@@ -1,0 +1,26 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Release build
+    runs-on: macos-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Show Swift version
+        run: swift --version
+
+      - name: Build DiskTree
+        run: swift build --configuration release

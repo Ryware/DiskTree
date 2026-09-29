@@ -1,0 +1,18 @@
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# Generated application and release artifacts
+build/
+dist/
+
+# Xcode user data
+DerivedData/
+xcuserdata/
+*.xcuserstate
+
+# macOS
+.DS_Store
+
+# Local logs
+*.log

@@ -1,0 +1,22 @@
+# Optional: `brew install xcodegen && xcodegen` → DiskTree.xcodeproj
+name: DiskTree
+options:
+  bundleIdPrefix: dev.ryware
+  deploymentTarget:
+    macOS: "14.0"
+targets:
+  DiskTree:
+    type: application
+    platform: macOS
+    sources:
+      - Sources/DiskTree
+      - path: Assets/AppIcon.icns
+        buildPhase: resources
+    info:
+      path: Info.plist
+    settings:
+      base:
+        SWIFT_VERSION: "5.9"
+        CODE_SIGN_IDENTITY: "-"
+        ENABLE_HARDENED_RUNTIME: NO
+        ENABLE_APP_SANDBOX: NO
