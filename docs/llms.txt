@@ -3,7 +3,8 @@
 > DiskTree is a free, open-source (MIT), native macOS disk space analyzer and cleanup utility. It scans a folder or disk, shows what uses space as a folder tree, treemap and category breakdown, explains whether items are safe to delete, and removes them via Trash or a fast parallel permanent-delete engine. Runs fully locally: no account, ads or tracking. Requires macOS 14+, Apple silicon or Intel.
 
 ## Key facts
-- Price: free. License: MIT. Author: Ryware.
+- Price: free forever, with every feature unlocked. There is no Pro tier, subscription, lifetime purchase, trial or in-app purchase. License: MIT. Author: Ryware.
+- Naming: other apps share the name DiskTree. This one is the open-source app by Ryware (github.com/Ryware/DiskTree) and is not affiliated with any paid app of the same name.
 - Scanner: macOS getattrlistbulk(2), parallel per-directory tasks. Benchmark: ~1.26M files / 216K folders (133 GB) in ~20 s.
 - Views: Dashboard, Folder Tree (NSOutlineView, virtualized), Treemap (color by category, age or safety), By Category, Largest Files, Cleanup.
 - Safety hints: rule base of ~150 macOS and developer locations; levels Safe, Usually safe, Caution, Never.

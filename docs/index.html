@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DiskTree – Free Disk Space Analyzer & Cleaner for Mac</title>
-<meta name="description" content="DiskTree is a free, open-source, native macOS disk space analyzer. Scan 1M+ files in seconds, explore a treemap, see what is safe to delete, and clean caches, node_modules and Xcode junk. No ads, no tracking.">
-<meta name="keywords" content="Mac disk space analyzer, macOS storage visualizer, free disk cleaner Mac, treemap, find large files Mac, clean Xcode DerivedData, delete node_modules, WizTree for Mac, TreeSize alternative Mac, DaisyDisk alternative">
+<title>DiskTree – 100% Free Mac Disk Cleaner & Space Analyzer (No Pro, No Subscription)</title>
+<meta name="description" content="DiskTree is a 100% free, open-source Mac disk space analyzer and cleaner. Every feature unlocked: treemap, one-click cleanup, developer deep scan, safe-to-delete hints. No Pro tier, no subscription, no ads, no tracking.">
+<meta name="keywords" content="free Mac disk cleaner, free disk space analyzer Mac, no subscription disk cleaner, open source disk cleaner macOS, all features free, no Pro version, Mac disk space analyzer, macOS storage visualizer, free disk cleaner Mac, treemap, find large files Mac, clean Xcode DerivedData, delete node_modules, WizTree for Mac, TreeSize alternative Mac, DaisyDisk alternative">
 <meta name="author" content="Ryware">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 <meta name="theme-color" content="#4f46e5">
@@ -19,8 +19,8 @@
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="DiskTree">
-<meta property="og:title" content="DiskTree – See what's eating your Mac's disk">
-<meta property="og:description" content="A free, fast, native disk space analyzer for macOS. Treemap, folder tree, safety hints and one-click cleanup. Open source, no tracking.">
+<meta property="og:title" content="DiskTree – Free Mac disk cleaner. Every feature unlocked.">
+<meta property="og:description" content="100% free and open source. Treemap, one-click cleanup, developer deep scan and safety hints, all unlocked. No Pro tier, no subscription, no tracking.">
 <meta property="og:url" content="https://ryware.github.io/DiskTree/">
 <meta property="og:image" content="https://ryware.github.io/DiskTree/og-image.png">
 <meta property="og:image:width" content="1200">
@@ -28,8 +28,8 @@
 <meta property="og:image:alt" content="DiskTree app icon next to a dashboard showing disk usage by category">
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="DiskTree – See what's eating your Mac's disk">
-<meta name="twitter:description" content="Free, fast, native disk space analyzer for macOS. Treemap, safety hints, one-click cleanup.">
+<meta name="twitter:title" content="DiskTree – Free Mac disk cleaner. Every feature unlocked.">
+<meta name="twitter:description" content="100% free, open source. No Pro tier, no subscription. Treemap, cleanup and safety hints for Mac.">
 <meta name="twitter:image" content="https://ryware.github.io/DiskTree/og-image.png">
 <meta name="twitter:image:alt" content="DiskTree dashboard screenshot">
 
@@ -59,7 +59,8 @@
       "@type": "SoftwareApplication",
       "@id": "https://ryware.github.io/DiskTree/#app",
       "name": "DiskTree",
-      "alternateName": "DiskTree Disk Space Analyzer",
+      "alternateName": ["DiskTree by Ryware", "DiskTree Disk Space Analyzer"],
+      "sameAs": ["https://github.com/Ryware/DiskTree"],
       "description": "A free, open-source, native macOS disk space analyzer and cleanup utility with a virtualized folder tree, squarified treemap, category breakdown, safety hints and fast parallel deletion.",
       "url": "https://ryware.github.io/DiskTree/",
       "image": "https://ryware.github.io/DiskTree/og-image.png",
@@ -75,7 +76,7 @@
       "softwareVersion": "0.1.0",
       "license": "https://opensource.org/licenses/MIT",
       "isAccessibleForFree": true,
-      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": "https://schema.org/InStock", "description": "Free forever. All features included. No Pro tier, subscription, trial or in-app purchases." },
       "downloadUrl": "https://github.com/Ryware/DiskTree/releases/latest",
       "codeRepository": "https://github.com/Ryware/DiskTree",
       "author": { "@id": "https://ryware.github.io/DiskTree/#author" },
@@ -88,7 +89,8 @@
         "Safety hints for roughly 150 macOS and developer locations",
         "Developer cleanup: DerivedData, node_modules, package caches",
         "Trash mode and fast permanent-delete mode",
-        "Local only: no account, ads or tracking"
+        "Local only: no account, ads or tracking",
+        "100% free with every feature unlocked: no Pro tier, subscription or lifetime fee"
       ]
     },
     {
@@ -107,6 +109,12 @@
     {
       "@type": "FAQPage",
       "mainEntity": [
+        { "@type": "Question", "name": "Is there a Pro version of DiskTree?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. DiskTree has no Pro tier, subscription, lifetime purchase, trial or in-app purchases. Every feature is free and unlocked for everyone: the treemap, one-click cleanup, developer deep scan, safety hints, Trash-first deletion and fast permanent deletion." } },
+        { "@type": "Question", "name": "Is there a free Mac disk cleaner with no subscription?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. DiskTree is a free, open-source Mac disk space analyzer and cleaner. It does not lock cleanup, developer scans or any other feature behind a paywall, and it never asks for an account or payment." } },
+        { "@type": "Question", "name": "Are there other apps called DiskTree?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes, other apps share the name. This DiskTree is the free, open-source macOS app by Ryware at github.com/Ryware/DiskTree, and it is not affiliated with any paid app of the same name." } },
         { "@type": "Question", "name": "What is DiskTree?",
           "acceptedAnswer": { "@type": "Answer", "text": "DiskTree is a free, open-source, native macOS app that shows what is using space on your Mac. It scans a folder or disk, visualizes the result as a folder tree, treemap and category charts, explains whether items are safe to delete and helps you clean them up." } },
         { "@type": "Question", "name": "Is DiskTree really free?",
@@ -146,6 +154,7 @@
     <span>DiskTree</span>
   </a>
   <nav aria-label="Primary">
+    <a href="#free">Free</a>
     <a href="#features">Features</a>
     <a href="#screens">Screenshots</a>
     <a href="#safety">Safety</a>
@@ -160,7 +169,7 @@
     <div class="orb o2" aria-hidden="true"></div>
     <div class="wrap hero-grid">
       <div class="hero-copy">
-        <p class="pill">Free · Open source · Made for Mac</p>
+        <p class="pill">100% free · Every feature unlocked · Open source</p>
         <h1>See what's eating your Mac's disk.</h1>
         <p class="lead">DiskTree is a fast, native disk space analyzer that turns a crowded drive into a map you can read, tells you what is safe to delete, and clears the junk in seconds.</p>
         <div class="cta">
@@ -169,7 +178,7 @@
         </div>
         <ul class="facts" aria-label="Key facts">
           <li><strong>1.26M</strong> files scanned in ~20 s</li>
-          <li><strong>$0</strong> no ads, no tracking</li>
+          <li><strong>$0, forever</strong> no Pro tier, no subscription</li>
           <li><strong>macOS 14+</strong> Apple silicon &amp; Intel</li>
         </ul>
       </div>
@@ -184,6 +193,19 @@
       <p><strong>Scan.</strong> Parallel <code>getattrlistbulk</code> reads millions of files in seconds.</p>
       <p><strong>Understand.</strong> Tree, treemap and categories show exactly where space went.</p>
       <p><strong>Clean.</strong> Safety badges say what is safe, then one click removes it.</p>
+    </div>
+  </section>
+
+  <section class="section free" id="free">
+    <div class="wrap">
+      <h2>Free. Really free. Everything unlocked.</h2>
+      <p class="sub">No Pro tier. No subscription. No lifetime upgrade. No trial that ends. No “upgrade to clean” button. The features other Mac disk cleaners keep behind a paywall are simply part of DiskTree.</p>
+      <ul class="unlocked" aria-label="Features included for free">
+        <li>Interactive treemap</li><li>One-click cleanup</li><li>Developer deep scan</li><li>Xcode, Gradle, npm, pip &amp; Cargo caches</li>
+        <li>node_modules finder</li><li>Safe-to-delete hints</li><li>Trash-first deletion</li><li>Fast permanent delete</li>
+        <li>Largest files &amp; apps</li><li>Category breakdown</li><li>Unlimited scans</li><li>Open source (MIT)</li>
+      </ul>
+      <p class="note">Made to be enjoyed, not sold. No ads, no accounts, no analytics. If you like it, a GitHub star is the only payment we'd ever ask for.</p>
     </div>
   </section>
 
@@ -270,6 +292,9 @@
   <section class="section alt" id="faq">
     <div class="wrap narrow">
       <h2>Frequently asked questions</h2>
+      <details><summary>Is there a Pro version of DiskTree?</summary><p>No. There is no Pro tier, subscription, lifetime purchase, trial or in-app purchase. Every feature is free and unlocked for everyone: the treemap, one-click cleanup, developer deep scan, safety hints, Trash-first deletion and fast permanent deletion.</p></details>
+      <details><summary>Is there a free Mac disk cleaner with no subscription?</summary><p>Yes, this one. DiskTree is a free, open-source Mac disk space analyzer and cleaner that never locks cleanup or developer scans behind a paywall, and never asks for an account or payment.</p></details>
+      <details><summary>Are there other apps called DiskTree?</summary><p>Yes, other apps share the name. This DiskTree is the free, open-source macOS app by Ryware at <a href="https://github.com/Ryware/DiskTree">github.com/Ryware/DiskTree</a>, and it is not affiliated with any paid app of the same name.</p></details>
       <details open><summary>What is DiskTree?</summary><p>DiskTree is a free, open-source, native macOS app that shows what is using space on your Mac. It scans a folder or disk, visualizes the result as a folder tree, treemap and category charts, explains whether items are safe to delete and helps you clean them up.</p></details>
       <details><summary>Is DiskTree really free?</summary><p>Yes. It is MIT-licensed with no ads, subscriptions, accounts, in-app purchases or analytics. It was made to be enjoyed.</p></details>
       <details><summary>How do I see what is taking up space on my Mac?</summary><p>Open DiskTree, choose Home or Startup Disk and wait for the scan. The dashboard shows free and used space and the biggest categories, the folder tree lists folders by size, and the treemap draws every file as a rectangle sized by how much space it uses.</p></details>
@@ -285,8 +310,8 @@
   <section class="final">
     <div class="wrap center">
       <img src="icon-512.png" width="96" height="96" alt="DiskTree app icon" loading="lazy" decoding="async">
-      <h2>Give your disk some room to breathe.</h2>
-      <p class="cta center"><a class="btn primary" href="https://github.com/Ryware/DiskTree/releases/latest">Download DiskTree – it's free</a></p>
+      <h2>Give your disk some room to breathe. Free, forever.</h2>
+      <p class="cta center"><a class="btn primary" href="https://github.com/Ryware/DiskTree/releases/latest">Download DiskTree – free, all features</a></p>
     </div>
   </section>
 </main>

@@ -101,3 +101,8 @@ details p{margin:0 0 16px;color:var(--muted)}
 footer{padding:28px 0;border-top:1px solid var(--line);color:var(--muted);font-size:14.5px}
 .foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.foot p{margin:0}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}.hero-shot{transform:none}}
+
+.free{background:var(--bg2);border-block:1px solid var(--line);text-align:center}
+.unlocked{list-style:none;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:0 auto;padding:0;max-width:860px}
+.unlocked li{padding:9px 16px 9px 34px;border-radius:999px;background:var(--card);border:1px solid var(--line);font-weight:600;font-size:15px;position:relative}
+.unlocked li::before{content:"✓";position:absolute;left:14px;color:var(--safe);font-weight:800}
