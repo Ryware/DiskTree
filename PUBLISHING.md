@@ -108,7 +108,7 @@ The prepared 1920-pixel-wide images are in `Screenshots/`.
 - [ ] Create a Developer ID Application certificate for team `W9J3HSY24R`.
 - [ ] Store the `DiskTree` notarization profile with `notarytool`.
 - [ ] Run `./release.sh` and verify the notarized DMG.
-- [x] Create the public `avisiboni/DiskTree` repository.
+- [x] Create the public `Ryware/DiskTree` repository.
 - [x] Configure GitHub Actions release-build verification.
 - [x] Create the draft GitHub release for `v0.1.0`.
 - [ ] Upload `dist/DiskTree-0.1.0.dmg` with the release body above.
