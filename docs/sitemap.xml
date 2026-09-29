@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://ryware.github.io/DiskTree/</loc>
+    <lastmod>2026-09-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+    <image:image><image:loc>https://ryware.github.io/DiskTree/assets/dashboard.webp</image:loc><image:title>DiskTree dashboard</image:title></image:image>
+    <image:image><image:loc>https://ryware.github.io/DiskTree/assets/treemap.webp</image:loc><image:title>DiskTree treemap</image:title></image:image>
+    <image:image><image:loc>https://ryware.github.io/DiskTree/assets/folder-tree.webp</image:loc><image:title>DiskTree folder tree</image:title></image:image>
+    <image:image><image:loc>https://ryware.github.io/DiskTree/assets/categories.webp</image:loc><image:title>DiskTree categories</image:title></image:image>
+  </url>
+</urlset>

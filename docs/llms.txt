@@ -1,0 +1,20 @@
+# DiskTree
+
+> DiskTree is a free, open-source (MIT), native macOS disk space analyzer and cleanup utility. It scans a folder or disk, shows what uses space as a folder tree, treemap and category breakdown, explains whether items are safe to delete, and removes them via Trash or a fast parallel permanent-delete engine. Runs fully locally: no account, ads or tracking. Requires macOS 14+, Apple silicon or Intel.
+
+## Key facts
+- Price: free. License: MIT. Author: Ryware.
+- Scanner: macOS getattrlistbulk(2), parallel per-directory tasks. Benchmark: ~1.26M files / 216K folders (133 GB) in ~20 s.
+- Views: Dashboard, Folder Tree (NSOutlineView, virtualized), Treemap (color by category, age or safety), By Category, Largest Files, Cleanup.
+- Safety hints: rule base of ~150 macOS and developer locations; levels Safe, Usually safe, Caution, Never.
+- Cleanup targets: Xcode DerivedData, node_modules, npm/pnpm/pip/Gradle/NuGet/Cargo caches, build output, logs, Trash.
+- Delete modes: Trash (recoverable) or Permanent (parallel unlinkat, not recoverable).
+- Privacy: all analysis on-device; no analytics SDK, no cloud.
+- Similar in spirit to WizTree and TreeSize (Windows), for macOS.
+
+## Links
+- [Home page](https://ryware.github.io/DiskTree/): overview, screenshots, FAQ
+- [Download](https://github.com/Ryware/DiskTree/releases/latest): latest release
+- [Source code](https://github.com/Ryware/DiskTree): README, build instructions
+- [Privacy](https://github.com/Ryware/DiskTree/blob/main/PRIVACY.md)
+- [Changelog](https://github.com/Ryware/DiskTree/blob/main/CHANGELOG.md)
