@@ -12,6 +12,11 @@ let package = Package(
             name: "DiskTree",
             path: "Sources/DiskTree",
             swiftSettings: [.unsafeFlags(["-parse-as-library"])]
-        )
+        ),
+        .testTarget(
+            name: "DiskTreeTests",
+            dependencies: ["DiskTree"],
+            path: "Tests/DiskTreeTests"
+        ),
     ]
 )

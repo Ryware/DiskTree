@@ -12,6 +12,24 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/Ryware/DiskTree/actions/workflows/build.yml"><img src="https://img.shields.io/github/actions/workflow/status/Ryware/DiskTree/build.yml?branch=main&label=build&logo=github" alt="Build status"></a>
+  <a href="https://github.com/Ryware/DiskTree/actions/workflows/build.yml"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2FRyware/DiskTree%2Fbadges%2Ftests.json&cacheSeconds=300" alt="Unit tests"></a>
+  <a href="https://github.com/Ryware/DiskTree/actions/workflows/build.yml"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2FRyware/DiskTree%2Fbadges%2Fcoverage.json&cacheSeconds=300" alt="Test coverage of the engine and model code"></a>
+  <br>
+  <a href="https://github.com/Ryware/DiskTree/releases/latest"><img src="https://img.shields.io/github/v/release/Ryware/DiskTree?label=release&sort=semver" alt="Latest release"></a>
+  <a href="https://github.com/Ryware/DiskTree/releases"><img src="https://img.shields.io/github/downloads/Ryware/DiskTree/total?label=downloads" alt="Downloads"></a>
+  <img src="https://img.shields.io/badge/macOS-14%2B-000000?logo=apple&logoColor=white" alt="macOS 14 or newer">
+  <img src="https://img.shields.io/badge/Swift-5.9-F05138?logo=swift&logoColor=white" alt="Swift 5.9">
+  <img src="https://img.shields.io/badge/Apple%20silicon%20%2B%20Intel-universal-555" alt="Universal binary">
+  <br>
+  <img src="https://img.shields.io/badge/Developer%20ID-notarized-2ea44f?logo=apple&logoColor=white" alt="Signed and notarized by Apple">
+  <img src="https://img.shields.io/badge/100%25-free-2ea44f" alt="100% free">
+  <img src="https://img.shields.io/badge/telemetry-none-2ea44f" alt="No telemetry">
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/Ryware/DiskTree" alt="License"></a>
+  <a href="https://github.com/Ryware/DiskTree/stargazers"><img src="https://img.shields.io/github/stars/Ryware/DiskTree?style=flat" alt="GitHub stars"></a>
+</p>
+
+<p align="center">
   <a href="../../releases/latest"><strong>Download the latest release</strong></a>
   ·
   <a href="#build-from-source">Build from source</a>
@@ -29,6 +47,7 @@ DiskTree turns a crowded drive into an understandable map. Scan a folder or disk
 - **Understand it visually** — explore a detailed folder tree, a squarified treemap, file categories, and the largest individual files and bundles.
 - **Delete with context** — safety badges explain what an item is, whether it is usually safe to remove, and what deletion may affect.
 - **Clean developer clutter** — discover caches, DerivedData, `node_modules`, package stores, build output, logs, virtual machines, and other regenerable data.
+- **Watch it from the menu bar** — a live free-space ring, 7-day trend, low-space and sudden-drop alerts, and one-click cleanup of safe caches.
 - **Stay in control** — choose recoverable Trash mode or an explicit permanent-delete mode.
 - **Keep data private** — analysis happens locally on your Mac; DiskTree does not require an account or send scan data anywhere.
 
@@ -95,6 +114,31 @@ DiskTree finds regenerable junk inside the selected folder and in known home-fol
 - Trash contents.
 
 Nothing is removed merely because it was found. You review and select cleanup candidates first.
+
+### Menu bar monitor
+
+DiskTree can live in the menu bar and keep an eye on your startup disk while you work.
+
+- **Free-space ring** in the menu bar: the arc is the share of the disk that is free, turning amber and then red as space runs low. Optionally show the free space as text.
+- **Popover** on click: free / used / total, a Healthy / Getting low / Low status, and a 7-day free-space chart.
+- **Reclaimable now**: totals the safe caches, logs and build output DiskTree found, and cleans only those Safe items to the Trash with one click.
+- **Alerts** as local notifications when free space drops below a threshold (default 10 GB) or falls quickly (default 5 GB within an hour). Tap an alert to open DiskTree.
+- **Shortcuts**: Open DiskTree, Scan Home, Settings, Quit.
+
+Settings (**DiskTree → Settings…**, ⌘,):
+
+| Setting | Default | What it does |
+| --- | --- | --- |
+| Show DiskTree in the menu bar | On | Adds or removes the ring. |
+| Show free space next to the icon | Off | Adds text such as "42 GB" beside the ring. |
+| Keep running when the window is closed | On | Closing the window leaves the monitor running. Quit from the popover. |
+| Show in the Dock | On | Turn off for a menu-bar-only app. |
+| Open at login | Off | Starts DiskTree quietly in the menu bar. |
+| Warn when free space is low | On, below 10 GB | Local notification, at most once every 6 hours. |
+| Warn when space drops quickly | On, 5 GB in an hour | Local notification, at most once every 3 hours. |
+| Deleting | Trash | Trash (recoverable) or permanent (instant, no undo). |
+
+History is stored only on your Mac in `~/Library/Application Support/DiskTree/`, and nothing is uploaded. The Mac App Store build omits the known-locations cleanup because of the sandbox.
 
 ### Safety Inspector
 
@@ -172,13 +216,23 @@ xcrun notarytool store-credentials DiskTree \
   --password "<app-specific password>"
 ```
 
-For each release, update `CFBundleShortVersionString` and `CFBundleVersion` in `Info.plist`, then run:
+For each release, update `CFBundleShortVersionString` and `CFBundleVersion` in `Info.plist` (and `project.yml`), then run:
 
 ```sh
 ./release.sh
 ```
 
 The distributable is written to `dist/DiskTree-<version>.dmg`.
+
+## Testing
+
+DiskTree has an XCTest suite covering the scanner (real temporary directory trees), the parallel permanent deleter, sorting, categories, the safety knowledge base, the cleanup finder and the disk monitor.
+
+```sh
+swift test --enable-code-coverage   # or double-click test.command
+```
+
+GitHub Actions runs the tests and a release build on every push and pull request. The **coverage** badge measures `Engine/` and `Models/`, where the logic lives (scanner, deleter, safety rules, cleanup finder, disk monitor, app state). The SwiftUI views are not unit tested; the per-file table, including views, is in each run's job summary.
 
 ## Project layout
 
@@ -199,6 +253,9 @@ Sources/DiskTree
     ├── OutlineTreeView.swift
     ├── TreemapView.swift
     └── …
+
+Tests/DiskTreeTests        XCTest suite (scanner, deleter, safety rules, cleanup, monitor)
+scripts/ci-summary.py      turns test + coverage output into the README badges
 ```
 
 ## Frequently asked questions
@@ -211,6 +268,9 @@ No. Scanning and categorization happen on your Mac.
 
 **Why are some folders unreadable?**  
 macOS privacy protections restrict access to certain locations. Grant Full Disk Access only if you want those locations included.
+
+**Does DiskTree keep running in the background?**  
+Only if you leave the menu bar monitor on and "Keep running when the window is closed" enabled. Turn either off in Settings, or quit from the menu bar popover.
 
 **Does moving files to Trash free space immediately?**  
 No. Disk space is reclaimed after you empty Trash.

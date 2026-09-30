@@ -67,10 +67,16 @@ final class FileNode: Identifiable, Hashable, @unchecked Sendable {
         self.directoryCount += dirs
     }
 
-    /// Re-sort the whole subtree (table header clicks).
-    func resort(using comparators: [KeyPathComparator<FileNode>]) {
-        children.sort(using: comparators)
-        for c in children where c.isDirectory { c.resort(using: comparators) }
+    /// Sort generation this node's children were last ordered for (see `ensureSorted`).
+    private var sortedGeneration = 0
+
+    /// Lazily re-sort just this folder's children (table header clicks). Sorting the whole
+    /// tree eagerly froze the UI on multi-million-node scans; folders are now sorted only
+    /// when the outline view first asks for them after a header click.
+    func ensureSorted(generation: Int, using comparators: [KeyPathComparator<FileNode>]) {
+        guard sortedGeneration != generation else { return }
+        sortedGeneration = generation
+        if children.count > 1 { children.sort(using: comparators) }
     }
 
     /// Detach a deleted child and propagate the size change up the tree.

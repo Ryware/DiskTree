@@ -94,20 +94,22 @@ struct WelcomeView: View {
                 HStack(spacing: 12) {
                     BigButton(title: "Scan Folder…", symbol: "folder.badge.plus", primary: true) { state.pickFolder() }
                         .keyboardShortcut(.defaultAction)
+#if !APP_STORE
                     BigButton(title: "Home", symbol: "house") { state.scan(URL(fileURLWithPath: NSHomeDirectory())) }
                     BigButton(title: "Startup Disk", symbol: "internaldrive") { state.scan(URL(fileURLWithPath: "/")) }
+#endif
                 }
 
                 if !state.recentScans.isEmpty {
                     VStack(alignment: .leading, spacing: 6) {
                         Text("RECENT").font(.caption.bold()).foregroundStyle(.white.opacity(0.6)).padding(.leading, 6)
-                        ForEach(state.recentScans, id: \.self) { path in
+                        ForEach(state.recentScans, id: \.path) { url in
                             Button {
-                                state.scan(URL(fileURLWithPath: path))
+                                state.scan(url)
                             } label: {
                                 HStack {
                                     Image(systemName: "clock.arrow.circlepath")
-                                    Text((path as NSString).abbreviatingWithTildeInPath).lineLimit(1).truncationMode(.middle)
+                                    Text((url.path as NSString).abbreviatingWithTildeInPath).lineLimit(1).truncationMode(.middle)
                                     Spacer()
                                     Image(systemName: "arrow.right").foregroundStyle(.white.opacity(0.5))
                                 }
@@ -121,8 +123,13 @@ struct WelcomeView: View {
                     .frame(width: 420)
                 }
                 Spacer(minLength: 0)
+#if APP_STORE
+                Text("Choose a folder to grant DiskTree access. Other locations remain private.")
+                    .font(.caption).foregroundStyle(.white.opacity(0.55)).padding(.bottom, 12)
+#else
                 Text("Sizes are bytes allocated on disk. Grant Full Disk Access to see inside Mail, Messages and Safari data.")
                     .font(.caption).foregroundStyle(.white.opacity(0.55)).padding(.bottom, 12)
+#endif
             }
             .padding(40)
         }

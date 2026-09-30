@@ -1,4 +1,4 @@
-# DiskTree 0.1.0 — Publishing Kit
+# DiskTree — Publishing Kit
 
 ## Positioning
 
@@ -39,11 +39,23 @@ Before removing anything, DiskTree explains what the item is and provides a safe
 
 Everything runs locally on your Mac. DiskTree is free and includes no subscription, ads, account system, analytics, or in-app purchases.
 
-## Suggested release title
+## Current release — 0.2.0
+
+**GitHub release title:** DiskTree 0.2.0 — Watch your disk from the menu bar
+
+**Tag:** `v0.2.0`  
+**Version:** `0.2.0` (build `2`) in `Info.plist` and `project.yml`
+
+Release body: [`release-notes-0.2.0.md`](release-notes-0.2.0.md).  
+After `./release.sh`, attach `dist/DiskTree-0.2.0.dmg` and `dist/DiskTree-0.2.0.dmg.sha256`.
+
+## Previous release — 0.1.0
+
+### Suggested release title
 
 DiskTree 0.1.0 — Free native disk analyzer for macOS
 
-## GitHub release body
+### GitHub release body
 
 DiskTree 0.1.0 is the first public release of a fast, free, native macOS disk space analyzer.
 
@@ -105,12 +117,43 @@ The prepared 1920-pixel-wide images are in `Screenshots/`.
 - [x] README includes benefit-led copy, install steps, privacy, safety, performance, and screenshots.
 - [x] Screenshot set is optimized for web publication.
 - [x] License the public source under the MIT License.
-- [ ] Create a Developer ID Application certificate for team `TEAM_ID_REDACTED`.
-- [ ] Store the `DiskTree` notarization profile with `notarytool`.
-- [ ] Run `./release.sh` and verify the notarized DMG.
+- [x] Create a Developer ID Application certificate for team `TEAM_ID_REDACTED`.
+- [x] Notarization credentials: `release.sh` uses the App Store Connect API key in `.secrets/` (no keychain profile needed).
+- [x] Run `release.command` (double-click; runs `release.sh` outside the assistant sandbox) and verify the notarized DMG.
 - [x] Create the public `Ryware/DiskTree` repository.
 - [x] Configure GitHub Actions release-build verification.
 - [x] Create the draft GitHub release for `v0.1.0`.
-- [ ] Upload `dist/DiskTree-0.1.0.dmg` with the release body above.
-- [ ] Publish a SHA-256 checksum.
+- [x] Upload `dist/DiskTree-0.1.0.dmg` and `.sha256` to the draft release with the release body above.
+- [x] Publish a SHA-256 checksum (in the release notes and `CHANGELOG.md`).
+- [ ] Publish the draft release (GitHub → Releases → v0.1.0 → Publish release).
 - [ ] Test the downloaded DMG on a Mac that did not build the app.
+
+## Mac App Store checklist
+
+Build the App Store variant from the generated Xcode project (`xcodegen` → `DiskTree.xcodeproj`), which enables App Sandbox and the `APP_STORE` compilation condition.
+
+```sh
+xcodebuild -project DiskTree.xcodeproj -scheme DiskTree -configuration Release \
+  -archivePath dist/DiskTree.xcarchive -allowProvisioningUpdates archive
+xcodebuild -exportArchive -archivePath dist/DiskTree.xcarchive \
+  -exportOptionsPlist ExportOptions.plist -exportPath dist/appstore -allowProvisioningUpdates
+```
+
+Set `destination` to `upload` in `ExportOptions.plist` to upload directly once the app record exists.
+
+- [x] App Sandbox entitlements (`AppStore.entitlements`) with user-selected read/write and security-scoped bookmarks.
+- [x] `APP_STORE` code paths: no Home/Startup Disk shortcuts, no known-location scanning, bookmark-based recents.
+- [x] App icon asset catalog (`Assets/Assets.xcassets`).
+- [x] App Store screenshots at exactly 1440 × 900 (`AppStore/Screenshots/`).
+- [x] Bundle ID `dev.ryware.disktree` registered and Mac App Store provisioning profile created.
+- [x] Apple Distribution certificate (cloud managed) created.
+- [x] Universal (arm64 + x86_64) archive exported and signed: `dist/appstore/DiskTree.pkg`.
+- [x] Create the app record in App Store Connect (app ID 6817532988, name "DiskTree - Free Mac Analyzer" because "DiskTree" is taken).
+- [x] Upload build 0.1.0 (1) via Xcode Organizer.
+- [x] Fill in App Information, pricing, availability, age rating, listing text, and screenshots via `AppStore/asc_publish.py` (App Store Connect API).
+- [x] Attach the uploaded build to version 0.1.0.
+- [ ] Add the App Review contact phone (`ASC_CONTACT_PHONE=+... python3 AppStore/asc_publish.py review`).
+- [ ] Complete the App Privacy questionnaire in the web UI ("No, we do not collect data"); the API does not expose it.
+- [ ] Submit for review.
+
+`asc_publish.py` needs `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_PATH`, and `ASC_TOKEN_TOOL` (the compiled `asc_token` JWT helper). Keys live in the git-ignored `.secrets/` folder.

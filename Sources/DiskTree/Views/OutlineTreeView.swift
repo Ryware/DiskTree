@@ -106,12 +106,12 @@ struct OutlineTreeView: NSViewRepresentable {
         // MARK: data source
 
         func outlineView(_ ov: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {
-            if item == nil { return root?.children.count ?? 0 }
+            if item == nil { return root.map { sortedChildren(of: $0).count } ?? 0 }
             guard let node = item as? FileNode, node.isDirectory, !node.isPackage else { return 0 }
-            return node.children.count
+            return sortedChildren(of: node).count
         }
         func outlineView(_ ov: NSOutlineView, child index: Int, ofItem item: Any?) -> Any {
-            ((item as? FileNode) ?? root!).children[index]
+            sortedChildren(of: (item as? FileNode) ?? root!)[index]
         }
         func outlineView(_ ov: NSOutlineView, isItemExpandable item: Any) -> Bool {
             guard let n = item as? FileNode else { return false }
@@ -129,9 +129,19 @@ struct OutlineTreeView: NSViewRepresentable {
             default: comparators = [KeyPathComparator(\FileNode.allocatedSize, order: order)]
             }
             let selected = ov.selectedRowIndexes.compactMap { ov.item(atRow: $0) as? FileNode }
-            root.resort(using: comparators)
+            sortComparators = comparators
+            sortGeneration += 1
             ov.reloadData()
             reselect(selected)
+        }
+
+        private var sortComparators: [KeyPathComparator<FileNode>] = []
+        private var sortGeneration = 0
+
+        /// Children of `node`, sorted for the active header choice (sorted on first access).
+        private func sortedChildren(of node: FileNode) -> [FileNode] {
+            if sortGeneration > 0 { node.ensureSorted(generation: sortGeneration, using: sortComparators) }
+            return node.children
         }
 
         // MARK: cells
