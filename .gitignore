@@ -16,3 +16,17 @@ xcuserdata/
 
 # Local logs
 *.log
+
+# Xcode project export artifacts
+*.xcarchive
+
+# App Store Connect API keys
+.secrets/
+*.p8
+
+# Test and coverage output
+coverage-summary.txt
+badges-out/
+*.log
+*.command
+AppStore/

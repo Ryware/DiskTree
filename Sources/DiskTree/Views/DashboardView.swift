@@ -36,6 +36,7 @@ struct DashboardView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     header(root)
                     diskSpaceCard
+                    FreeSpaceTrendCard()
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: 200), spacing: 12)], spacing: 12) {
                         statistic("Size on disk", value: root.allocatedSize.humanBytes,
                                   note: "\(root.logicalSize.humanBytes) logical size", symbol: "internaldrive", color: .purple)

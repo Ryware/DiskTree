@@ -16,6 +16,14 @@ struct CleanupView: View {
             header
             Divider()
             List {
+#if APP_STORE
+                Section {
+                    Text("The App Store version only reviews cleanup candidates inside the folder you selected.")
+                        .foregroundStyle(.secondary)
+                } header: {
+                    Text("Privacy")
+                }
+#else
                 Section {
                     if state.scanningKnownLocations {
                         HStack { ProgressView().controlSize(.small); Text("Measuring caches, build output and package stores…") }
@@ -33,6 +41,7 @@ struct CleanupView: View {
                         }
                     }
                 }
+#endif
 
                 Section {
                     if state.root == nil {

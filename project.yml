@@ -1,22 +1,33 @@
-# Optional: `brew install xcodegen && xcodegen` → DiskTree.xcodeproj
+# Generate the Xcode project for App Store builds: `xcodegen` → DiskTree.xcodeproj
+# The Swift package (Package.swift + build.sh) remains the path for direct-download builds.
 name: DiskTree
 options:
   bundleIdPrefix: dev.ryware
   deploymentTarget:
     macOS: "14.0"
+  xcodeVersion: "16.0"
 targets:
   DiskTree:
     type: application
     platform: macOS
     sources:
       - Sources/DiskTree
-      - path: Assets/AppIcon.icns
-        buildPhase: resources
-    info:
-      path: Info.plist
+      - Assets/Assets.xcassets
     settings:
       base:
         SWIFT_VERSION: "5.9"
-        CODE_SIGN_IDENTITY: "-"
-        ENABLE_HARDENED_RUNTIME: NO
-        ENABLE_APP_SANDBOX: NO
+        PRODUCT_NAME: DiskTree
+        PRODUCT_BUNDLE_IDENTIFIER: dev.ryware.disktree
+        MARKETING_VERSION: "0.2.0"
+        CURRENT_PROJECT_VERSION: "2"
+        DEVELOPMENT_TEAM: W9J3HSY24R
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_ENTITLEMENTS: AppStore.entitlements
+        ENABLE_HARDENED_RUNTIME: YES
+        ENABLE_APP_SANDBOX: YES
+        # Use the hand-maintained Info.plist rather than a generated one.
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: Info.plist
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        COMBINE_HIDPI_IMAGES: YES
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) APP_STORE"

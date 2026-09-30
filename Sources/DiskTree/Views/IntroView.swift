@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// Bump when "What's new" changes; the intro re-opens on the What's New page for existing users.
-let currentIntroVersion = 2
+let currentIntroVersion = 3
 
 struct IntroStep: Identifiable {
     let id: Int
@@ -39,10 +39,10 @@ private let steps: [IntroStep] = [
                         ("flame", "Permanent mode: parallel delete, instant, no undo")],
               art: .clean),
     IntroStep(id: 5, eyebrow: "WHAT'S NEW", title: "Version 0.2",
-              bullets: [("square.grid.3x3.square", "Treemap with category / age / safety coloring"),
-                        ("questionmark.circle", "Inspector with delete-safety verdicts for 160+ known locations"),
-                        ("bolt.fill", "getattrlistbulk scanner and dirfd-based parallel deletion"),
-                        ("app.badge", "New icon, welcome screen, recent scans, this tour")],
+              bullets: [("chart.pie", "Menu bar monitor: free-space ring, 7-day trend, one-click safe clean"),
+                        ("bell.badge", "Local alerts for low space and fast drops. Tune them in Settings (⌘,)"),
+                        ("hare", "Fixed: sorting a column no longer freezes on huge scans"),
+                        ("macwindow", "Fixed: Open DiskTree reliably brings the window back")],
               art: .whatsNew),
 ]
 

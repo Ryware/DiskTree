@@ -49,14 +49,83 @@ final class AppState: ObservableObject {
     @Published var treeVersion = 0
     /// Installed by the outline view so deletions animate rows out instead of reloading.
     var treeRemovalHandler: (([FileNode]) -> Bool)?
-    @Published var recentScans: [String] = (UserDefaults.standard.stringArray(forKey: "recentScans") ?? []).filter { FileManager.default.fileExists(atPath: $0) }
+    @Published var recentScans: [URL] = []
 
+    private static let recentScanPathsKey = "recentScans"
+    private static let recentScanBookmarksKey = "recentScanBookmarks"
     private var scanTask: Task<Void, Never>?
     private var pollTimer: Timer?
     private var counters = ScanCounters()
+#if APP_STORE
+    private var securityScopedURL: URL?
+    private var isAccessingSecurityScopedURL = false
+#endif
 
     /// Map from id to node for selection lookups.
     private var index: [FileNode.ID: FileNode] = [:]
+
+    init() {
+        recentScans = Self.loadRecentScans()
+    }
+
+    private static func loadRecentScans() -> [URL] {
+#if APP_STORE
+        let bookmarks = UserDefaults.standard.array(forKey: recentScanBookmarksKey) as? [Data] ?? []
+        return bookmarks.compactMap { data in
+            var isStale = false
+            return try? URL(
+                resolvingBookmarkData: data,
+                options: .withSecurityScope,
+                relativeTo: nil,
+                bookmarkDataIsStale: &isStale
+            )
+        }
+#else
+        return (UserDefaults.standard.stringArray(forKey: recentScanPathsKey) ?? [])
+            .map { URL(fileURLWithPath: $0) }
+            .filter { FileManager.default.fileExists(atPath: $0.path) }
+#endif
+    }
+
+    private func rememberRecentScan(_ url: URL) {
+        recentScans.removeAll { $0.standardizedFileURL == url.standardizedFileURL }
+        recentScans.insert(url, at: 0)
+        recentScans = Array(recentScans.prefix(5))
+
+#if APP_STORE
+        guard let bookmark = try? url.bookmarkData(
+            options: .withSecurityScope,
+            includingResourceValuesForKeys: nil,
+            relativeTo: nil
+        ) else { return }
+
+        let existing = UserDefaults.standard.array(forKey: Self.recentScanBookmarksKey) as? [Data] ?? []
+        let filtered = existing.filter { data in
+            var isStale = false
+            guard let savedURL = try? URL(
+                resolvingBookmarkData: data,
+                options: .withSecurityScope,
+                relativeTo: nil,
+                bookmarkDataIsStale: &isStale
+            ) else { return false }
+            return savedURL.standardizedFileURL != url.standardizedFileURL
+        }
+        UserDefaults.standard.set(Array(([bookmark] + filtered).prefix(5)), forKey: Self.recentScanBookmarksKey)
+#else
+        UserDefaults.standard.set(recentScans.map(\.path), forKey: Self.recentScanPathsKey)
+#endif
+    }
+
+#if APP_STORE
+    private func activateSecurityScope(for url: URL) {
+        guard securityScopedURL?.standardizedFileURL != url.standardizedFileURL else { return }
+        if isAccessingSecurityScopedURL {
+            securityScopedURL?.stopAccessingSecurityScopedResource()
+        }
+        securityScopedURL = url
+        isAccessingSecurityScopedURL = url.startAccessingSecurityScopedResource()
+    }
+#endif
 
     var isScanning: Bool { phase == .scanning }
 
@@ -64,11 +133,11 @@ final class AppState: ObservableObject {
 
     func scan(_ url: URL) {
         cancelScan()
+#if APP_STORE
+        activateSecurityScope(for: url)
+#endif
         rootURL = url
-        recentScans.removeAll { $0 == url.path }
-        recentScans.insert(url.path, at: 0)
-        recentScans = Array(recentScans.prefix(5))
-        UserDefaults.standard.set(recentScans, forKey: "recentScans")
+        rememberRecentScan(url)
         root = nil
         selection = []
         selectedNode = nil
@@ -155,6 +224,11 @@ final class AppState: ObservableObject {
     // MARK: Known junk locations (independent of the open folder)
 
     func scanKnownLocations() {
+#if APP_STORE
+        // App Store builds only inspect the folder explicitly selected by the user.
+        knownLocationCandidates = []
+        scanningKnownLocations = false
+#else
         guard !scanningKnownLocations else { return }
         scanningKnownLocations = true
         knownLocationCandidates = []
@@ -169,19 +243,21 @@ final class AppState: ObservableObject {
             let sorted = found.sorted { $0.size > $1.size }
             await self?.setKnownLocations(sorted)
         }
+#endif
     }
 
     // MARK: Deleting
 
-    func delete(_ nodes: [FileNode]) async {
-        guard !nodes.isEmpty, deleting == nil else { return }
+    @discardableResult
+    func delete(_ nodes: [FileNode], mode: DeleteMode? = nil, silent: Bool = false) async -> DeleteResult? {
+        guard !nodes.isEmpty, deleting == nil else { return nil }
         let counters = DeleteCounters()
         deleting = DeleteProgress()
         let timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
             let s = counters.snapshot
             Task { @MainActor in self?.deleting = DeleteProgress(done: s.done, total: s.total, bytes: s.bytes) }
         }
-        let deleter = Deleter(mode: deleteMode, counters: counters)
+        let deleter = Deleter(mode: mode ?? deleteMode, counters: counters)
         let result = await Task.detached(priority: .userInitiated) { await deleter.delete(nodes) }.value
         timer.invalidate()
 
@@ -204,14 +280,18 @@ final class AppState: ObservableObject {
             progress.bytes = root.allocatedSize
         }
         // Let the progress sheet finish dismissing before presenting the summary alert.
-        try? await Task.sleep(for: .milliseconds(350))
-        lastDeleteResult = result
+        if !silent {
+            try? await Task.sleep(for: .milliseconds(350))
+            lastDeleteResult = result
+        }
+        return result
     }
 
     // MARK: Folder picking
 
-    func pickFolder() {
+    func pickFolder(startingAt directoryURL: URL? = nil) {
         let panel = NSOpenPanel()
+        panel.directoryURL = directoryURL
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
         panel.allowsMultipleSelection = false

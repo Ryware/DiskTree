@@ -1,14 +1,49 @@
 import SwiftUI
+import ServiceManagement
+
+final class AppDelegate: NSObject, NSApplicationDelegate {
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        AppDelegate.applyDockPolicy()
+        Task { @MainActor in DiskMonitor.shared.start() }
+        // Started by "Open at login": stay in the menu bar instead of popping the window open.
+        if Self.launchedAtLogin, Pref.bool("menuBarEnabled", true) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                NSApp.windows.filter { $0.canBecomeMain }.forEach { $0.close() }
+            }
+        }
+    }
+
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        !(Pref.bool("menuBarEnabled", true) && Pref.bool("keepRunning", true))
+    }
+
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool { true }
+
+    /// Menu-bar-only mode (no Dock icon) is only offered while the menu bar item is on.
+    static func applyDockPolicy() {
+        let accessory = Pref.bool("menuBarEnabled", true) && !Pref.bool("showInDock", true)
+        NSApp.setActivationPolicy(accessory ? .accessory : .regular)
+    }
+
+    private static var launchedAtLogin: Bool {
+        guard let event = NSAppleEventManager.shared().currentAppleEvent else { return false }
+        return event.eventID == AEEventID(kAEOpenApplication)
+            && event.paramDescriptor(forKeyword: AEKeyword(keyAEPropData))?.enumCodeValue == AEKeyword(keyAELaunchedAsLogInItem)
+    }
+}
 
 @main
 struct DiskTreeApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var state = AppState()
     @AppStorage("seenIntroVersion") private var seenIntroVersion = 0
+    @AppStorage("menuBarEnabled") private var menuBarEnabled = true
+    @AppStorage("menuBarShowsText") private var menuBarShowsText = false
     @State private var showIntro = false
     @State private var introPage = 0
 
     var body: some Scene {
-        WindowGroup("DiskTree") {
+        WindowGroup("DiskTree", id: "main") {
             ContentView()
                 .environmentObject(state)
                 .frame(minWidth: 1120, minHeight: 680)
@@ -44,6 +79,14 @@ struct DiskTreeApp: App {
                     .disabled(state.rootURL == nil || state.isScanning)
             }
         }
+
+        MenuBarExtra(isInserted: $menuBarEnabled) {
+            MenuBarPanel().environmentObject(state)
+        } label: {
+            MenuBarLabel(showText: menuBarShowsText)
+        }
+        .menuBarExtraStyle(.window)
+
         Settings {
             SettingsView().environmentObject(state)
         }
@@ -52,17 +95,57 @@ struct DiskTreeApp: App {
 
 struct SettingsView: View {
     @EnvironmentObject var state: AppState
+    @AppStorage("menuBarEnabled") private var menuBarEnabled = true
+    @AppStorage("menuBarShowsText") private var menuBarShowsText = false
+    @AppStorage("keepRunning") private var keepRunning = true
+    @AppStorage("showInDock") private var showInDock = true
+    @AppStorage("alertsLowEnabled") private var lowEnabled = true
+    @AppStorage("alertsLowGB") private var lowGB = 10.0
+    @AppStorage("alertsDropEnabled") private var dropEnabled = true
+    @AppStorage("alertsDropGB") private var dropGB = 5.0
+    @State private var launchAtLogin = SMAppService.mainApp.status == .enabled
+
     var body: some View {
         Form {
-            Picker("Deleting", selection: $state.deleteMode) {
-                ForEach(DeleteMode.allCases) { Text($0.title).tag($0) }
+            Section("Deleting") {
+                Picker("Deleting", selection: $state.deleteMode) {
+                    ForEach(DeleteMode.allCases) { Text($0.title).tag($0) }
+                }
+                .pickerStyle(.radioGroup)
+                Text("Permanent deletion unlinks every file in parallel (like rimraf) and cannot be undone.")
+                    .font(.caption).foregroundStyle(.secondary)
             }
-            .pickerStyle(.radioGroup)
-            Text("Permanent deletion unlinks every file in parallel (like rimraf) and cannot be undone.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+
+            Section("Menu bar") {
+                Toggle("Show DiskTree in the menu bar", isOn: $menuBarEnabled)
+                Toggle("Show free space next to the icon", isOn: $menuBarShowsText).disabled(!menuBarEnabled)
+                Toggle("Keep running when the window is closed", isOn: $keepRunning).disabled(!menuBarEnabled)
+                Toggle("Show in the Dock", isOn: $showInDock).disabled(!menuBarEnabled)
+                Toggle("Open at login", isOn: Binding(
+                    get: { launchAtLogin },
+                    set: { on in
+                        do {
+                            if on { try SMAppService.mainApp.register() } else { try SMAppService.mainApp.unregister() }
+                        } catch {}
+                        launchAtLogin = SMAppService.mainApp.status == .enabled
+                    }
+                ))
+            }
+
+            Section("Alerts") {
+                Toggle("Warn when free space is low", isOn: $lowEnabled)
+                Stepper("Below \(Int(lowGB)) GB free", value: $lowGB, in: 1...500, step: 1).disabled(!lowEnabled)
+                Toggle("Warn when space drops quickly", isOn: $dropEnabled)
+                Stepper("Loss of \(Int(dropGB)) GB within an hour", value: $dropGB, in: 1...200, step: 1).disabled(!dropEnabled)
+                Text("Alerts are local notifications. Nothing leaves your Mac.")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
         }
-        .padding(20)
-        .frame(width: 420)
+        .formStyle(.grouped)
+        .frame(width: 480, height: 600)
+        .onChange(of: menuBarEnabled) { _, _ in AppDelegate.applyDockPolicy() }
+        .onChange(of: showInDock) { _, _ in AppDelegate.applyDockPolicy() }
+        .onChange(of: lowEnabled) { _, on in if on { DiskMonitor.shared.requestNotificationAuthorization() } }
+        .onChange(of: dropEnabled) { _, on in if on { DiskMonitor.shared.requestNotificationAuthorization() } }
     }
 }
