@@ -14,7 +14,8 @@
 <p align="center">
   <a href="https://github.com/Ryware/DiskTree/actions/workflows/build.yml"><img src="https://img.shields.io/github/actions/workflow/status/Ryware/DiskTree/build.yml?branch=main&label=build&logo=github" alt="Build status"></a>
   <a href="https://github.com/Ryware/DiskTree/actions/workflows/build.yml"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2FRyware/DiskTree%2Fbadges%2Ftests.json&cacheSeconds=300" alt="Unit tests"></a>
-  <a href="https://github.com/Ryware/DiskTree/actions/workflows/build.yml"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2FRyware/DiskTree%2Fbadges%2Fcoverage.json&cacheSeconds=300" alt="Test coverage of the engine and model code"></a>
+  <a href="https://github.com/Ryware/DiskTree/actions/workflows/build.yml"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2FRyware/DiskTree%2Fbadges%2Fcoverage.json&cacheSeconds=300" alt="Test coverage"></a>
+  <a href="https://github.com/Ryware/DiskTree/actions/workflows/build.yml"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2FRyware/DiskTree%2Fbadges%2Fcore-coverage.json&cacheSeconds=300" alt="Engine and model coverage"></a>
   <br>
   <a href="https://github.com/Ryware/DiskTree/releases/latest"><img src="https://img.shields.io/github/v/release/Ryware/DiskTree?label=release&sort=semver" alt="Latest release"></a>
   <a href="https://github.com/Ryware/DiskTree/releases"><img src="https://img.shields.io/github/downloads/Ryware/DiskTree/total?label=downloads" alt="Downloads"></a>
@@ -205,34 +206,17 @@ open DiskTree.xcodeproj
 
 ## Release
 
-The release script builds the app, signs it with the hardened runtime, creates a DMG, submits it to Apple for notarization, staples the ticket, and verifies it with Gatekeeper.
-
-One-time notarization setup:
+Releases are built by GitHub Actions on a macOS runner. Pushing a version tag builds a universal binary, signs it with the Developer ID certificate and hardened runtime, packages a DMG, submits it to Apple for notarization, staples the ticket, and publishes a GitHub Release with the DMG, its SHA-256 and the matching section of `CHANGELOG.md`:
 
 ```sh
-xcrun notarytool store-credentials DiskTree \
-  --apple-id "<Apple ID email>" \
-  --team-id TEAM_ID_REDACTED \
-  --password "<app-specific password>"
+# 1. bump CFBundleShortVersionString / CFBundleVersion in Info.plist (and project.yml), add a CHANGELOG section
+# 2. commit and push, then:
+git tag -a v0.2.0 -m "DiskTree 0.2.0" && git push origin v0.2.0
 ```
 
-For each release, update `CFBundleShortVersionString` and `CFBundleVersion` in `Info.plist` (and `project.yml`), then run:
+The workflow (`.github/workflows/release.yml`) needs five repository secrets: `MACOS_CERT_P12` (base64 of the exported Developer ID Application `.p12`), `MACOS_CERT_PASSWORD`, and an App Store Connect API key as `ASC_KEY_ID`, `ASC_ISSUER_ID` and `ASC_KEY_P8` (base64 of the `.p8`). The tag must match the version in `Info.plist` or the run fails before building.
 
-```sh
-./release.sh
-```
-
-The distributable is written to `dist/DiskTree-<version>.dmg`.
-
-## Testing
-
-DiskTree has an XCTest suite covering the scanner (real temporary directory trees), the parallel permanent deleter, sorting, categories, the safety knowledge base, the cleanup finder and the disk monitor.
-
-```sh
-swift test --enable-code-coverage   # or double-click test.command
-```
-
-GitHub Actions runs the tests and a release build on every push and pull request. The **coverage** badge measures `Engine/` and `Models/`, where the logic lives (scanner, deleter, safety rules, cleanup finder, disk monitor, app state). The SwiftUI views are not unit tested; the per-file table, including views, is in each run's job summary.
+The same thing can be done locally with `./release.sh`, which writes `dist/DiskTree-<version>.dmg` (see the script header for the one-time certificate and notarization setup).
 
 ## Project layout
 

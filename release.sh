@@ -5,7 +5,7 @@
 #   1. Developer ID Application certificate in your login keychain
 #      (Xcode → Settings → Accounts → Manage Certificates → + → Developer ID Application).
 #   2. Notarization credentials, either:
-#        a. an App Store Connect API key in .secrets/ (ASC_KEY_ID + ASC_ISSUER_ID below), or
+#        a. an App Store Connect API key in .secrets/ (see ASC_* below; never committed), or
 #        b. a keychain profile:  xcrun notarytool store-credentials DiskTree --apple-id ... --team-id TEAM_ID_REDACTED
 #
 # Usage: ./release.sh            → dist/DiskTree-<version>.dmg, notarized + stapled
@@ -16,8 +16,13 @@ cd "$(dirname "$0")"
 APP=DiskTree
 TEAM_ID=TEAM_ID_REDACTED
 NOTARY_PROFILE=DiskTree
-ASC_KEY_ID=${ASC_KEY_ID:-ASC_KEY_ID_REDACTED}
-ASC_ISSUER_ID=${ASC_ISSUER_ID:-ASC_ISSUER_ID_REDACTED}
+# Notarization credentials come from the environment (CI) or from .secrets/ (local, gitignored):
+#   .secrets/asc_ids.txt   two lines: key id, issuer id
+#   .secrets/AuthKey_<key id>.p8
+if [ -z "$ASC_KEY_ID" ] && [ -f .secrets/asc_ids.txt ]; then
+  ASC_KEY_ID=$(sed -n 1p .secrets/asc_ids.txt | tr -d '[:space:]')
+  ASC_ISSUER_ID=$(sed -n 2p .secrets/asc_ids.txt | tr -d '[:space:]')
+fi
 ASC_KEY_PATH=${ASC_KEY_PATH:-.secrets/AuthKey_$ASC_KEY_ID.p8}
 BUNDLE=build/$APP.app
 VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" Info.plist)

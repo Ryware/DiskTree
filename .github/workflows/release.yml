@@ -1,0 +1,128 @@
+name: Release
+
+# Push a version tag to build, sign, notarize and publish the DMG:
+#   git tag v0.2.0 && git push origin v0.2.0
+# The tag must match CFBundleShortVersionString in Info.plist.
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build, notarize and publish DMG
+    runs-on: macos-latest
+    env:
+      TEAM_ID: TEAM_ID_REDACTED
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Show toolchain
+        run: |
+          sw_vers
+          xcodebuild -version
+          swift --version
+
+      - name: Check that the tag matches Info.plist
+        if: github.ref_type == 'tag'
+        run: |
+          VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" Info.plist)
+          TAG="${GITHUB_REF_NAME#v}"
+          if [ "$VERSION" != "$TAG" ]; then
+            echo "::error::Tag v$TAG does not match Info.plist version $VERSION"; exit 1
+          fi
+
+      - name: Run tests
+        run: swift test
+
+      - name: Import Developer ID certificate
+        env:
+          CERT_P12_BASE64: ${{ secrets.MACOS_CERT_P12 }}
+          CERT_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
+        run: |
+          set -e
+          KEYCHAIN="$RUNNER_TEMP/build.keychain-db"
+          KEYCHAIN_PASSWORD="$(uuidgen)"
+          echo "$CERT_P12_BASE64" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security import "$RUNNER_TEMP/cert.p12" -P "$CERT_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN"
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
+          security list-keychains -d user -s "$KEYCHAIN" login.keychain-db
+          rm -f "$RUNNER_TEMP/cert.p12"
+          security find-identity -v -p codesigning "$KEYCHAIN"
+
+      - name: Write App Store Connect API key
+        env:
+          ASC_KEY_P8_BASE64: ${{ secrets.ASC_KEY_P8 }}
+        run: |
+          mkdir -p .secrets
+          echo "$ASC_KEY_P8_BASE64" | base64 --decode > .secrets/AuthKey.p8
+          chmod 600 .secrets/AuthKey.p8
+
+      - name: Build, sign, package, notarize and staple
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_PATH: .secrets/AuthKey.p8
+        run: ./release.sh
+
+      - name: Collect release notes from CHANGELOG.md
+        id: notes
+        run: |
+          VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" Info.plist)
+          # Everything under "## <version>" up to the next "## " heading.
+          awk -v v="$VERSION" '
+            /^## /{ if (found) exit; found = ($2 == v); next }
+            found { print }
+          ' CHANGELOG.md > release-notes.md
+          if [ ! -s release-notes.md ]; then
+            echo "No CHANGELOG section for $VERSION; see the commit history." > release-notes.md
+          fi
+          {
+            echo ""
+            echo "---"
+            echo "Requires macOS 14 Sonoma or newer. Universal binary (Apple silicon and Intel)."
+            echo "Signed with Developer ID and notarized by Apple."
+            echo ""
+            echo '```'
+            cat dist/DiskTree-$VERSION.dmg.sha256
+            echo '```'
+          } >> release-notes.md
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          cat release-notes.md
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.notes.outputs.version }}
+        run: |
+          TAG="v$VERSION"
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$TAG" "dist/DiskTree-$VERSION.dmg" "dist/DiskTree-$VERSION.dmg.sha256" --clobber --repo "$GITHUB_REPOSITORY"
+            gh release edit "$TAG" --notes-file release-notes.md --repo "$GITHUB_REPOSITORY"
+          else
+            gh release create "$TAG" "dist/DiskTree-$VERSION.dmg" "dist/DiskTree-$VERSION.dmg.sha256" \
+              --title "DiskTree $VERSION" --notes-file release-notes.md --repo "$GITHUB_REPOSITORY"
+          fi
+          gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json url -q .url
+
+      - name: Upload DMG as workflow artifact
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: DiskTree-dmg
+          path: dist/*.dmg*
+          if-no-files-found: ignore
+
+      - name: Clean up keychain and key
+        if: always()
+        run: |
+          security delete-keychain "$RUNNER_TEMP/build.keychain-db" 2>/dev/null || true
+          rm -rf .secrets
