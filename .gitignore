@@ -24,9 +24,12 @@ xcuserdata/
 .secrets/
 *.p8
 
-# Test and coverage output
+# Local helpers (double-click wrappers, run logs, one-off notes) — not part of the source
+*.command
+*.log
 coverage-summary.txt
 badges-out/
-*.log
-*.command
-AppStore/
+release-notes-*.md
+scripts/workflow-ci.yml
+scripts/workflow-release.yml
+secrets-for-github.txt
