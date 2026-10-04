@@ -42,3 +42,6 @@ ExportOptions.plist
 *.cer
 *.mobileprovision
 *.provisionprofile
+
+# Local App Store Connect tooling and screenshots (never published)
+AppStore/
