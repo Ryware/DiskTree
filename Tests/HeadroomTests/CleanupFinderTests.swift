@@ -1,5 +1,5 @@
 import XCTest
-@testable import DiskTree
+@testable import Headroom
 
 final class CleanupFinderTests: XCTestCase {
     private let mb: Int64 = 1 << 20

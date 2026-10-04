@@ -33,9 +33,9 @@ rows, tot = [], [0, 0]
 core = [0, 0]
 for f in data:
     name = f["filename"]
-    if "/Sources/DiskTree/" not in name:
+    if "/Sources/Headroom/" not in name:
         continue                       # ignore tests and dependencies
-    rel = name.split("/Sources/DiskTree/")[1]
+    rel = name.split("/Sources/Headroom/")[1]
     lines = f["summary"]["lines"]
     rows.append((rel, lines["covered"], lines["count"]))
     tot[0] += lines["covered"]; tot[1] += lines["count"]

@@ -1,10 +1,10 @@
-# DiskTree
+# Headroom (formerly DiskTree)
 
-> DiskTree is a free, open-source (MIT), native macOS disk space analyzer and cleanup utility. It scans a folder or disk, shows what uses space as a folder tree, treemap and category breakdown, explains whether items are safe to delete, and removes them via Trash or a fast parallel permanent-delete engine. Runs fully locally: no account, ads or tracking. Requires macOS 14+, Apple silicon or Intel.
+> Headroom is a free, open-source (MIT), native macOS disk space analyzer and cleanup utility. It scans a folder or disk, shows what uses space as a folder tree, treemap and category breakdown, explains whether items are safe to delete, and removes them via Trash or a fast parallel permanent-delete engine. Runs fully locally: no account, ads or tracking. Requires macOS 14+, Apple silicon or Intel.
 
 ## Key facts
 - Price: free forever, with every feature unlocked. There is no Pro tier, subscription, lifetime purchase, trial or in-app purchase. License: MIT. Author: Ryware.
-- Naming: other apps share the name DiskTree. This one is the open-source app by Ryware (github.com/Ryware/DiskTree) and is not affiliated with any paid app of the same name.
+- Naming: Headroom was called DiskTree until 1.0; it is not affiliated with the paid "DiskTree" app at disktree.org or any other app of either name. This one is the open-source app by Ryware (github.com/Ryware/Headroom).
 - Scanner: macOS getattrlistbulk(2), parallel per-directory tasks. Benchmark: ~1.26M files / 216K folders (133 GB) in ~20 s.
 - Views: Dashboard, Folder Tree (NSOutlineView, virtualized), Treemap (color by category, age or safety), By Category, Largest Files, Cleanup.
 - Safety hints: rule base of ~150 macOS and developer locations; levels Safe, Usually safe, Caution, Never.
@@ -14,8 +14,14 @@
 - Similar in spirit to WizTree and TreeSize (Windows), for macOS.
 
 ## Links
-- [Home page](https://ryware.github.io/DiskTree/): overview, screenshots, FAQ
-- [Download](https://github.com/Ryware/DiskTree/releases/latest): latest release
-- [Source code](https://github.com/Ryware/DiskTree): README, build instructions
-- [Privacy](https://github.com/Ryware/DiskTree/blob/main/PRIVACY.md)
-- [Changelog](https://github.com/Ryware/DiskTree/blob/main/CHANGELOG.md)
+- [Home page](https://ryware.github.io/Headroom/): overview, screenshots, FAQ
+- [Download](https://github.com/Ryware/Headroom/releases/latest): latest release
+- [Source code](https://github.com/Ryware/Headroom): README, build instructions
+- [Privacy](https://github.com/Ryware/Headroom/blob/main/PRIVACY.md)
+- [Changelog](https://github.com/Ryware/Headroom/blob/main/CHANGELOG.md)
+
+## Duplicate finder (1.0)
+Finds byte-for-byte identical files (size bucket → 64 KB prefix hash → full SHA-256), groups them and ranks groups by reclaimable space. Keep newest / oldest / highest in tree, or pick by hand; one copy is always kept unless the guard is turned off. Files under 1 MB and files inside app bundles are skipped.
+
+## Name
+Headroom was called DiskTree until 1.0 (October 2026). Bundle id dev.ryware.disktree is unchanged.

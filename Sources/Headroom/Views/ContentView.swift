@@ -1,7 +1,7 @@
 import SwiftUI
 
 enum Pane: String, CaseIterable, Identifiable {
-    case dashboard, tree, treemap, categories, largest, cleanup
+    case dashboard, tree, treemap, categories, largest, duplicates, cleanup
     var id: String { rawValue }
     var title: String {
         switch self {
@@ -10,6 +10,7 @@ enum Pane: String, CaseIterable, Identifiable {
         case .treemap: return "Treemap"
         case .categories: return "By Category"
         case .largest: return "Largest Files"
+        case .duplicates: return "Duplicates"
         case .cleanup: return "Cleanup"
         }
     }
@@ -20,6 +21,7 @@ enum Pane: String, CaseIterable, Identifiable {
         case .treemap: return "square.grid.3x3.square"
         case .categories: return "chart.pie"
         case .largest: return "arrow.up.doc"
+        case .duplicates: return "doc.on.doc"
         case .cleanup: return "sparkles"
         }
     }
@@ -122,6 +124,7 @@ struct ContentView: View {
             case .treemap: TreemapView()
             case .categories: CategoriesView()
             case .largest: LargestFilesView()
+            case .duplicates: DuplicatesView()
             case .cleanup: CleanupView()
             }
         }

@@ -1,13 +1,13 @@
-# DiskTree — Publishing Kit
+# Headroom — Publishing Kit
 
 ## Positioning
 
-**Product name:** DiskTree  
+**Product name:** Headroom  
 **Category:** macOS Utilities / Disk Space Analyzer  
 **Price:** Free  
 **Primary promise:** See what is using your Mac's disk and reclaim space safely.
 
-DiskTree is for Mac users and developers who want the speed and visual clarity of a modern disk analyzer without a subscription, account, ads, or data collection.
+Headroom is for Mac users and developers who want the speed and visual clarity of a modern disk analyzer without a subscription, account, ads, or data collection.
 
 ## Short descriptions
 
@@ -25,39 +25,39 @@ Free native macOS disk analyzer with a folder tree, treemap, file categories, sa
 
 ### Social post
 
-Meet DiskTree: a free native disk space analyzer for macOS. Scan huge folders quickly, explore an interactive treemap, find giant files and developer caches, and understand what is safe to remove. No subscription, ads, account, or tracking.
+Meet Headroom: a free native disk space analyzer for macOS. Scan huge folders quickly, explore an interactive treemap, find giant files and developer caches, and understand what is safe to remove. No subscription, ads, account, or tracking.
 
 ## Full product description
 
-DiskTree is a fast, native disk space analyzer and cleanup utility for macOS 14 and newer.
+Headroom is a fast, native disk space analyzer and cleanup utility for macOS 14 and newer.
 
 Scan your home folder, startup disk, or any directory and immediately see where the space went. Browse a responsive folder tree, explore a colorful interactive treemap, compare storage by category, and find the largest files and app bundles.
 
-DiskTree is especially useful for developers. It recognizes common build output, package stores, dependency folders, virtual machines, caches, and logs from Xcode, npm, pnpm, pip, Gradle, NuGet, Cargo, and other tools.
+Headroom is especially useful for developers. It recognizes common build output, package stores, dependency folders, virtual machines, caches, and logs from Xcode, npm, pnpm, pip, Gradle, NuGet, Cargo, and other tools.
 
-Before removing anything, DiskTree explains what the item is and provides a safety verdict. Use recoverable Trash mode for everyday cleanup, or opt into permanent parallel deletion when you explicitly need it.
+Before removing anything, Headroom explains what the item is and provides a safety verdict. Use recoverable Trash mode for everyday cleanup, or opt into permanent parallel deletion when you explicitly need it.
 
-Everything runs locally on your Mac. DiskTree is free and includes no subscription, ads, account system, analytics, or in-app purchases.
+Everything runs locally on your Mac. Headroom is free and includes no subscription, ads, account system, analytics, or in-app purchases.
 
 ## Current release — 0.2.0
 
-**GitHub release title:** DiskTree 0.2.0 — Watch your disk from the menu bar
+**GitHub release title:** Headroom 0.2.0 — Watch your disk from the menu bar
 
 **Tag:** `v0.2.0`  
 **Version:** `0.2.0` (build `2`) in `Info.plist` and `project.yml`
 
 Release body: [`release-notes-0.2.0.md`](release-notes-0.2.0.md).  
-After `./release.sh`, attach `dist/DiskTree-0.2.0.dmg` and `dist/DiskTree-0.2.0.dmg.sha256`.
+After `./release.sh`, attach `dist/Headroom-0.2.0.dmg` and `dist/Headroom-0.2.0.dmg.sha256`.
 
 ## Previous release — 0.1.0
 
 ### Suggested release title
 
-DiskTree 0.1.0 — Free native disk analyzer for macOS
+Headroom 0.1.0 — Free native disk analyzer for macOS
 
 ### GitHub release body
 
-DiskTree 0.1.0 is the first public release of a fast, free, native macOS disk space analyzer.
+Headroom 0.1.0 is the first public release of a fast, free, native macOS disk space analyzer.
 
 ### Highlights
 
@@ -78,9 +78,9 @@ DiskTree 0.1.0 is the first public release of a fast, free, native macOS disk sp
 
 ### Install
 
-Download `DiskTree-0.1.0.dmg`, open it, and drag DiskTree to Applications.
+Download `Headroom-0.1.0.dmg`, open it, and drag Headroom to Applications.
 
-DiskTree may request Full Disk Access only when you choose to scan protected locations such as Mail, Messages, or Safari data.
+Headroom may request Full Disk Access only when you choose to scan protected locations such as Mail, Messages, or Safari data.
 
 ## Discovery metadata
 
@@ -120,22 +120,22 @@ The prepared 1920-pixel-wide images are in `Screenshots/`.
 - [x] Create a Developer ID Application certificate for team `TEAM_ID_REDACTED`.
 - [x] Notarization credentials: `release.sh` uses the App Store Connect API key in `.secrets/` (no keychain profile needed).
 - [x] Run `release.command` (double-click; runs `release.sh` outside the assistant sandbox) and verify the notarized DMG.
-- [x] Create the public `Ryware/DiskTree` repository.
+- [x] Create the public `Ryware/Headroom` repository.
 - [x] Configure GitHub Actions release-build verification.
 - [x] Create the draft GitHub release for `v0.1.0`.
-- [x] Upload `dist/DiskTree-0.1.0.dmg` and `.sha256` to the draft release with the release body above.
+- [x] Upload `dist/Headroom-0.1.0.dmg` and `.sha256` to the draft release with the release body above.
 - [x] Publish a SHA-256 checksum (in the release notes and `CHANGELOG.md`).
 - [ ] Publish the draft release (GitHub → Releases → v0.1.0 → Publish release).
 - [ ] Test the downloaded DMG on a Mac that did not build the app.
 
 ## Mac App Store checklist
 
-Build the App Store variant from the generated Xcode project (`xcodegen` → `DiskTree.xcodeproj`), which enables App Sandbox and the `APP_STORE` compilation condition.
+Build the App Store variant from the generated Xcode project (`xcodegen` → `Headroom.xcodeproj`), which enables App Sandbox and the `APP_STORE` compilation condition.
 
 ```sh
-xcodebuild -project DiskTree.xcodeproj -scheme DiskTree -configuration Release \
-  -archivePath dist/DiskTree.xcarchive -allowProvisioningUpdates archive
-xcodebuild -exportArchive -archivePath dist/DiskTree.xcarchive \
+xcodebuild -project Headroom.xcodeproj -scheme Headroom -configuration Release \
+  -archivePath dist/Headroom.xcarchive -allowProvisioningUpdates archive
+xcodebuild -exportArchive -archivePath dist/Headroom.xcarchive \
   -exportOptionsPlist ExportOptions.plist -exportPath dist/appstore -allowProvisioningUpdates
 ```
 
@@ -147,8 +147,8 @@ Set `destination` to `upload` in `ExportOptions.plist` to upload directly once t
 - [x] App Store screenshots at exactly 1440 × 900 (`AppStore/Screenshots/`).
 - [x] Bundle ID `dev.ryware.disktree` registered and Mac App Store provisioning profile created.
 - [x] Apple Distribution certificate (cloud managed) created.
-- [x] Universal (arm64 + x86_64) archive exported and signed: `dist/appstore/DiskTree.pkg`.
-- [x] Create the app record in App Store Connect (app ID 6817532988, name "DiskTree - Free Mac Analyzer" because "DiskTree" is taken).
+- [x] Universal (arm64 + x86_64) archive exported and signed: `dist/appstore/Headroom.pkg`.
+- [x] Create the app record in App Store Connect (app ID 6817532988, name "Headroom - Free Mac Analyzer" because "Headroom" is taken).
 - [x] Upload build 0.1.0 (1) via Xcode Organizer.
 - [x] Fill in App Information, pricing, availability, age rating, listing text, and screenshots via `AppStore/asc_publish.py` (App Store Connect API).
 - [x] Attach the uploaded build to version 0.1.0.

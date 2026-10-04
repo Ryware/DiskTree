@@ -92,7 +92,7 @@ jobs:
             echo "Signed with Developer ID and notarized by Apple."
             echo ""
             echo '```'
-            cat dist/DiskTree-$VERSION.dmg.sha256
+            cat dist/Headroom-$VERSION.dmg.sha256
             echo '```'
           } >> release-notes.md
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
@@ -105,11 +105,11 @@ jobs:
         run: |
           TAG="v$VERSION"
           if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            gh release upload "$TAG" "dist/DiskTree-$VERSION.dmg" "dist/DiskTree-$VERSION.dmg.sha256" --clobber --repo "$GITHUB_REPOSITORY"
+            gh release upload "$TAG" "dist/Headroom-$VERSION.dmg" "dist/Headroom-$VERSION.dmg.sha256" --clobber --repo "$GITHUB_REPOSITORY"
             gh release edit "$TAG" --notes-file release-notes.md --repo "$GITHUB_REPOSITORY"
           else
-            gh release create "$TAG" "dist/DiskTree-$VERSION.dmg" "dist/DiskTree-$VERSION.dmg.sha256" \
-              --title "DiskTree $VERSION" --notes-file release-notes.md --repo "$GITHUB_REPOSITORY"
+            gh release create "$TAG" "dist/Headroom-$VERSION.dmg" "dist/Headroom-$VERSION.dmg.sha256" \
+              --title "Headroom $VERSION" --notes-file release-notes.md --repo "$GITHUB_REPOSITORY"
           fi
           gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json url -q .url
 
@@ -117,7 +117,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: DiskTree-dmg
+          name: Headroom-dmg
           path: dist/*.dmg*
           if-no-files-found: ignore
 

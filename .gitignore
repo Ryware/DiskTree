@@ -33,3 +33,5 @@ release-notes-*.md
 scripts/workflow-ci.yml
 scripts/workflow-release.yml
 secrets-for-github.txt
+_to_delete/
+logs/

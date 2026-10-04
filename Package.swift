@@ -2,21 +2,21 @@
 import PackageDescription
 
 let package = Package(
-    name: "DiskTree",
+    name: "Headroom",
     platforms: [.macOS(.v14)],
     products: [
-        .executable(name: "DiskTree", targets: ["DiskTree"])
+        .executable(name: "Headroom", targets: ["Headroom"])
     ],
     targets: [
         .executableTarget(
-            name: "DiskTree",
-            path: "Sources/DiskTree",
+            name: "Headroom",
+            path: "Sources/Headroom",
             swiftSettings: [.unsafeFlags(["-parse-as-library"])]
         ),
         .testTarget(
-            name: "DiskTreeTests",
-            dependencies: ["DiskTree"],
-            path: "Tests/DiskTreeTests"
+            name: "HeadroomTests",
+            dependencies: ["Headroom"],
+            path: "Tests/HeadroomTests"
         ),
     ]
 )

@@ -85,7 +85,7 @@ struct WelcomeView: View {
                         .frame(width: 128, height: 128)
                         .shadow(color: .black.opacity(0.3), radius: 16, y: 10)
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("DiskTree").font(.system(size: 40, weight: .bold, design: .rounded)).foregroundStyle(.white)
+                        Text("Headroom").font(.system(size: 40, weight: .bold, design: .rounded)).foregroundStyle(.white)
                         Text("See what's eating your disk. Clean it in one click.")
                             .font(.title3).foregroundStyle(.white.opacity(0.85))
                     }
@@ -124,7 +124,7 @@ struct WelcomeView: View {
                 }
                 Spacer(minLength: 0)
 #if APP_STORE
-                Text("Choose a folder to grant DiskTree access. Other locations remain private.")
+                Text("Choose a folder to grant Headroom access. Other locations remain private.")
                     .font(.caption).foregroundStyle(.white.opacity(0.55)).padding(.bottom, 12)
 #else
                 Text("Sizes are bytes allocated on disk. Grant Full Disk Access to see inside Mail, Messages and Safari data.")

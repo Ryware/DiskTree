@@ -1,25 +1,25 @@
-# Generate the Xcode project for App Store builds: `xcodegen` → DiskTree.xcodeproj
+# Generate the Xcode project for App Store builds: `xcodegen` → Headroom.xcodeproj
 # The Swift package (Package.swift + build.sh) remains the path for direct-download builds.
-name: DiskTree
+name: Headroom
 options:
   bundleIdPrefix: dev.ryware
   deploymentTarget:
     macOS: "14.0"
   xcodeVersion: "16.0"
 targets:
-  DiskTree:
+  Headroom:
     type: application
     platform: macOS
     sources:
-      - Sources/DiskTree
+      - Sources/Headroom
       - Assets/Assets.xcassets
     settings:
       base:
         SWIFT_VERSION: "5.9"
-        PRODUCT_NAME: DiskTree
+        PRODUCT_NAME: Headroom
         PRODUCT_BUNDLE_IDENTIFIER: dev.ryware.disktree
-        MARKETING_VERSION: "0.2.0"
-        CURRENT_PROJECT_VERSION: "2"
+        MARKETING_VERSION: "1.0.0"
+        CURRENT_PROJECT_VERSION: "3"
         DEVELOPMENT_TEAM: TEAM_ID_REDACTED
         CODE_SIGN_STYLE: Automatic
         CODE_SIGN_ENTITLEMENTS: AppStore.entitlements

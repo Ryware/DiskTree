@@ -21,7 +21,7 @@ struct OutlineTreeView: NSViewRepresentable {
         outline.autoresizesOutlineColumn = false
         outline.indentationPerLevel = 14
         outline.floatsGroupRows = false
-        outline.autosaveName = "DiskTree.outline"
+        outline.autosaveName = "Headroom.outline"
         outline.autosaveTableColumns = true
 
         func col(_ id: String, _ title: String, _ width: CGFloat, min: CGFloat, sortKey: String? = nil) -> NSTableColumn {

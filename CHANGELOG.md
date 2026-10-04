@@ -1,30 +1,49 @@
 # Changelog
 
+## 1.0.0 — October 2026
+
+First stable release. DiskTree is now **Headroom**: the name describes what the app gives you, and it no longer clashes with another disk analyzer on the App Store. The bundle id is unchanged, so 0.x installs update in place; the free-space history carries over.
+
+### 🚀 New feature
+
+- **Duplicate finder.** Finds files that exist more than once with identical content, grouped and sorted by how much space one copy would give back. Files are bucketed by size, then compared by a 64 KB prefix hash, then by a full SHA-256, so only true byte-for-byte copies are listed and only candidates are ever read in full. Files under 1 MB and files inside app bundles are skipped. Select with one click (keep newest / oldest / highest in the tree), keep-one-copy protection on by default, delete to the Trash or permanently.
+- **Dashboard card** showing reclaimable duplicate space with a jump to the new Duplicates pane.
+
+### ✨ Changed
+
+- Renamed to Headroom everywhere: app, menu bar, GitHub repository, landing page, DMG name (`Headroom-1.0.0.dmg`).
+- The What's New tour explains the duplicate finder and the new name.
+
+### 🧰 Chores
+
+- 78 unit tests (duplicate finder added), CI coverage and badges updated for the new name.
+- Release workflow publishes `Headroom-<version>.dmg`.
+
 ## 0.2.0 — September 30, 2026
 
-DiskTree now watches your disk from the menu bar. Still 100% free, with every feature unlocked.
+Headroom now watches your disk from the menu bar. Still 100% free, with every feature unlocked.
 
 ### 🚀 New feature
 
 - **Menu bar monitor** with a ring showing how much of the startup disk is free. It turns amber, then red, as space runs low. Optionally show the free space as text next to the ring.
 - **Popover** with free / used / total space, a Healthy / Getting low / Low status, and a 7-day free-space chart.
 - **Reclaimable now**: adds up safe caches, logs and build output and lets you clean them in one click. Only items rated Safe are included, and they go to the Trash, so it is recoverable.
-- **Alerts** (local notifications): low free space (default below 10 GB) and fast drops (default 5 GB within an hour). Both thresholds are adjustable. Tapping an alert opens DiskTree.
+- **Alerts** (local notifications): low free space (default below 10 GB) and fast drops (default 5 GB within an hour). Both thresholds are adjustable. Tapping an alert opens Headroom.
 - **Dashboard trend card** with the 7-day free-space history and the change over the last 24 hours.
 - **Settings** (⌘,):
-  - Show DiskTree in the menu bar
+  - Show Headroom in the menu bar
   - Show free space next to the icon
   - Keep running when the window is closed
   - Show in the Dock (turn off for a menu-bar-only app)
   - Open at login (starts quietly in the menu bar)
   - Alert toggles and thresholds
   - Deleting mode (Trash or permanent)
-- Popover shortcuts: **Open DiskTree**, **Scan Home**, Settings and Quit.
+- Popover shortcuts: **Open Headroom**, **Scan Home**, Settings and Quit.
 
 ### 🔥 Bug fix
 
 - Sorting by Size, Name, Files or Modified no longer freezes the app on very large scans. Folders are now sorted only when they are displayed.
-- **Open DiskTree** from the menu bar (and tapping an alert) reliably brings the window forward, including after the window was closed or when the app is running without a Dock icon.
+- **Open Headroom** from the menu bar (and tapping an alert) reliably brings the window forward, including after the window was closed or when the app is running without a Dock icon.
 
 ### ⚙️ Chore
 
@@ -41,7 +60,7 @@ Free-space history (at most 7 days) is stored only on your Mac in Application Su
 
 ## 0.1.0
 
-DiskTree 0.1.0 is the first public release of a fast, free, native macOS disk space analyzer.
+Headroom 0.1.0 is the first public release of a fast, free, native macOS disk space analyzer.
 
 ### 🚀 New feature
 
@@ -60,4 +79,4 @@ DiskTree 0.1.0 is the first public release of a fast, free, native macOS disk sp
 - macOS 14 Sonoma or newer. Apple silicon or Intel (universal binary).
 - The DMG is signed with a Developer ID certificate and notarized by Apple.
 
-SHA-256 `DiskTree-0.1.0.dmg`: `6361fea6d58dd6c0d07e03201a3eb9cd4c18272a917e481ae2b1469af592c097`
+SHA-256 `Headroom-0.1.0.dmg`: `6361fea6d58dd6c0d07e03201a3eb9cd4c18272a917e481ae2b1469af592c097`

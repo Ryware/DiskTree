@@ -1,5 +1,5 @@
 import XCTest
-@testable import DiskTree
+@testable import Headroom
 
 @MainActor
 final class AppStateTests: XCTestCase {

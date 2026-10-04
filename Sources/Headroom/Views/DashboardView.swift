@@ -47,6 +47,7 @@ struct DashboardView: View {
                         statistic("Cleanup candidates", value: cleanupBytes.humanBytes,
                                   note: "\(state.cleanupCandidates.count.formatted()) folders to review", symbol: "sparkles", color: .mint)
                     }
+                    duplicatesCard
 
                     card {
                         sectionHeader("Space by category", destination: .categories)
@@ -146,6 +147,43 @@ struct DashboardView: View {
             }
             .onChange(of: scenePhase) { _, phase in
                 if phase == .active { refreshDiskSpace() }
+            }
+        }
+    }
+
+    private var duplicatesCard: some View {
+        card {
+            HStack {
+                Label("Duplicate files", systemImage: "doc.on.doc").font(.headline)
+                Spacer()
+                if state.duplicates != nil {
+                    Button("View all") { pane = .duplicates }.buttonStyle(.link)
+                }
+            }
+            if let p = state.duplicateProgress {
+                HStack(spacing: 10) {
+                    ProgressView(value: p.fraction).frame(maxWidth: 260)
+                    Text("Comparing \(p.done.formatted()) of \(p.total.formatted()) files…").font(.callout).foregroundStyle(.secondary)
+                }
+            } else if let d = state.duplicates {
+                if d.groups.isEmpty {
+                    Text("No duplicate files of 1 MB or more in this folder.").font(.callout).foregroundStyle(.secondary)
+                } else {
+                    HStack(alignment: .firstTextBaseline, spacing: 6) {
+                        Text(d.wasted.humanBytes).font(.system(size: 28, weight: .bold, design: .rounded)).monospacedDigit()
+                        Text("in \(d.groups.count.formatted()) groups of identical files").foregroundStyle(.secondary)
+                        Spacer()
+                        Button("Review and clean") { pane = .duplicates }
+                    }
+                    Text("Space you get back by keeping one copy of each.").font(.caption).foregroundStyle(.secondary)
+                }
+            } else {
+                HStack {
+                    Text("Find files that exist more than once, byte for byte, and keep only one copy.")
+                        .font(.callout).foregroundStyle(.secondary)
+                    Spacer()
+                    Button("Find duplicates") { state.findDuplicates() }
+                }
             }
         }
     }

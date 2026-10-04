@@ -1,5 +1,5 @@
 import XCTest
-@testable import DiskTree
+@testable import Headroom
 
 final class DiskMonitorTests: XCTestCase {
     func testVolumeSnapshotReadsStartupDisk() throws {
@@ -32,7 +32,7 @@ final class DiskMonitorTests: XCTestCase {
     }
 
     func testPrefFallbacks() {
-        let key = "disktree.tests.\(UUID().uuidString)"
+        let key = "headroom.tests.\(UUID().uuidString)"
         XCTAssertTrue(Pref.bool(key, true))
         XCTAssertFalse(Pref.bool(key, false))
         XCTAssertEqual(Pref.double(key, 7.5), 7.5)

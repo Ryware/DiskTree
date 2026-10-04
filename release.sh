@@ -6,16 +6,16 @@
 #      (Xcode → Settings → Accounts → Manage Certificates → + → Developer ID Application).
 #   2. Notarization credentials, either:
 #        a. an App Store Connect API key in .secrets/ (see ASC_* below; never committed), or
-#        b. a keychain profile:  xcrun notarytool store-credentials DiskTree --apple-id ... --team-id TEAM_ID_REDACTED
+#        b. a keychain profile:  xcrun notarytool store-credentials Headroom --apple-id ... --team-id TEAM_ID_REDACTED
 #
-# Usage: ./release.sh            → dist/DiskTree-<version>.dmg, notarized + stapled
+# Usage: ./release.sh            → dist/Headroom-<version>.dmg, notarized + stapled
 #        ./release.sh --no-notarize
 set -e
 cd "$(dirname "$0")"
 
-APP=DiskTree
+APP=Headroom
 TEAM_ID=TEAM_ID_REDACTED
-NOTARY_PROFILE=DiskTree
+NOTARY_PROFILE=${NOTARY_PROFILE:-DiskTree}   # keychain profile name (local only)
 # Notarization credentials come from the environment (CI) or from .secrets/ (local, gitignored):
 #   .secrets/asc_ids.txt   two lines: key id, issuer id
 #   .secrets/AuthKey_<key id>.p8

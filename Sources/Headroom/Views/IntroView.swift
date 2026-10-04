@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// Bump when "What's new" changes; the intro re-opens on the What's New page for existing users.
-let currentIntroVersion = 3
+let currentIntroVersion = 4
 
 struct IntroStep: Identifiable {
     let id: Int
@@ -9,11 +9,11 @@ struct IntroStep: Identifiable {
     let title: String
     let bullets: [(symbol: String, text: String)]
     let art: Art
-    enum Art { case hero, scan, tree, treemap, safety, clean, whatsNew }
+    enum Art { case hero, scan, tree, treemap, safety, clean, menuBar, duplicates, whatsNew }
 }
 
 private let steps: [IntroStep] = [
-    IntroStep(id: 0, eyebrow: "WELCOME", title: "DiskTree",
+    IntroStep(id: 0, eyebrow: "WELCOME", title: "Headroom",
               bullets: [("bolt.fill", "Scans a million files in seconds"),
                         ("square.grid.3x3.square", "Shows where the space goes, by folder, type and age"),
                         ("checkmark.shield.fill", "Tells you what is safe to delete — and what isn't")],
@@ -38,12 +38,17 @@ private let steps: [IntroStep] = [
                         ("trash", "Trash mode: recoverable from the Trash, frees space later"),
                         ("flame", "Permanent mode: parallel delete, instant, no undo")],
               art: .clean),
-    IntroStep(id: 5, eyebrow: "WHAT'S NEW", title: "Version 0.2",
-              bullets: [("chart.pie", "Menu bar monitor: free-space ring, 7-day trend, one-click safe clean"),
-                        ("bell.badge", "Local alerts for low space and fast drops. Tune them in Settings (⌘,)"),
-                        ("hare", "Fixed: sorting a column no longer freezes on huge scans"),
-                        ("macwindow", "Fixed: Open DiskTree reliably brings the window back")],
-              art: .whatsNew),
+    IntroStep(id: 5, eyebrow: "WHAT'S NEW IN 1.0", title: "Duplicate finder",
+              bullets: [("doc.on.doc", "Finds files that exist more than once, compared byte for byte"),
+                        ("arrow.down.right.and.arrow.up.left", "Grouped by how much space one copy gives back"),
+                        ("checkmark.circle", "Keep newest, oldest or pick by hand. One copy always stays"),
+                        ("gauge.with.dots.needle.33percent", "Fast: size, then a 64 KB prefix, then a full hash")],
+              art: .duplicates),
+    IntroStep(id: 6, eyebrow: "ALSO IN 1.0", title: "Hello, Headroom",
+              bullets: [("sparkles", "DiskTree is now Headroom: the room your disk has left"),
+                        ("chart.pie", "Menu bar ring, 7-day trend and local alerts (from 0.2)"),
+                        ("checkmark.shield", "Same app, same settings, same bundle. Nothing to reinstall")],
+              art: .menuBar),
 ]
 
 struct IntroView: View {
@@ -122,6 +127,10 @@ struct IntroView: View {
                 SafetyArt(tick: artTick).frame(width: 240, height: 220)
             case .clean:
                 CleanArt(tick: artTick).frame(width: 240, height: 220)
+            case .menuBar:
+                MenuBarArt(tick: artTick).frame(width: 260, height: 240)
+            case .duplicates:
+                DuplicatesArt(tick: artTick).frame(width: 250, height: 230)
             case .whatsNew:
                 Image(systemName: "sparkles").font(.system(size: 120, weight: .light)).foregroundStyle(.white)
                     .rotationEffect(.degrees(artTick % 2 == 0 ? -6 : 6))
@@ -242,6 +251,157 @@ private struct CleanArt: View {
     }
 }
 
+
+/// Three identical files slide together, the extra copies get checked and vanish, the freed space appears.
+private struct DuplicatesArt: View {
+    let tick: Int
+    private var phase: Int { tick % 6 }   // 0-1 scattered, 2 grouped, 3 extras checked, 4 extras gone, 5 freed
+    private let offsets: [CGSize] = [CGSize(width: -70, height: -60), CGSize(width: 60, height: -20), CGSize(width: -20, height: 60)]
+
+    var body: some View {
+        VStack(spacing: 16) {
+            ZStack {
+                ForEach(0..<3, id: \.self) { i in
+                    let gone = phase >= 4 && i > 0
+                    VStack(spacing: 6) {
+                        ZStack(alignment: .topTrailing) {
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                .fill(.white.opacity(0.9))
+                                .frame(width: 64, height: 80)
+                                .overlay(alignment: .topLeading) {
+                                    VStack(alignment: .leading, spacing: 5) {
+                                        ForEach(0..<5, id: \.self) { l in
+                                            Capsule().fill(Color(red: 0.45, green: 0.35, blue: 0.95).opacity(0.35))
+                                                .frame(width: l == 4 ? 26 : 44, height: 5)
+                                        }
+                                    }
+                                    .padding(10)
+                                }
+                            if phase == 3 && i > 0 {
+                                Image(systemName: "checkmark.circle.fill").font(.system(size: 18))
+                                    .foregroundStyle(.white, Color(red: 0.93, green: 0.42, blue: 0.42))
+                                    .offset(x: 6, y: -6)
+                            }
+                            if phase >= 4 && i == 0 {
+                                Image(systemName: "star.circle.fill").font(.system(size: 18))
+                                    .foregroundStyle(.white, Color(red: 0.38, green: 0.78, blue: 0.54))
+                                    .offset(x: 6, y: -6)
+                            }
+                        }
+                        Text("IMG_4021.heic").font(.system(size: 9, weight: .medium)).foregroundStyle(.white.opacity(0.9))
+                    }
+                    .offset(phase < 2 ? offsets[i] : CGSize(width: CGFloat(i - 1) * 74, height: 0))
+                    .scaleEffect(gone ? 0.3 : 1)
+                    .opacity(gone ? 0 : 1)
+                    .zIndex(Double(3 - i))
+                }
+            }
+            .frame(width: 240, height: 140)
+            Text(phase >= 5 ? "Freed 8.2 MB" : phase >= 2 ? "3 copies · 4.1 MB each" : "Scanning for duplicates…")
+                .font(.headline).foregroundStyle(.white).contentTransition(.opacity)
+        }
+        .animation(.spring(duration: 0.6, bounce: 0.25), value: phase)
+    }
+}
+
+/// Menu bar ring draining to red, the popover appearing, one click cleaning, ring back to green.
+private struct MenuBarArt: View {
+    let tick: Int
+    private var phase: Int { tick % 9 }
+    // 0-2 draining, 3 popover appears, 4-5 clean button pulses, 6 cleaned + refilled, 7 checkmark, 8 popover gone
+    private var free: Double {
+        switch phase { case 0: return 0.48; case 1: return 0.26; case 2, 3, 4, 5: return 0.07; default: return 0.42 }
+    }
+    private var color: Color {
+        free < 0.1 ? Color(red: 0.93, green: 0.42, blue: 0.42)
+        : free < 0.3 ? Color(red: 0.96, green: 0.70, blue: 0.34)
+        : Color(red: 0.38, green: 0.78, blue: 0.54)
+    }
+    private var popoverShown: Bool { (3...7).contains(phase) }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // Mini menu bar
+            HStack(spacing: 14) {
+                Spacer()
+                ring(size: 18, lineWidth: 3)
+                Text(free < 0.1 ? "34 GB" : free < 0.3 ? "129 GB" : "212 GB")
+                    .font(.system(size: 12, weight: .medium, design: .rounded)).monospacedDigit()
+                    .contentTransition(.numericText())
+                ForEach(["wifi", "battery.75percent", "magnifyingglass"], id: \.self) {
+                    Image(systemName: $0).font(.system(size: 12))
+                }
+            }
+            .foregroundStyle(.white)
+            .padding(.horizontal, 12).frame(height: 30)
+            .background(.white.opacity(0.18), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+
+            // Popover
+            ZStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("Macintosh HD").font(.caption.bold())
+                        Spacer()
+                        Text(free < 0.1 ? "Low" : free < 0.3 ? "Getting low" : "Healthy")
+                            .font(.system(size: 9, weight: .bold))
+                            .padding(.horizontal, 6).padding(.vertical, 2)
+                            .background(color.opacity(0.3), in: Capsule()).foregroundStyle(color)
+                    }
+                    HStack(alignment: .firstTextBaseline, spacing: 4) {
+                        Text(free < 0.1 ? "34 GB" : "208 GB")
+                            .font(.system(size: 22, weight: .bold, design: .rounded)).contentTransition(.numericText())
+                        Text("free").font(.caption).opacity(0.7)
+                    }
+                    GeometryReader { g in
+                        ZStack(alignment: .leading) {
+                            Capsule().fill(.white.opacity(0.2))
+                            Capsule().fill(color).frame(width: g.size.width * (1 - free))
+                        }
+                    }
+                    .frame(height: 6)
+                    .animation(.spring(duration: 0.6), value: free)
+
+                    if phase >= 6 {
+                        Label("Freed 12.3 GB", systemImage: "checkmark.circle.fill")
+                            .font(.caption.bold()).foregroundStyle(Color(red: 0.55, green: 0.9, blue: 0.68))
+                            .transition(.scale.combined(with: .opacity))
+                    } else {
+                        Text("Clean 12.3 GB (safe items only)")
+                            .font(.caption.bold()).foregroundStyle(.white)
+                            .padding(.horizontal, 10).padding(.vertical, 6)
+                            .frame(maxWidth: .infinity)
+                            .background(Color.accentColor, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
+                            .scaleEffect(phase == 4 || phase == 5 ? 1.06 : 1)
+                            .shadow(color: .white.opacity(phase == 4 || phase == 5 ? 0.6 : 0), radius: 10)
+                    }
+                }
+                .padding(12)
+                .frame(width: 190)
+                .background(.black.opacity(0.35), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).strokeBorder(.white.opacity(0.25)))
+                .foregroundStyle(.white)
+                .offset(x: 12, y: 10)
+                .opacity(popoverShown ? 1 : 0)
+                .scaleEffect(popoverShown ? 1 : 0.85, anchor: .top)
+                .animation(.spring(duration: 0.45, bounce: 0.25), value: popoverShown)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+        }
+        .animation(.spring(duration: 0.55), value: phase)
+    }
+
+    private func ring(size: CGFloat, lineWidth: CGFloat) -> some View {
+        ZStack {
+            Circle().stroke(color.opacity(0.3), lineWidth: lineWidth)
+            Circle().trim(from: 0, to: max(0.04, free))
+                .stroke(color, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
+                .rotationEffect(.degrees(-90))
+                .animation(.spring(duration: 0.6), value: free)
+        }
+        .frame(width: size, height: size)
+        .scaleEffect(free < 0.1 && phase < 6 && phase % 2 == 0 ? 1.15 : 1)
+    }
+}
 
 /// App icon with an orbiting light — reads as "working", not a static picture.
 private struct HeroLoader: View {

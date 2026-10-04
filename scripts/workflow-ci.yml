@@ -63,5 +63,5 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v7
 
-      - name: Build DiskTree (release)
+      - name: Build Headroom (release)
         run: swift build --configuration release

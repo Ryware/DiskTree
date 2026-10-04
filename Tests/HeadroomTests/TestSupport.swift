@@ -1,11 +1,11 @@
 import Foundation
-@testable import DiskTree
+@testable import Headroom
 
 enum TestSupport {
     /// Fresh temp directory (symlinks resolved so paths match what the scanner reports).
     static func makeTempDir(_ label: String = "tree") throws -> URL {
         let base = FileManager.default.temporaryDirectory.resolvingSymlinksInPath()
-        let dir = base.appendingPathComponent("disktree-tests-\(label)-\(UUID().uuidString)", isDirectory: true)
+        let dir = base.appendingPathComponent("headroom-tests-\(label)-\(UUID().uuidString)", isDirectory: true)
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         return dir
     }

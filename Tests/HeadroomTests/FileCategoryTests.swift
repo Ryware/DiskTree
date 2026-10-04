@@ -1,5 +1,5 @@
 import XCTest
-@testable import DiskTree
+@testable import Headroom
 
 final class FileCategoryTests: XCTestCase {
     func testKnownExtensions() {

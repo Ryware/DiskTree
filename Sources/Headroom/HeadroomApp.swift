@@ -33,7 +33,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 }
 
 @main
-struct DiskTreeApp: App {
+struct HeadroomApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var state = AppState()
     @AppStorage("seenIntroVersion") private var seenIntroVersion = 0
@@ -43,7 +43,7 @@ struct DiskTreeApp: App {
     @State private var introPage = 0
 
     var body: some Scene {
-        WindowGroup("DiskTree", id: "main") {
+        WindowGroup("Headroom", id: "main") {
             ContentView()
                 .environmentObject(state)
                 .frame(minWidth: 1120, minHeight: 680)
@@ -62,14 +62,14 @@ struct DiskTreeApp: App {
         .defaultSize(width: 1280, height: 800)
         .commands {
             CommandGroup(replacing: .appInfo) {
-                Button("About DiskTree") {
+                Button("About Headroom") {
                     let credits = NSAttributedString(string: "See what's eating your disk. Clean it in one click.\n\nScanning uses getattrlistbulk(2) and fans out across all cores; permanent deletion renames first, then unlinks in parallel.", attributes: [.font: NSFont.systemFont(ofSize: 11)])
-                    NSApp.orderFrontStandardAboutPanel(options: [.credits: credits, .applicationName: "DiskTree"])
+                    NSApp.orderFrontStandardAboutPanel(options: [.credits: credits, .applicationName: "Headroom"])
                 }
             }
             CommandGroup(replacing: .help) {
                 Button("Welcome Tour") { introPage = 0; showIntro = true }
-                Button("What's New in DiskTree") { introPage = 5; showIntro = true }
+                Button("What's New in Headroom") { introPage = 5; showIntro = true }
             }
             CommandGroup(replacing: .newItem) {
                 Button("Scan Folder…") { state.pickFolder() }
@@ -117,7 +117,7 @@ struct SettingsView: View {
             }
 
             Section("Menu bar") {
-                Toggle("Show DiskTree in the menu bar", isOn: $menuBarEnabled)
+                Toggle("Show Headroom in the menu bar", isOn: $menuBarEnabled)
                 Toggle("Show free space next to the icon", isOn: $menuBarShowsText).disabled(!menuBarEnabled)
                 Toggle("Keep running when the window is closed", isOn: $keepRunning).disabled(!menuBarEnabled)
                 Toggle("Show in the Dock", isOn: $showInDock).disabled(!menuBarEnabled)

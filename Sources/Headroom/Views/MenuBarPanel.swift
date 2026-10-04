@@ -99,7 +99,7 @@ struct FreeSpaceTrendCard: View {
             if monitor.history.count >= 3 {
                 FreeSpaceChart(samples: monitor.history, showAxes: true).frame(height: 110)
             } else {
-                Text("DiskTree records free space on your startup disk while it runs. The trend appears after a little while.")
+                Text("Headroom records free space on your startup disk while it runs. The trend appears after a little while.")
                     .font(.callout).foregroundStyle(.secondary).padding(.vertical, 8)
             }
             Text("Startup disk · last 7 days · stored only on this Mac.")
@@ -265,14 +265,14 @@ struct MenuBarPanel: View {
 
     private var footer: some View {
         HStack(spacing: 10) {
-            Button { AppWindows.showMain() } label: { Label("Open DiskTree", systemImage: "macwindow") }
+            Button { AppWindows.showMain() } label: { Label("Open Headroom", systemImage: "macwindow") }
             Button {
                 AppWindows.showMain()
                 state.scan(URL(fileURLWithPath: NSHomeDirectory()))
             } label: { Label("Scan Home", systemImage: "house") }
             Spacer()
             SettingsLink { Image(systemName: "gearshape") }.buttonStyle(.plain).help("Settings")
-            Button { NSApp.terminate(nil) } label: { Image(systemName: "power") }.buttonStyle(.plain).help("Quit DiskTree")
+            Button { NSApp.terminate(nil) } label: { Image(systemName: "power") }.buttonStyle(.plain).help("Quit Headroom")
         }
         .font(.callout)
     }

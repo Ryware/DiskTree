@@ -19,7 +19,7 @@
 		840D4308B9C086C3C80303DC /* FileCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12C70F849CB0BD0882F50B2B /* FileCategory.swift */; };
 		8DC4855045518D2E5869E914 /* CategoriesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBE8CC142D16AA8841CD901B /* CategoriesView.swift */; };
 		8FF160480B4100DED1374774 /* TreemapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABB5FD7E3ABC3CAD4EADE401 /* TreemapView.swift */; };
-		901096766F830B5A9086A741 /* DiskTreeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5442892EBA00CED0DE03568D /* DiskTreeApp.swift */; };
+		901096766F830B5A9086A741 /* HeadroomApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5442892EBA00CED0DE03568D /* HeadroomApp.swift */; };
 		97AC213F43F0B16A5EF20BF6 /* LargestFilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BAD80B9E643D20B851FFC8 /* LargestFilesView.swift */; };
 		ADC891284889EA930842B0E6 /* IntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D61CC4ADA1D34822A57C7F52 /* IntroView.swift */; };
 		B66678C91FB04B447FB0C331 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 629041005E4311B3038CE4FE /* WelcomeView.swift */; };
@@ -36,13 +36,13 @@
 		0F5944F148F7387E8CD8A15F /* Cleanup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cleanup.swift; sourceTree = "<group>"; };
 		11940DAF1D36B17D65B91EE1 /* WindowSizing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowSizing.swift; sourceTree = "<group>"; };
 		12C70F849CB0BD0882F50B2B /* FileCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileCategory.swift; sourceTree = "<group>"; };
-		24693E91785B38A4DF35F3CE /* DiskTree.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DiskTree.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		24693E91785B38A4DF35F3CE /* Headroom.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Headroom.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D35FA5E4492F833DE9690CD /* Deleter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Deleter.swift; sourceTree = "<group>"; };
 		3BC62A1DDFB5A1E065F2A912 /* SafetyInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafetyInfo.swift; sourceTree = "<group>"; };
 		4A86FA48289D3D3520D804E5 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		4EF7AEA6013196303636FEAF /* OutlineTreeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutlineTreeView.swift; sourceTree = "<group>"; };
 		524EB54C5E8255A617C39AEE /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
-		5442892EBA00CED0DE03568D /* DiskTreeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiskTreeApp.swift; sourceTree = "<group>"; };
+		5442892EBA00CED0DE03568D /* HeadroomApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeadroomApp.swift; sourceTree = "<group>"; };
 		5999A69851CC37B105E4AC08 /* DeleteToast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteToast.swift; sourceTree = "<group>"; };
 		629041005E4311B3038CE4FE /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		6698A1C28190EA2F8D57131E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -62,7 +62,7 @@
 			isa = PBXGroup;
 			children = (
 				E55F60D24CC76E2906F5FB13 /* Assets */,
-				E49CAC70EC823DE7F35A0716 /* DiskTree */,
+				E49CAC70EC823DE7F35A0716 /* Headroom */,
 				A268D1C2881727608629726B /* Products */,
 			);
 			sourceTree = "<group>";
@@ -101,7 +101,7 @@
 		A268D1C2881727608629726B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				24693E91785B38A4DF35F3CE /* DiskTree.app */,
+				24693E91785B38A4DF35F3CE /* Headroom.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -116,16 +116,16 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
-		E49CAC70EC823DE7F35A0716 /* DiskTree */ = {
+		E49CAC70EC823DE7F35A0716 /* Headroom */ = {
 			isa = PBXGroup;
 			children = (
-				5442892EBA00CED0DE03568D /* DiskTreeApp.swift */,
+				5442892EBA00CED0DE03568D /* HeadroomApp.swift */,
 				3C231FFDEE5D50E7F2F09881 /* Engine */,
 				A83FBD0FFDC29747C63F78D0 /* Models */,
 				901A9525BE320F188588C849 /* Views */,
 			);
-			name = DiskTree;
-			path = Sources/DiskTree;
+			name = Headroom;
+			path = Sources/Headroom;
 			sourceTree = "<group>";
 		};
 		E55F60D24CC76E2906F5FB13 /* Assets */ = {
@@ -139,9 +139,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		0A7CA9E587F641BD44C69FEC /* DiskTree */ = {
+		0A7CA9E587F641BD44C69FEC /* Headroom */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C9A0CF90C63A118840941A8A /* Build configuration list for PBXNativeTarget "DiskTree" */;
+			buildConfigurationList = C9A0CF90C63A118840941A8A /* Build configuration list for PBXNativeTarget "Headroom" */;
 			buildPhases = (
 				6E8E3AFDDAA9A159C7C3E77A /* Sources */,
 				C1D543E52F5FDE079D538A0C /* Resources */,
@@ -150,11 +150,11 @@
 			);
 			dependencies = (
 			);
-			name = DiskTree;
+			name = Headroom;
 			packageProductDependencies = (
 			);
-			productName = DiskTree;
-			productReference = 24693E91785B38A4DF35F3CE /* DiskTree.app */;
+			productName = Headroom;
+			productReference = 24693E91785B38A4DF35F3CE /* Headroom.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -172,7 +172,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 52B766F0AF9EA6DA144EED20 /* Build configuration list for PBXProject "DiskTree" */;
+			buildConfigurationList = 52B766F0AF9EA6DA144EED20 /* Build configuration list for PBXProject "Headroom" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -186,7 +186,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				0A7CA9E587F641BD44C69FEC /* DiskTree */,
+				0A7CA9E587F641BD44C69FEC /* Headroom */,
 			);
 		};
 /* End PBXProject section */
@@ -215,7 +215,7 @@
 				0060C1E070B20B10BA0FBCC5 /* DashboardView.swift in Sources */,
 				D06B31F1FD9F0DE400A2F808 /* DeleteToast.swift in Sources */,
 				37E9B5D5488344529C59F3F2 /* Deleter.swift in Sources */,
-				901096766F830B5A9086A741 /* DiskTreeApp.swift in Sources */,
+				901096766F830B5A9086A741 /* HeadroomApp.swift in Sources */,
 				840D4308B9C086C3C80303DC /* FileCategory.swift in Sources */,
 				BA08ACA519976A1F9D785CBC /* FileNode.swift in Sources */,
 				D86A805175A45FE08E306C0C /* InspectorView.swift in Sources */,
@@ -316,7 +316,7 @@
 				);
 				MARKETING_VERSION = 0.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.ryware.disktree;
-				PRODUCT_NAME = DiskTree;
+				PRODUCT_NAME = Headroom;
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) APP_STORE";
 				SWIFT_VERSION = 5.9;
@@ -398,7 +398,7 @@
 				);
 				MARKETING_VERSION = 0.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.ryware.disktree;
-				PRODUCT_NAME = DiskTree;
+				PRODUCT_NAME = Headroom;
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) APP_STORE";
 				SWIFT_VERSION = 5.9;
@@ -408,7 +408,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		52B766F0AF9EA6DA144EED20 /* Build configuration list for PBXProject "DiskTree" */ = {
+		52B766F0AF9EA6DA144EED20 /* Build configuration list for PBXProject "Headroom" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0A3DE13197944DA26CC466D6 /* Debug */,
@@ -417,7 +417,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		C9A0CF90C63A118840941A8A /* Build configuration list for PBXNativeTarget "DiskTree" */ = {
+		C9A0CF90C63A118840941A8A /* Build configuration list for PBXNativeTarget "Headroom" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D066E70022413DD93F43EACA /* Debug */,

@@ -137,7 +137,12 @@ final class DiskMonitor: ObservableObject {
     private static var historyURL: URL? {
         guard let dir = try? FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask,
                                                      appropriateFor: nil, create: true) else { return nil }
-        let folder = dir.appendingPathComponent("DiskTree", isDirectory: true)
+        let folder = dir.appendingPathComponent("Headroom", isDirectory: true)
+        // 0.x stored history under the old app name; carry it over once.
+        let legacy = dir.appendingPathComponent("DiskTree", isDirectory: true)
+        if !FileManager.default.fileExists(atPath: folder.path), FileManager.default.fileExists(atPath: legacy.path) {
+            try? FileManager.default.moveItem(at: legacy, to: folder)
+        }
         try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
         return folder.appendingPathComponent("free-space-history.json")
     }
@@ -165,7 +170,7 @@ final class DiskMonitor: ObservableObject {
                 let last = d.object(forKey: "lastLowAlert") as? Date
                 if last == nil || now.timeIntervalSince(last!) > 6 * 3600 {
                     notify(id: "low", title: "Low disk space",
-                           body: "Only \(s.free.humanBytes) free on \(s.name). Open DiskTree to see what is using it.")
+                           body: "Only \(s.free.humanBytes) free on \(s.name). Open Headroom to see what is using it.")
                     d.set(now, forKey: "lastLowAlert")
                 }
             } else if s.free > threshold * 3 / 2 {
@@ -225,7 +230,7 @@ enum AppWindows {
         if NSApp.activationPolicy() != .regular { NSApp.setActivationPolicy(.regular) }
         NSApp.activate(ignoringOtherApps: true)
         let candidates = NSApp.windows.filter { $0.canBecomeMain && !$0.isSheet && !($0 is NSPanel) }
-        if let w = candidates.first(where: { $0.title == "DiskTree" }) ?? candidates.first {
+        if let w = candidates.first(where: { $0.title == "Headroom" }) ?? candidates.first {
             if w.isMiniaturized { w.deminiaturize(nil) }
             w.makeKeyAndOrderFront(nil)
             w.orderFrontRegardless()

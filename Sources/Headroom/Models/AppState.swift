@@ -16,6 +16,14 @@ struct ScanProgress {
     var elapsed: TimeInterval { (finished ?? Date()).timeIntervalSince(started) }
 }
 
+struct DuplicateProgress {
+    var done = 0
+    var total = 0
+    var bytes: Int64 = 0
+    var current = ""
+    var fraction: Double { total == 0 ? 0 : Double(done) / Double(total) }
+}
+
 struct DeleteProgress {
     var done = 0
     var total = 0
@@ -47,6 +55,9 @@ final class AppState: ObservableObject {
     @Published var categoryTotals: [FileCategory: Int64] = [:]
     @Published var largest: [FileNode] = []
     @Published var treeVersion = 0
+    @Published var duplicates: DuplicateScanResult?
+    @Published var duplicateProgress: DuplicateProgress?
+    private var duplicateTask: Task<Void, Never>?
     /// Installed by the outline view so deletions animate rows out instead of reloading.
     var treeRemovalHandler: (([FileNode]) -> Bool)?
     @Published var recentScans: [URL] = []
@@ -145,6 +156,8 @@ final class AppState: ObservableObject {
         categoryTotals = [:]
         largest = []
         index = [:]
+        cancelDuplicateScan()
+        duplicates = nil
         counters = ScanCounters()
         progress = ScanProgress()
         phase = .scanning
@@ -246,6 +259,47 @@ final class AppState: ObservableObject {
 #endif
     }
 
+    // MARK: Duplicates
+
+    func findDuplicates() {
+        guard let root, duplicateProgress == nil else { return }
+        let counters = DuplicateCounters()
+        duplicateProgress = DuplicateProgress()
+        let timer = Timer.scheduledTimer(withTimeInterval: 0.15, repeats: true) { [weak self] _ in
+            let s = counters.snapshot
+            Task { @MainActor in
+                guard self?.duplicateProgress != nil else { return }
+                self?.duplicateProgress = DuplicateProgress(done: s.done, total: s.total, bytes: s.bytes, current: s.current)
+            }
+        }
+        duplicateTask = Task.detached(priority: .userInitiated) { [weak self] in
+            let result = try? await DuplicateFinder(counters: counters).find(in: root)
+            await MainActor.run {
+                timer.invalidate()
+                guard let self else { return }
+                self.duplicateProgress = nil
+                if let result { self.duplicates = result }
+            }
+        }
+    }
+
+    func cancelDuplicateScan() {
+        duplicateTask?.cancel()
+        duplicateTask = nil
+        duplicateProgress = nil
+    }
+
+    /// Drop deleted files from the duplicate groups without rehashing anything.
+    private func pruneDuplicates(removed: [FileNode]) {
+        guard var d = duplicates, !removed.isEmpty else { return }
+        let gone = Set(removed.map(\.id))
+        d.groups = d.groups.compactMap { g in
+            let left = g.files.filter { !gone.contains($0.id) }
+            return left.count > 1 ? DuplicateGroup(id: g.id, size: g.size, files: left) : nil
+        }
+        duplicates = d
+    }
+
     // MARK: Deleting
 
     @discardableResult
@@ -272,6 +326,7 @@ final class AppState: ObservableObject {
             treeVersion += 1
         }
         knownLocationCandidates.removeAll { c in nodes.contains { $0 === c.node } }
+        pruneDuplicates(removed: removed)
         deleting = nil
         rebuildDerived()
         if let root {

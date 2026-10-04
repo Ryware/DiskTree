@@ -1,7 +1,7 @@
 #!/bin/sh
-# Build DiskTree.app (release, universal, ad-hoc signed). Usage: ./build.sh [run]
+# Build Headroom.app (release, universal, ad-hoc signed). Usage: ./build.sh [run]
 set -e
-APP=DiskTree
+APP=Headroom
 BUNDLE=build/$APP.app
 # Universal binary so the direct-download build runs on Apple silicon and Intel Macs.
 swift build -c release --arch arm64 --arch x86_64
