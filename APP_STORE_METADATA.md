@@ -8,11 +8,9 @@
 | Name | Headroom |
 | Subtitle | Disk space analyzer & cleanup |
 | Primary language | English (U.S.) |
-| Bundle ID | `dev.ryware.disktree` |
-| SKU | `SKU_REDACTED` |
 | User access | Full Access |
 
-The bundle ID and SKU become difficult or impossible to change after record creation. The bundle ID `dev.ryware.disktree` is already registered under team `TEAM_ID_REDACTED` (created automatically during the first archive export), so it appears in the Bundle ID dropdown when creating the record.
+The bundle ID and SKU are set once in App Store Connect and cannot be changed afterwards; they are not kept in this repository.
 
 ## App information
 
@@ -30,7 +28,7 @@ The bundle ID and SKU become difficult or impossible to change after record crea
 ## Naming rules (learned from the 0.1.0 rejection)
 
 - The App Store name and subtitle must not contain **"Free"** (Guideline 2.3.7: a price reference) or **"Mac"** (Guideline 5.2.5: Apple trademark). Say both in the description instead.
-- The app was renamed from DiskTree to Headroom because another "DiskTree" disk analyzer is on the store (Guideline 4.3(a) similarity). The bundle id `dev.ryware.disktree` stays.
+- The app was renamed from DiskTree to Headroom because another "DiskTree" disk analyzer is on the store (Guideline 4.3(a) similarity). The bundle id stays the same.
 
 ## Version 1.0.0
 

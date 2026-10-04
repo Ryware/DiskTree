@@ -6,7 +6,7 @@
 #      (Xcode → Settings → Accounts → Manage Certificates → + → Developer ID Application).
 #   2. Notarization credentials, either:
 #        a. an App Store Connect API key in .secrets/ (see ASC_* below; never committed), or
-#        b. a keychain profile:  xcrun notarytool store-credentials Headroom --apple-id ... --team-id TEAM_ID_REDACTED
+#        b. a keychain profile:  xcrun notarytool store-credentials Headroom --apple-id ... --team-id <your team id>
 #
 # Usage: ./release.sh            → dist/Headroom-<version>.dmg, notarized + stapled
 #        ./release.sh --no-notarize
@@ -14,7 +14,6 @@ set -e
 cd "$(dirname "$0")"
 
 APP=Headroom
-TEAM_ID=TEAM_ID_REDACTED
 NOTARY_PROFILE=${NOTARY_PROFILE:-DiskTree}   # keychain profile name (local only)
 # Notarization credentials come from the environment (CI) or from .secrets/ (local, gitignored):
 #   .secrets/asc_ids.txt   two lines: key id, issuer id
@@ -28,10 +27,10 @@ BUNDLE=build/$APP.app
 VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" Info.plist)
 DMG=dist/$APP-$VERSION.dmg
 
-# Pick the Developer ID identity for this team automatically.
-IDENTITY=$(security find-identity -v -p codesigning | grep "Developer ID Application" | grep "($TEAM_ID)" | head -1 | sed -E 's/.*"(.+)".*/\1/')
+# Pick the Developer ID identity automatically (TEAM_ID narrows it when several teams are installed).
+IDENTITY=$(security find-identity -v -p codesigning | grep "Developer ID Application" | grep "(${TEAM_ID:-}" | head -1 | sed -E 's/.*"(.+)".*/\1/')
 if [ -z "$IDENTITY" ]; then
-  echo "No 'Developer ID Application' certificate for team $TEAM_ID in the keychain." >&2
+  echo "No 'Developer ID Application' certificate${TEAM_ID:+ for team $TEAM_ID} in the keychain." >&2
   echo "Create one in Xcode → Settings → Accounts → Manage Certificates, then re-run." >&2
   exit 1
 fi

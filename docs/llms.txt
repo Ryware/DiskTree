@@ -24,4 +24,4 @@
 Finds byte-for-byte identical files (size bucket → 64 KB prefix hash → full SHA-256), groups them and ranks groups by reclaimable space. Keep newest / oldest / highest in tree, or pick by hand; one copy is always kept unless the guard is turned off. Files under 1 MB and files inside app bundles are skipped.
 
 ## Name
-Headroom was called DiskTree until 1.0 (October 2026). Bundle id dev.ryware.disktree is unchanged.
+Headroom was called DiskTree until 1.0 (October 2026). The bundle id is unchanged, so updates install in place.

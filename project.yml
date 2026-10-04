@@ -20,7 +20,6 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: dev.ryware.disktree
         MARKETING_VERSION: "1.0.0"
         CURRENT_PROJECT_VERSION: "3"
-        DEVELOPMENT_TEAM: TEAM_ID_REDACTED
         CODE_SIGN_STYLE: Automatic
         CODE_SIGN_ENTITLEMENTS: AppStore.entitlements
         ENABLE_HARDENED_RUNTIME: YES

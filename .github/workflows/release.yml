@@ -17,7 +17,7 @@ jobs:
     name: Build, notarize and publish DMG
     runs-on: macos-latest
     env:
-      TEAM_ID: TEAM_ID_REDACTED
+      TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}   # optional; narrows the signing identity when several teams are installed
     steps:
       - name: Check out source
         uses: actions/checkout@v7

@@ -35,3 +35,10 @@ scripts/workflow-release.yml
 secrets-for-github.txt
 _to_delete/
 logs/
+
+# Local signing / App Store identifiers (copy ExportOptions.example.plist and fill in your team id)
+ExportOptions.plist
+*.p12
+*.cer
+*.mobileprovision
+*.provisionprofile

@@ -108,8 +108,6 @@ Review storage by file type or browse the 100 largest files and bundles. A size 
 
 ### Duplicates
 
-<p align="center"><img src="Screenshots/duplicates.jpeg" alt="Headroom Duplicates pane: groups of identical files ranked by reclaimable space, with checkboxes and keep-newest selection"></p>
-
 Finds files that exist more than once with identical content and shows how much space you get back by keeping one copy of each.
 
 **How it works.** Three passes, each cheaper than the next:

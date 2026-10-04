@@ -117,7 +117,7 @@ The prepared 1920-pixel-wide images are in `Screenshots/`.
 - [x] README includes benefit-led copy, install steps, privacy, safety, performance, and screenshots.
 - [x] Screenshot set is optimized for web publication.
 - [x] License the public source under the MIT License.
-- [x] Create a Developer ID Application certificate for team `TEAM_ID_REDACTED`.
+- [x] Create a Developer ID Application certificate for team `<your team id>`.
 - [x] Notarization credentials: `release.sh` uses the App Store Connect API key in `.secrets/` (no keychain profile needed).
 - [x] Run `release.command` (double-click; runs `release.sh` outside the assistant sandbox) and verify the notarized DMG.
 - [x] Create the public `Ryware/Headroom` repository.
@@ -145,7 +145,7 @@ Set `destination` to `upload` in `ExportOptions.plist` to upload directly once t
 - [x] `APP_STORE` code paths: no Home/Startup Disk shortcuts, no known-location scanning, bookmark-based recents.
 - [x] App icon asset catalog (`Assets/Assets.xcassets`).
 - [x] App Store screenshots at exactly 1440 × 900 (`AppStore/Screenshots/`).
-- [x] Bundle ID `dev.ryware.disktree` registered and Mac App Store provisioning profile created.
+- [x] Bundle ID the app bundle id registered and Mac App Store provisioning profile created.
 - [x] Apple Distribution certificate (cloud managed) created.
 - [x] Universal (arm64 + x86_64) archive exported and signed: `dist/appstore/Headroom.pkg`.
 - [x] Create the app record in App Store Connect (app ID 6817532988, name "Headroom - Free Mac Analyzer" because "Headroom" is taken).
