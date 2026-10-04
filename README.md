@@ -49,7 +49,7 @@ Headroom turns a crowded drive into an understandable map. Scan a folder or disk
 - **Understand it visually** — explore a detailed folder tree, a squarified treemap, file categories, and the largest individual files and bundles.
 - **Delete with context** — safety badges explain what an item is, whether it is usually safe to remove, and what deletion may affect.
 - **Clean developer clutter** — discover caches, DerivedData, `node_modules`, package stores, build output, logs, virtual machines, and other regenerable data.
-- **Find duplicates** — byte-for-byte identical files, grouped and ranked by reclaimable space, with one-click "keep newest" selection.
+- **Find duplicates** — byte-for-byte identical files (size → prefix hash → full SHA-256), grouped and ranked by reclaimable space, with one-click "keep newest" selection and a keep-one-copy guard.
 - **Watch it from the menu bar** — a live free-space ring, 7-day trend, low-space and sudden-drop alerts, and one-click cleanup of safe caches.
 - **Stay in control** — choose recoverable Trash mode or an explicit permanent-delete mode.
 - **Keep data private** — analysis happens locally on your Mac; Headroom does not require an account or send scan data anywhere.
@@ -108,7 +108,21 @@ Review storage by file type or browse the 100 largest files and bundles. A size 
 
 ### Duplicates
 
-Finds files that exist more than once with identical content. Files are grouped by size, then by a 64 KB prefix hash, then by a full SHA-256, so only byte-for-byte copies are listed and only real candidates are read in full. Groups are sorted by reclaimable space; pick copies by hand or with one click (keep newest, oldest, or the copy highest in the tree), and a keep-one-copy guard is on by default. Files under 1 MB and files inside app bundles are skipped.
+<p align="center"><img src="Screenshots/duplicates.jpeg" alt="Headroom Duplicates pane: groups of identical files ranked by reclaimable space, with checkboxes and keep-newest selection"></p>
+
+Finds files that exist more than once with identical content and shows how much space you get back by keeping one copy of each.
+
+**How it works.** Three passes, each cheaper than the next:
+
+1. **Size.** Every file from the scan is bucketed by exact byte size. Sizes that occur once are discarded without reading anything.
+2. **Prefix hash.** Files that share a size get the first 64 KB hashed (SHA-256). Different prefixes mean different files.
+3. **Full hash.** Only files that still match get read end to end and hashed. Two files are listed as duplicates only when their full hashes are identical, so there are no false positives.
+
+Hashing runs in parallel across cores and can be cancelled. Files under 1 MB are skipped (they add noise and free nothing), as are files inside app bundles and other packages, which legitimately share resources. Symlinks are never content.
+
+**Choosing what to delete.** Each group lists every copy with its folder, modification date and the safety verdict from the knowledge base. Tick copies by hand, or use **Select** to keep the newest, the oldest, or the copy highest in the folder tree and mark the rest. The *keep at least one copy* guard is on by default, so a group can never be emptied by accident. Deletion uses the same Trash or permanent mode as everywhere else; removed copies disappear from the groups without a rescan.
+
+**Where it shows up.** The Dashboard has a *Duplicate files* card with a one-click scan and the reclaimable total, and the sidebar has a *Duplicates* pane with the full list, a path filter, and the selection tools. The App Store build has the same feature.
 
 ### Cleanup
 
@@ -260,6 +274,12 @@ No. Scanning and categorization happen on your Mac.
 
 **Why are some folders unreadable?**  
 macOS privacy protections restrict access to certain locations. Grant Full Disk Access only if you want those locations included.
+
+**How does the duplicate finder avoid false positives?**  
+Files are only listed as duplicates when their full SHA-256 hashes match. Size and a 64 KB prefix hash are used first so only real candidates are read in full.
+
+**Why doesn't the duplicate finder show small files or files inside apps?**  
+Files under 1 MB free almost nothing and would bury the useful results; files inside `.app` and other bundles are shared on purpose and deleting them breaks the app.
 
 **Does Headroom keep running in the background?**  
 Only if you leave the menu bar monitor on and "Keep running when the window is closed" enabled. Turn either off in Settings, or quit from the menu bar popover.
