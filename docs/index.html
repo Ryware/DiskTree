@@ -160,6 +160,7 @@
   <nav aria-label="Primary">
     <a href="#free">Free</a>
     <a href="#features">Features</a>
+    <a href="#duplicates">Duplicates</a>
     <a href="#screens">Screenshots</a>
     <a href="#safety">Safety</a>
     <a href="#faq">FAQ</a>
@@ -173,20 +174,24 @@
     <div class="orb o2" aria-hidden="true"></div>
     <div class="wrap hero-grid">
       <div class="hero-copy">
-        <p class="pill">100% free · Every feature unlocked · Open source</p>
-        <h1>See what's eating your Mac's disk. Give it some headroom.</h1>
-        <p class="lead">Headroom (formerly DiskTree) is a fast, native disk space analyzer that turns a crowded drive into a map you can read, finds duplicate files, tells you what is safe to delete, and clears the junk in seconds.</p>
-        <div class="cta">
+        <p class="pill reveal">100% free · Every feature unlocked · Open source · v1.0</p>
+        <h1 class="reveal d1">See what's eating your Mac's disk.<br><span class="grad-text">Give it some headroom.</span></h1>
+        <p class="lead reveal d2">Headroom (formerly DiskTree) is a fast, native disk space analyzer that turns a crowded drive into a map you can read, finds duplicate files, tells you what is safe to delete, and clears the junk in seconds.</p>
+        <div class="cta reveal d3">
           <a class="btn primary" href="https://github.com/Ryware/Headroom/releases/latest">Download for macOS</a>
           <a class="btn ghost" href="https://github.com/Ryware/Headroom">View on GitHub</a>
         </div>
-        <ul class="facts" aria-label="Key facts">
-          <li><strong>1.26M</strong> files scanned in ~20 s</li>
+        <ul class="facts reveal d4" aria-label="Key facts">
+          <li><strong><span class="count" data-to="1.26" data-dec="2">0</span>M</strong> files scanned in ~20 s</li>
           <li><strong>$0, forever</strong> no Pro tier, no subscription</li>
           <li><strong>macOS 14+</strong> Apple silicon &amp; Intel</li>
         </ul>
       </div>
-      <figure class="frame hero-shot">
+      <figure class="frame hero-shot reveal d2">
+        <div class="ring-demo" aria-hidden="true">
+          <svg viewBox="0 0 44 44" class="ring"><circle class="track" cx="22" cy="22" r="18"/><circle class="arc" cx="22" cy="22" r="18"/></svg>
+          <span class="ring-label">42 GB free</span>
+        </div>
         <img src="assets/dashboard.webp" srcset="assets/dashboard-800.webp 800w, assets/dashboard.webp 1600w" sizes="(min-width: 960px) 620px, 92vw" width="1600" height="1006" alt="Headroom dashboard on macOS showing free disk space, 133 GB scanned, cleanup candidates and space by category" fetchpriority="high" decoding="async">
       </figure>
     </div>
@@ -201,7 +206,7 @@
   </section>
 
   <section class="section free" id="free">
-    <div class="wrap">
+    <div class="wrap reveal">
       <h2>Free. Really free. Everything unlocked.</h2>
       <p class="sub">No Pro tier. No subscription. No lifetime upgrade. No trial that ends. No “upgrade to clean” button. The features other Mac disk cleaners keep behind a paywall are simply part of Headroom.</p>
       <ul class="unlocked" aria-label="Features included for free">
@@ -217,13 +222,13 @@
     <h2>Everything you need to reclaim space</h2>
     <p class="sub">A TreeSize- and WizTree-style analyzer, built natively for macOS with SwiftUI and AppKit.</p>
     <div class="cards">
-      <article class="card"><span class="ico" aria-hidden="true">⚡</span><h3>Blazing scanner</h3><p>Uses the macOS <code>getattrlistbulk(2)</code> system call and fans out across every core. Sizes are bytes allocated on disk, not guesses.</p></article>
-      <article class="card"><span class="ico" aria-hidden="true">🌳</span><h3>Virtualized folder tree</h3><p>Built on <code>NSOutlineView</code>, so folders with hundreds of thousands of items expand instantly. Sort by size, share, files, safety or date.</p></article>
-      <article class="card"><span class="ico" aria-hidden="true">🗺️</span><h3>Interactive treemap</h3><p>A squarified map of your disk. Color by category, file age or deletion safety. Double-click to zoom, right-click to act.</p></article>
-      <article class="card"><span class="ico" aria-hidden="true">👯</span><h3>Duplicate finder</h3><p>Files that exist more than once, compared byte for byte and ranked by the space one copy gives back. Keep newest, oldest or pick by hand; one copy always stays.</p></article>
-      <article class="card"><span class="ico" aria-hidden="true">🛡️</span><h3>Safe-to-delete hints</h3><p>A rule base of about 150 macOS and developer locations explains what a folder is and whether removing it is safe.</p></article>
-      <article class="card"><span class="ico" aria-hidden="true">🧹</span><h3>Developer cleanup</h3><p>Finds DerivedData, <code>node_modules</code>, npm/pnpm/pip/Gradle/Cargo caches, build output, logs and more. You review before anything goes.</p></article>
-      <article class="card"><span class="ico" aria-hidden="true">🔒</span><h3>Private by design</h3><p>Everything runs locally. No account, no analytics, no cloud. Open source under the MIT license.</p></article>
+      <article class="card reveal"><span class="ico" aria-hidden="true">⚡</span><h3>Blazing scanner</h3><p>Uses the macOS <code>getattrlistbulk(2)</code> system call and fans out across every core. Sizes are bytes allocated on disk, not guesses.</p></article>
+      <article class="card reveal"><span class="ico" aria-hidden="true">🌳</span><h3>Virtualized folder tree</h3><p>Built on <code>NSOutlineView</code>, so folders with hundreds of thousands of items expand instantly. Sort by size, share, files, safety or date.</p></article>
+      <article class="card reveal"><span class="ico" aria-hidden="true">🗺️</span><h3>Interactive treemap</h3><p>A squarified map of your disk. Color by category, file age or deletion safety. Double-click to zoom, right-click to act.</p></article>
+      <article class="card reveal"><span class="ico" aria-hidden="true">👯</span><h3>Duplicate finder</h3><p>Files that exist more than once, compared byte for byte and ranked by the space one copy gives back. Keep newest, oldest or pick by hand; one copy always stays.</p></article>
+      <article class="card reveal"><span class="ico" aria-hidden="true">🛡️</span><h3>Safe-to-delete hints</h3><p>A rule base of about 150 macOS and developer locations explains what a folder is and whether removing it is safe.</p></article>
+      <article class="card reveal"><span class="ico" aria-hidden="true">🧹</span><h3>Developer cleanup</h3><p>Finds DerivedData, <code>node_modules</code>, npm/pnpm/pip/Gradle/Cargo caches, build output, logs and more. You review before anything goes.</p></article>
+      <article class="card reveal"><span class="ico" aria-hidden="true">🔒</span><h3>Private by design</h3><p>Everything runs locally. No account, no analytics, no cloud. Open source under the MIT license.</p></article>
     </div>
   </section>
 
@@ -233,26 +238,26 @@
       <p class="sub">Real screenshots from a real 133 GB home folder.</p>
 
       <div class="showcase">
-        <figure class="frame">
+        <figure class="frame reveal">
           <img src="assets/treemap.webp" srcset="assets/treemap-800.webp 800w, assets/treemap.webp 1600w" sizes="(min-width: 960px) 960px, 92vw" width="1600" height="1005" alt="Headroom treemap of a home folder colored by file age, with Library, Documents and Android SDK as the largest blocks" loading="lazy" decoding="async">
           <figcaption><strong>Treemap.</strong> Every rectangle is a folder or file, sized by disk usage. Color by category, age or safety.</figcaption>
         </figure>
         <div class="two">
-          <figure class="frame">
+          <figure class="frame reveal">
             <img src="assets/folder-tree.webp" srcset="assets/folder-tree-800.webp 800w, assets/folder-tree.webp 1600w" sizes="(min-width: 960px) 480px, 92vw" width="1600" height="1009" alt="Headroom folder tree with size bars, percent of parent, file counts, safety badges and categories" loading="lazy" decoding="async">
             <figcaption><strong>Folder tree.</strong> Sortable sizes, share of parent and a “Safe to delete?” column.</figcaption>
           </figure>
-          <figure class="frame">
+          <figure class="frame reveal">
             <img src="assets/categories.webp" srcset="assets/categories-800.webp 800w, assets/categories.webp 1600w" sizes="(min-width: 960px) 480px, 92vw" width="1600" height="1003" alt="Headroom category breakdown showing virtual machines, applications, dependencies, caches and other file types" loading="lazy" decoding="async">
             <figcaption><strong>Categories.</strong> See VMs, dependencies, caches and media at a glance.</figcaption>
           </figure>
         </div>
         <div class="two">
-          <figure class="frame menubar-shot">
+          <figure class="frame menubar-shot reveal">
             <img src="assets/menu-bar.webp" width="680" height="845" loading="lazy" alt="Headroom menu bar popover showing 41.88 GB free of 494 GB, a 7-day free-space chart, and a one-click Clean 12.34 GB safe items button">
             <figcaption><strong>Menu bar monitor.</strong> A ring that shows free space at a glance, a 7-day trend, local alerts, and one-click cleanup of safe caches.</figcaption>
           </figure>
-          <figure class="frame menubar-text">
+          <figure class="frame menubar-text reveal d1">
             <figcaption>
               <strong>Always one click away.</strong>
               <ul>
@@ -269,14 +274,45 @@
     </div>
   </section>
 
+  <section class="section dup" id="duplicates">
+    <div class="wrap split">
+      <div class="reveal">
+        <p class="eyebrow">New in 1.0</p>
+        <h2>Duplicate finder</h2>
+        <p class="sub left">The same photo in three folders. The same installer in Downloads twice. Headroom finds files that exist more than once, byte for byte, and ranks them by the space one copy would give back.</p>
+        <ol class="steps">
+          <li><strong>Size first.</strong> Files that share an exact size become candidates; everything else is ignored without a single read.</li>
+          <li><strong>Then a 64 KB prefix hash.</strong> Cheap and decisive for most look-alikes.</li>
+          <li><strong>Then a full SHA-256.</strong> Only true byte-for-byte copies make the list. No false positives.</li>
+          <li><strong>You choose.</strong> Keep the newest, the oldest, or pick by hand. One copy always stays.</li>
+        </ol>
+      </div>
+      <div class="dup-demo reveal d1" aria-hidden="true">
+        <div class="dup-window">
+          <div class="dup-head"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="dup-title">Duplicates · <b>8.2 GB</b> reclaimable</span></div>
+          <div class="dup-group">
+            <div class="dup-row keep"><span class="chk"></span><span class="file"></span><span class="name">IMG_4021.heic</span><span class="path">~/Pictures/2025</span><span class="tag">newest</span></div>
+            <div class="dup-row"><span class="chk"></span><span class="file"></span><span class="name">IMG_4021.heic</span><span class="path">~/Downloads</span></div>
+            <div class="dup-row"><span class="chk"></span><span class="file"></span><span class="name">IMG_4021 copy.heic</span><span class="path">~/Desktop/old</span></div>
+          </div>
+          <div class="dup-group">
+            <div class="dup-row keep"><span class="chk"></span><span class="file"></span><span class="name">Xcode_16.xip</span><span class="path">~/Downloads</span><span class="tag">newest</span></div>
+            <div class="dup-row"><span class="chk"></span><span class="file"></span><span class="name">Xcode_16.xip</span><span class="path">~/Desktop</span></div>
+          </div>
+          <div class="dup-foot"><span class="dup-btn">Move 4 copies to Trash · 8.2 GB</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="wrap section" id="safety">
     <h2>Know before you delete</h2>
     <p class="sub">Every recognized item gets a plain-language verdict, so you never have to guess.</p>
     <div class="levels">
-      <div class="lvl"><span class="dot safe"></span><h3>Safe</h3><p>Regenerable data such as caches and package stores.</p></div>
-      <div class="lvl"><span class="dot usually"></span><h3>Usually safe</h3><p>Rebuilt on demand, may take time to recreate.</p></div>
-      <div class="lvl"><span class="dot caution"></span><h3>Caution</h3><p>Contains settings or user data. Review first.</p></div>
-      <div class="lvl"><span class="dot never"></span><h3>Never</h3><p>Critical system or irreplaceable data.</p></div>
+      <div class="lvl reveal"><span class="dot safe"></span><h3>Safe</h3><p>Regenerable data such as caches and package stores.</p></div>
+      <div class="lvl reveal"><span class="dot usually"></span><h3>Usually safe</h3><p>Rebuilt on demand, may take time to recreate.</p></div>
+      <div class="lvl reveal"><span class="dot caution"></span><h3>Caution</h3><p>Contains settings or user data. Review first.</p></div>
+      <div class="lvl reveal"><span class="dot never"></span><h3>Never</h3><p>Critical system or irreplaceable data.</p></div>
     </div>
     <p class="note"><strong>Trash mode</strong> is the default and is fully recoverable. <strong>Permanent mode</strong> uses a parallel rimraf-style engine for huge folders and cannot be undone.</p>
   </section>
@@ -293,8 +329,8 @@
           <li><strong>Only draw what you see.</strong> The outline view creates just the visible rows, so scrolling stays smooth.</li>
         </ol>
       </div>
-      <div class="stat-card" aria-label="Benchmark">
-        <p class="big">~20 s</p>
+      <div class="stat-card reveal" aria-label="Benchmark">
+        <p class="big"><span class="count" data-to="20" data-prefix="~" data-suffix=" s">~0 s</span></p>
         <p>to scan <strong>1,256,000 files</strong> in <strong>216,000 folders</strong> (133 GB) on a MacBook.</p>
       </div>
     </div>
@@ -346,5 +382,29 @@
     <p><a href="https://github.com/Ryware/Headroom">GitHub</a> · <a href="https://github.com/Ryware/Headroom/blob/main/PRIVACY.md">Privacy</a> · <a href="https://github.com/Ryware/Headroom/blob/main/CHANGELOG.md">Changelog</a> · <a href="llms.txt">llms.txt</a></p>
   </div>
 </footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var els = document.querySelectorAll('.reveal');
+  if (reduce || !('IntersectionObserver' in window)) { els.forEach(function(e){ e.classList.add('in'); }); runCounters(); return; }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){ if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+  els.forEach(function(e){ io.observe(e); });
+  var cio = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){ if (en.isIntersecting) { animateCount(en.target); cio.unobserve(en.target); } });
+  }, { threshold: 0.6 });
+  document.querySelectorAll('.count').forEach(function(c){ cio.observe(c); });
+  function runCounters(){ document.querySelectorAll('.count').forEach(function(c){ c.textContent = (c.dataset.prefix||'') + c.dataset.to + (c.dataset.suffix||''); }); }
+  function animateCount(el){
+    var to = parseFloat(el.dataset.to), dec = parseInt(el.dataset.dec||'0',10), pre = el.dataset.prefix||'', suf = el.dataset.suffix||'';
+    var t0 = null, dur = 1100;
+    function step(ts){ if (!t0) t0 = ts; var p = Math.min(1, (ts - t0)/dur); p = 1 - Math.pow(1-p, 3);
+      el.textContent = pre + (to*p).toFixed(dec) + suf; if (p < 1) requestAnimationFrame(step); }
+    requestAnimationFrame(step);
+  }
+})();
+</script>
 </body>
 </html>
