@@ -124,6 +124,8 @@ Nothing is removed merely because it was found. You review and select cleanup ca
 
 ### Menu bar monitor
 
+<p align="center"><img src="Screenshots/menu-bar.png" width="340" alt="Headroom menu bar popover: free space, 7-day trend, one-click safe cleanup"></p>
+
 Headroom can live in the menu bar and keep an eye on your startup disk while you work.
 
 - **Free-space ring** in the menu bar: the arc is the share of the disk that is free, turning amber and then red as space runs low. Optionally show the free space as text.

@@ -106,3 +106,8 @@ footer{padding:28px 0;border-top:1px solid var(--line);color:var(--muted);font-s
 .unlocked{list-style:none;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:0 auto;padding:0;max-width:860px}
 .unlocked li{padding:9px 16px 9px 34px;border-radius:999px;background:var(--card);border:1px solid var(--line);font-weight:600;font-size:15px;position:relative}
 .unlocked li::before{content:"✓";position:absolute;left:14px;color:var(--safe);font-weight:800}
+
+.menubar-shot img{max-height:560px;width:auto;margin:0 auto;padding:18px 18px 0;background:var(--bg2)}
+.menubar-text{display:flex;align-items:center}
+.menubar-text figcaption{font-size:16px;line-height:1.6}
+.menubar-text ul{margin:10px 0 0;padding-left:1.2em}.menubar-text li{margin:.35em 0}
