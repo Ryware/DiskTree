@@ -38,7 +38,7 @@
 <link rel="preload" as="font" href="fonts/geist-latin-wght-normal.woff2" type="font/woff2" crossorigin>
 <link rel="preload" as="font" href="fonts/geist-mono-latin-wght-normal.woff2" type="font/woff2" crossorigin>
 <link rel="preload" as="image" href="assets/dashboard.webp" type="image/webp">
-<link rel="stylesheet" href="style.css?v=16">
+<link rel="stylesheet" href="style.css?v=17">
 
 <script type="application/ld+json">
 {
@@ -361,7 +361,7 @@
           </li>
           </ul>
           <div class="group-badge" aria-hidden="true">3 identical, 28.4 MB back</div>
-          <p class="dup-foot">Bytes read: <strong data-p0="0" data-p1="0" data-p2="256 KB" data-p3="640 KB" data-p4="42.6 MB">0</strong><span class="demo-steps"><i></i><i></i><i></i><i></i></span></p>
+          <p class="dup-foot">Bytes read: <strong data-p0="0" data-p1="0" data-p2="256 KB" data-p3="640 KB" data-p4="42.6 MB">0</strong><span class="demo-steps"><i></i><i></i><i></i><i></i></span><button type="button" class="dup-replay" aria-label="Replay the duplicate finder animation">Replay</button></p>
         </div>
       </div>
     </div>
@@ -533,12 +533,14 @@
   });
 })();
 (function(){
-  /* pinned duplicate-finder explainer: scroll progress drives data-pass 1..4 */
+  /* duplicate-finder explainer. Wide screens: scroll progress drives data-pass 1..4 inside a pinned stage.
+     Phones/tablets: the same passes autoplay once when the section scrolls into view, with a Replay button. */
   var stage = document.getElementById('dup-stage');
   if (!stage) return;
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var narrow = window.matchMedia('(max-width: 900px)');
   var swaps = stage.querySelectorAll('[data-p0]');
+  var replay = stage.querySelector('.dup-replay');
   var stageH = 0;
   function measure(){ stageH = stage.offsetHeight; }
   var useRO = 'ResizeObserver' in window;
@@ -547,8 +549,43 @@
     stage.setAttribute('data-pass', p);
     swaps.forEach(function(el){ el.textContent = el.getAttribute('data-p' + p); });
   }
+  /* autoplay (narrow only) */
+  var STEPS = [700, 2700, 4700, 6700];   /* ms at which passes 1..4 begin */
+  var timers = [], played = false, seen = false;
+  function stop(){ timers.forEach(clearTimeout); timers = []; }
+  function play(){
+    stop(); played = true;
+    stage.classList.add('autoplay'); stage.classList.remove('done');
+    set(0);
+    STEPS.forEach(function(t, i){
+      timers.push(setTimeout(function(){
+        set(i + 1);
+        if (i === STEPS.length - 1) stage.classList.add('done');
+      }, t));
+    });
+  }
+  if (replay) replay.addEventListener('click', function(){
+    if (typeof gtag === 'function') gtag('event', 'duplicates_replay', { site_host: location.hostname });
+    play();
+  });
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function(entries, io){
+      entries.forEach(function(en){
+        if (!en.isIntersecting) return;
+        seen = true; io.disconnect();
+        if (narrow.matches && !reduce && !played) play();
+      });
+    }, { threshold: 0.35 }).observe(stage);
+  }
   function update(){
-    if (reduce || narrow.matches) { set(4); return; }
+    if (reduce) { set(4); return; }
+    if (narrow.matches) {
+      /* no scroll mapping on small screens: show the start state until it scrolls into view */
+      if (!played) { if (seen) play(); else { stage.classList.add('autoplay'); set(0); } }
+      return;
+    }
+    /* wide screen: drop any autoplay state and follow the scroll */
+    stop(); played = false; stage.classList.remove('autoplay', 'done');
     var r = stage.getBoundingClientRect();
     var total = stageH - window.innerHeight;
     var prog = total > 0 ? Math.min(1, Math.max(0, -r.top / total)) : 1;
