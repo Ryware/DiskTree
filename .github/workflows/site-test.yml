@@ -31,4 +31,4 @@ jobs:
         run: node scripts/site-test.mjs http://localhost:8765/index.html
       - name: Test the live site
         if: github.event_name == 'schedule' || github.ref == 'refs/heads/main'
-        run: node scripts/site-test.mjs https://ryware.github.io/Headroom/
+        run: node scripts/site-test.mjs https://headroom-app.org/
