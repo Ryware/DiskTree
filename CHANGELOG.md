@@ -1,34 +1,26 @@
 # Changelog
 
-## 1.0.1 — October 5, 2026
+## 1.0.1 — October 5, 2026 · First stable release
 
-### 🐛 Fixed
-
-- **Duplicate finder on large scans is much faster.** A sampling pass (64 KB from the middle and the end of each file) now runs before the full hash, so large videos, disk images and VM files are read in full only when every cheaper check says they match. Hashing runs on a bounded number of parallel lanes instead of thrashing the disk, the progress view shows which pass is running, and the results list is paged so thousands of groups no longer stall the window.
-
-### 🧰 Chores
-
-- Removed Apple team id, App Store Connect ids, SKU and contact email from the repository and its history; `ExportOptions.plist` and the App Store tooling are now local-only. Signing identity is discovered from the keychain.
-- Landing page redesign: scroll reveals, live free-space ring, animated duplicate-finder demo.
-
-## 1.0.0 — October 2026
-
-First stable release. DiskTree is now **Headroom**: the name describes what the app gives you, and it no longer clashes with another disk analyzer on the App Store. The bundle id is unchanged, so 0.x installs update in place; the free-space history carries over.
+DiskTree is now **Headroom**, and this is the first stable release. The name describes what the app gives you, and it no longer clashes with another disk analyzer on the App Store. The bundle id is unchanged, so 0.x installs update in place and the free-space history carries over. (1.0.0 was tagged internally and never published; everything below is new since 0.2.0.)
 
 ### 🚀 New feature
 
 - **Duplicate finder.** Finds files that exist more than once with identical content, grouped and sorted by how much space one copy would give back. Files are bucketed by size, then compared by a 64 KB header hash, then by samples from the middle and the end, then by a full SHA-256, so only true byte-for-byte copies are listed and large files are read in full only when every cheaper check says they match. Files under 1 MB and files inside app bundles are skipped. Select with one click (keep newest / oldest / highest in the tree), keep-one-copy protection on by default, delete to the Trash or permanently.
 - **Dashboard card** showing reclaimable duplicate space with a jump to the new Duplicates pane.
+- **Progress by phase** for the duplicate scan ("Comparing file headers", "Sampling large files", "Verifying byte for byte") and a paged results list, so huge scans neither look stuck nor stall the window.
 
 ### ✨ Changed
 
-- Renamed to Headroom everywhere: app, menu bar, GitHub repository, landing page, DMG name (`Headroom-1.0.0.dmg`).
+- Renamed to Headroom everywhere: app, menu bar, GitHub repository, landing page, DMG name (`Headroom-1.0.1.dmg`).
 - The What's New tour explains the duplicate finder and the new name.
+- Landing page redesign: scroll reveals, live free-space ring, animated duplicate-finder demo, menu bar screenshot.
 
 ### 🧰 Chores
 
-- 78 unit tests (duplicate finder added), CI coverage and badges updated for the new name.
+- 79 unit tests (duplicate finder added), CI coverage and badges updated for the new name.
 - Release workflow publishes `Headroom-<version>.dmg`.
+- Removed Apple team id, App Store Connect ids, SKU and contact email from the repository and its history; `ExportOptions.plist` and the App Store tooling are local-only. The signing identity is discovered from the keychain.
 
 ## 0.2.0 — September 30, 2026
 
