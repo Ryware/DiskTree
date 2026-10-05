@@ -23,4 +23,4 @@ Allow: /
 User-agent: CCBot
 Allow: /
 
-Sitemap: https://ryware.github.io/Headroom/sitemap.xml
+Sitemap: https://headroom-app.com/sitemap.xml
