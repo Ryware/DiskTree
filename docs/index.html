@@ -36,8 +36,9 @@
 
 <link rel="alternate" type="text/plain" href="llms.txt" title="LLM-readable summary">
 <link rel="preload" as="font" href="fonts/geist-latin-wght-normal.woff2" type="font/woff2" crossorigin>
+<link rel="preload" as="font" href="fonts/geist-mono-latin-wght-normal.woff2" type="font/woff2" crossorigin>
 <link rel="preload" as="image" href="assets/dashboard.webp" type="image/webp">
-<link rel="stylesheet" href="style.css?v=13">
+<link rel="stylesheet" href="style.css?v=14">
 
 <script type="application/ld+json">
 {
@@ -151,8 +152,7 @@
 }
 </script>
 <script>try{var t=localStorage.getItem('headroom-theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-EE4D7SZGJC"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-EE4D7SZGJC',{anonymize_ip:true,site_host:location.hostname});</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-EE4D7SZGJC',{anonymize_ip:true,site_host:location.hostname});addEventListener('load',function(){var l=function(){var g=document.createElement('script');g.async=true;g.src='https://www.googletagmanager.com/gtag/js?id=G-EE4D7SZGJC';document.head.appendChild(g)};'requestIdleCallback' in window?requestIdleCallback(l,{timeout:3000}):setTimeout(l,1500)});</script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -542,6 +542,8 @@
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var narrow = window.matchMedia('(max-width: 900px)');
   var swaps = stage.querySelectorAll('[data-p0]');
+  var stageH = 0;
+  function measure(){ stageH = stage.offsetHeight; }
   function set(p){
     if (stage.getAttribute('data-pass') === String(p)) return;
     stage.setAttribute('data-pass', p);
@@ -550,7 +552,7 @@
   function update(){
     if (reduce || narrow.matches) { set(4); return; }
     var r = stage.getBoundingClientRect();
-    var total = stage.offsetHeight - window.innerHeight;
+    var total = stageH - window.innerHeight;
     var prog = total > 0 ? Math.min(1, Math.max(0, -r.top / total)) : 1;
     var p = prog < 0.12 ? 0 : prog < 0.34 ? 1 : prog < 0.56 ? 2 : prog < 0.78 ? 3 : 4;
     set(p);
@@ -558,9 +560,9 @@
   var ticking = false;
   function onScroll(){ if (!ticking) { ticking = true; requestAnimationFrame(function(){ ticking = false; update(); }); } }
   window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll);
+  window.addEventListener('resize', function(){ measure(); onScroll(); });
   narrow.addEventListener ? narrow.addEventListener('change', update) : narrow.addListener(update);
-  update();
+  requestAnimationFrame(function(){ measure(); update(); });
 })();
 </script>
 </body>

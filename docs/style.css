@@ -78,6 +78,7 @@ p{margin:0}
 /* reveal */
 .reveal{opacity:0;transform:translateY(14px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
 .reveal.in{opacity:1;transform:none}
+.hero h1.reveal,.hero .hero-strip.reveal{opacity:1}
 .reveal.d1{transition-delay:.08s}.reveal.d2{transition-delay:.16s}.reveal.d3{transition-delay:.24s}
 
 /* hero: headline, then the app itself running on the page */
