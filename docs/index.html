@@ -388,10 +388,11 @@ footer{padding:24px 0;border-top:1px solid var(--line);font-size:14px;color:var(
       "publisher": { "@id": "https://headroom-app.org/#author" }
     },
     {
-      "@type": "Person",
+      "@type": "Organization",
       "@id": "https://headroom-app.org/#author",
       "name": "Ryware",
-      "url": "https://github.com/Ryware"
+      "url": "https://ryware.dev",
+      "sameAs": ["https://github.com/Ryware"]
     },
     {
       "@type": "SoftwareApplication",
@@ -412,6 +413,8 @@ footer{padding:24px 0;border-top:1px solid var(--line);font-size:14px;color:var(
       "applicationSubCategory": "Disk space analyzer",
       "operatingSystem": "macOS 14 Sonoma or later",
       "softwareVersion": "1.0.2",
+      "datePublished": "2026-09-30",
+      "dateModified": "2026-10-05",
       "license": "https://opensource.org/licenses/MIT",
       "isAccessibleForFree": true,
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": "https://schema.org/InStock", "description": "Free forever. All features included. No Pro tier, subscription, trial or in-app purchases." },
@@ -471,6 +474,12 @@ footer{padding:24px 0;border-top:1px solid var(--line);font-size:14px;color:var(
           "acceptedAnswer": { "@type": "Answer", "text": "No. Scanning and analysis happen entirely on your Mac. Headroom has no account system, no analytics SDK and no cloud service." } },
         { "@type": "Question", "name": "Is there a WizTree or TreeSize alternative for Mac?",
           "acceptedAnswer": { "@type": "Answer", "text": "Headroom is a free, native Mac app in the same spirit as WizTree and TreeSize: a fast scan, a sortable size tree and a treemap. It adds safety explanations and one-click developer cleanup." } },
+        { "@type": "Question", "name": "Is there a free alternative to DaisyDisk?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Headroom is a free, open-source option if you want a DaisyDisk-style visual map of your disk without paying. DaisyDisk is a paid app with a sunburst map; Headroom uses a treemap and a sortable folder tree, and adds a duplicate finder, safety explanations and developer cleanup." } },
+        { "@type": "Question", "name": "How is Headroom different from GrandPerspective?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Both are open source and both draw a treemap of your disk. GrandPerspective focuses on the treemap view. Headroom adds a sortable folder tree, category breakdown, duplicate finder, safety explanations for what you are about to delete, one-click developer cleanup and a menu bar monitor." } },
+        { "@type": "Question", "name": "Is Headroom a free alternative to CleanMyMac?",
+          "acceptedAnswer": { "@type": "Answer", "text": "For finding and freeing disk space, yes. Headroom covers disk analysis, large files, duplicates and cache and developer cleanup for free, with no subscription. It is not a full maintenance suite: it has no malware scanner, app uninstaller or performance tools." } },
         { "@type": "Question", "name": "What are the system requirements?",
           "acceptedAnswer": { "@type": "Answer", "text": "macOS 14 Sonoma or newer on an Apple silicon or Intel Mac. Full Disk Access is only needed if you want to scan protected locations such as Mail, Messages and Safari data." } }
       ]
@@ -519,7 +528,7 @@ footer{padding:24px 0;border-top:1px solid var(--line);font-size:14px;color:var(
     <div class="wrap hero-head">
       <p class="hero-strip reveal">Free and open source for macOS 14 and up</p>
       <h1 class="reveal d1">See what fills your disk.<br>Give it some headroom.</h1>
-      <p class="lead reveal d2">A fast, native disk space analyzer and duplicate finder that tells you what is safe to delete.</p>
+      <p class="lead reveal d2">A free, native Mac disk space analyzer and duplicate finder that tells you what is safe to delete.</p>
       <div class="cta reveal d3">
         <a class="btn btn-primary" href="https://github.com/Ryware/Headroom/releases/latest"><svg class="ic" viewBox="0 0 256 256" aria-hidden="true" fill="currentColor"><path d="M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z"/></svg>Download for Mac</a>
         <a class="btn btn-ghost" href="https://github.com/Ryware/Headroom">View source</a>
@@ -763,6 +772,9 @@ footer{padding:24px 0;border-top:1px solid var(--line);font-size:14px;color:var(
         <details><summary>How fast is Headroom?<span class="plus" aria-hidden="true"></span></summary><div class="answer"><p>It uses <code>getattrlistbulk(2)</code> and scans directories in parallel across all cores. A home folder with about 1.26 million files and 216,000 folders scanned in roughly 20 seconds.</p></div></details>
         <details><summary>Does Headroom send my data anywhere?<span class="plus" aria-hidden="true"></span></summary><div class="answer"><p>No. Scanning and analysis happen entirely on your Mac. There is no account system, analytics SDK or cloud service in the app. This website uses Google Analytics to count visits and downloads; the app itself sends nothing.</p></div></details>
         <details><summary>Is there a WizTree or TreeSize alternative for Mac?<span class="plus" aria-hidden="true"></span></summary><div class="answer"><p>Headroom is a free, native Mac app in the same spirit: a fast scan, a sortable size tree and a treemap, plus safety explanations and one-click developer cleanup.</p></div></details>
+        <details><summary>Is there a free alternative to DaisyDisk?<span class="plus" aria-hidden="true"></span></summary><div class="answer"><p>Headroom is a free, open-source option if you want a DaisyDisk-style visual map of your disk without paying. DaisyDisk is a paid app with a sunburst map; Headroom uses a treemap and a sortable folder tree, and adds a duplicate finder, safety explanations and developer cleanup.</p></div></details>
+        <details><summary>How is Headroom different from GrandPerspective?<span class="plus" aria-hidden="true"></span></summary><div class="answer"><p>Both are open source and both draw a treemap of your disk. GrandPerspective focuses on the treemap view. Headroom adds a sortable folder tree, category breakdown, duplicate finder, safety explanations for what you are about to delete, one-click developer cleanup and a menu bar monitor.</p></div></details>
+        <details><summary>Is Headroom a free alternative to CleanMyMac?<span class="plus" aria-hidden="true"></span></summary><div class="answer"><p>For finding and freeing disk space, yes. Headroom covers disk analysis, large files, duplicates and cache and developer cleanup for free, with no subscription. It is not a full maintenance suite: it has no malware scanner, app uninstaller or performance tools.</p></div></details>
         <details><summary>What are the system requirements?<span class="plus" aria-hidden="true"></span></summary><div class="answer"><p>macOS 14 Sonoma or newer on Apple silicon or Intel. Full Disk Access is only needed for protected locations such as Mail, Messages and Safari data.</p></div></details>
       </div>
     </div>
@@ -782,7 +794,7 @@ footer{padding:24px 0;border-top:1px solid var(--line);font-size:14px;color:var(
 
 <footer>
   <div class="wrap foot">
-    <p>Headroom, formerly DiskTree. Made with SwiftUI by <a href="https://github.com/Ryware">Ryware</a>. MIT License.</p>
+    <p>Headroom, formerly DiskTree. MIT License. Made with ❤️ by <a href="https://ryware.dev">Ryware</a></p>
     <nav aria-label="Footer"><a href="https://github.com/Ryware/Headroom">GitHub</a><a href="https://github.com/Ryware/Headroom/releases">Releases</a><a href="https://github.com/Ryware/Headroom/blob/main/PRIVACY.md">Privacy</a><a href="https://github.com/Ryware/Headroom/blob/main/CHANGELOG.md">Changelog</a></nav>
   </div>
 </footer>
