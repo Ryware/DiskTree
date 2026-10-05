@@ -131,8 +131,19 @@ async function newPage(opts = {}) {
   check('no horizontal scrolling on a phone', overflow <= 0, `${overflow}px overflow`);
   const h1Lines = await page.$eval('h1', (h) => Math.round(h.getBoundingClientRect().height / parseFloat(getComputedStyle(h).lineHeight)));
   check('hero headline is at most 3 lines on a phone', h1Lines <= 3, `${h1Lines} lines`);
-  await page.evaluate(() => document.getElementById('duplicates').scrollIntoView()); await sleep(600);
-  check('duplicates section is static on a phone (final state)', (await page.$eval('#dup-stage', (d) => d.getAttribute('data-pass'))) === '4');
+  // phones: the duplicate finder autoplays once when it scrolls into view (no scroll pinning), then offers Replay
+  await page.evaluate(() => document.getElementById('duplicates').scrollIntoView());
+  const dupPass = () => page.$eval('#dup-stage', (d) => d.getAttribute('data-pass'));
+  await sleep(1500);
+  const midPass = await dupPass();
+  check('duplicates section autoplays on a phone (mid-run)', ['1', '2'].includes(midPass), `pass ${midPass}`);
+  await page.waitForFunction(() => document.getElementById('dup-stage').classList.contains('done'), null, { timeout: 12000 }).catch(() => {});
+  check('duplicates autoplay ends on the final pass', (await dupPass()) === '4');
+  await sleep(900);   // the collapse is a 0.6s transition
+  check('decoy cards collapse at the end on a phone', await page.$eval('.decoy-size', (c) => c.getBoundingClientRect().height < 2));
+  check('Replay is offered on a phone', await page.$eval('.dup-replay', (b) => getComputedStyle(b).display !== 'none'));
+  await page.click('.dup-replay'); await sleep(300);
+  check('Replay restarts the animation', (await dupPass()) === '0');
   check('no JavaScript errors on a phone', page.errors.length === 0, page.errors.join(' | '));
   await page.close();
 }
