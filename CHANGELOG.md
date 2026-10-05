@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.1 — October 5, 2026
+
+### 🐛 Fixed
+
+- **Duplicate finder on large scans is much faster.** A sampling pass (64 KB from the middle and the end of each file) now runs before the full hash, so large videos, disk images and VM files are read in full only when every cheaper check says they match. Hashing runs on a bounded number of parallel lanes instead of thrashing the disk, the progress view shows which pass is running, and the results list is paged so thousands of groups no longer stall the window.
+
+### 🧰 Chores
+
+- Removed Apple team id, App Store Connect ids, SKU and contact email from the repository and its history; `ExportOptions.plist` and the App Store tooling are now local-only. Signing identity is discovered from the keychain.
+- Landing page redesign: scroll reveals, live free-space ring, animated duplicate-finder demo.
+
 ## 1.0.0 — October 2026
 
 First stable release. DiskTree is now **Headroom**: the name describes what the app gives you, and it no longer clashes with another disk analyzer on the App Store. The bundle id is unchanged, so 0.x installs update in place; the free-space history carries over.

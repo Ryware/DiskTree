@@ -232,7 +232,7 @@ Releases are built by GitHub Actions on a macOS runner. Pushing a version tag bu
 ```sh
 # 1. bump CFBundleShortVersionString / CFBundleVersion in Info.plist (and project.yml), add a CHANGELOG section
 # 2. commit and push, then:
-git tag -a v1.0.0 -m "Headroom 1.0.0" && git push origin v1.0.0
+git tag -a v1.0.1 -m "Headroom 1.0.1" && git push origin v1.0.1
 ```
 
 The workflow (`.github/workflows/release.yml`) needs five repository secrets: `MACOS_CERT_P12` (base64 of the exported Developer ID Application `.p12`), `MACOS_CERT_PASSWORD`, and an App Store Connect API key as `ASC_KEY_ID`, `ASC_ISSUER_ID` and `ASC_KEY_P8` (base64 of the `.p8`). The tag must match the version in `Info.plist` or the run fails before building.
