@@ -38,7 +38,7 @@
 <link rel="preload" as="font" href="fonts/geist-latin-wght-normal.woff2" type="font/woff2" crossorigin>
 <link rel="preload" as="font" href="fonts/geist-mono-latin-wght-normal.woff2" type="font/woff2" crossorigin>
 <link rel="preload" as="image" href="assets/dashboard.webp" type="image/webp">
-<link rel="stylesheet" href="style.css?v=14">
+<link rel="stylesheet" href="style.css?v=15">
 
 <script type="application/ld+json">
 {
@@ -160,7 +160,7 @@
 <header class="nav" role="banner">
   <div class="wrap nav-row">
     <a class="brand" href="#top" aria-label="Headroom home">
-      <img src="icon-192.png" width="28" height="28" alt="">
+      <img src="icon-56.png" width="28" height="28" alt="">
       <span>Headroom</span>
     </a>
     <nav aria-label="Primary">
@@ -290,7 +290,7 @@
         </div>
         <div class="mb-stage">
           <div class="mb-note" hidden>
-            <img src="icon-192.png" width="44" height="44" alt="">
+            <img src="icon-88.png" width="44" height="44" alt="">
             <div><b>Headroom</b><span>Startup disk is getting low</span><small><em data-mb="free2">14 GB</em> free. 38.3 GB of safe caches and build output can go.</small></div>
             <button type="button" class="mb-clean">Clean</button>
           </div>
@@ -438,7 +438,7 @@
 
   <section class="final">
     <div class="wrap final-row">
-      <img src="icon-512.png" width="72" height="72" alt="" loading="lazy">
+      <img src="icon-144.png" width="72" height="72" alt="" loading="lazy">
       <div>
         <h2>Give your disk some room to breathe.</h2>
         <p>Free, open source, every feature included.</p>
@@ -544,6 +544,7 @@
   var swaps = stage.querySelectorAll('[data-p0]');
   var stageH = 0;
   function measure(){ stageH = stage.offsetHeight; }
+  var useRO = 'ResizeObserver' in window;
   function set(p){
     if (stage.getAttribute('data-pass') === String(p)) return;
     stage.setAttribute('data-pass', p);
@@ -560,9 +561,12 @@
   var ticking = false;
   function onScroll(){ if (!ticking) { ticking = true; requestAnimationFrame(function(){ ticking = false; update(); }); } }
   window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', function(){ measure(); onScroll(); });
+  if (!useRO) window.addEventListener('resize', function(){ measure(); onScroll(); });
+  else window.addEventListener('resize', onScroll);
   narrow.addEventListener ? narrow.addEventListener('change', update) : narrow.addListener(update);
-  requestAnimationFrame(function(){ measure(); update(); });
+  /* ResizeObserver reports the height after layout, so measuring never forces a reflow */
+  if (useRO) new ResizeObserver(function(e){ stageH = e[0].target.offsetHeight; update(); }).observe(stage);
+  else requestAnimationFrame(function(){ measure(); update(); });
 })();
 </script>
 </body>
