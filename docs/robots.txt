@@ -23,4 +23,4 @@ Allow: /
 User-agent: CCBot
 Allow: /
 
-Sitemap: https://headroom-app.com/sitemap.xml
+Sitemap: https://headroom-app.org/sitemap.xml

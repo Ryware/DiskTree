@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
-    <loc>https://headroom-app.com/</loc>
+    <loc>https://headroom-app.org/</loc>
     <lastmod>2026-10-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
-    <image:image><image:loc>https://headroom-app.com/assets/dashboard.webp</image:loc><image:title>Headroom dashboard</image:title></image:image>
-    <image:image><image:loc>https://headroom-app.com/assets/treemap.webp</image:loc><image:title>Headroom treemap</image:title></image:image>
-    <image:image><image:loc>https://headroom-app.com/assets/folder-tree.webp</image:loc><image:title>Headroom folder tree</image:title></image:image>
-    <image:image><image:loc>https://headroom-app.com/assets/categories.webp</image:loc><image:title>Headroom categories</image:title></image:image>
+    <image:image><image:loc>https://headroom-app.org/assets/dashboard.webp</image:loc><image:title>Headroom dashboard</image:title></image:image>
+    <image:image><image:loc>https://headroom-app.org/assets/treemap.webp</image:loc><image:title>Headroom treemap</image:title></image:image>
+    <image:image><image:loc>https://headroom-app.org/assets/folder-tree.webp</image:loc><image:title>Headroom folder tree</image:title></image:image>
+    <image:image><image:loc>https://headroom-app.org/assets/categories.webp</image:loc><image:title>Headroom categories</image:title></image:image>
   </url>
 </urlset>
