@@ -1,0 +1,13 @@
+{
+  "hosting": {
+    "public": "docs",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**", "llms.txt.bak"],
+    "cleanUrls": true,
+    "headers": [
+      {
+        "source": "**/*.@(woff2|png|ico|jpg|svg)",
+        "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+      }
+    ]
+  }
+}

@@ -1,0 +1,51 @@
+name: Deploy site
+
+# Publishes docs/ (the landing page) to Firebase Hosting.
+#   main            -> live channel
+#   pull requests   -> temporary preview channel (same-repo PRs only; forks have no secrets)
+#
+# One-time setup: see "Firebase Hosting" in PUBLISHING.md.
+#   secret  FIREBASE_SERVICE_ACCOUNT   service account JSON key
+#   variable FIREBASE_PROJECT_ID       Firebase project id
+
+on:
+  push:
+    branches: [main]
+    paths: ["docs/**", "firebase.json", ".github/workflows/deploy-site.yml"]
+  pull_request:
+    branches: [main]
+    paths: ["docs/**", "firebase.json"]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-site-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy to Firebase Hosting
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    permissions:
+      contents: read
+      pull-requests: write     # preview URL comment
+      checks: write
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Deploy preview (pull request)
+        if: github.event_name == 'pull_request'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: ${{ vars.FIREBASE_PROJECT_ID }}
+
+      - name: Deploy live
+        if: github.event_name != 'pull_request'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: ${{ vars.FIREBASE_PROJECT_ID }}
+          channelId: live
