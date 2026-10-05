@@ -260,11 +260,20 @@ h1{font-size:clamp(36px,5.2vw,68px);line-height:1.02;font-weight:600;letter-spac
   .dup{padding:64px 0 0;--cw:120px;--gap:12px}
   .dup-stage{height:auto}
   .dup-sticky{position:static;min-height:0;padding:0 0 40px}
-  .cards{flex-wrap:wrap;justify-content:center}
+  /* phones/tablets: the scroll-driven 5-card fan is replaced by a static list showing the final state */
+  .cards{flex-direction:column;gap:10px;perspective:none;width:100%;max-width:420px;margin:24px auto 0}
+  .card{width:100%;height:88px;transform:none}
+  .decoy-size,.decoy-head,.face.back{display:none}
+  .face{display:grid;grid-template-columns:84px minmax(0,1fr) auto;grid-template-rows:auto auto;align-content:center;align-items:center;column-gap:12px;padding:10px 12px 18px}
+  .thumb{grid-row:1/3;height:54px}
+  .face b{margin:0;grid-column:2;font-size:13.5px}
+  .face span{grid-column:2;font-size:12px}
+  .face em{grid-column:3;grid-row:1/3;margin:0}
+  .reads{left:108px;right:12px;bottom:8px}
   .rail li span{display:none}.rail li+li::before{width:24px;margin:0 8px}
   .dup .wide-shot{margin-bottom:64px}
 }
-@media (max-width:600px){.dup{--cw:96px;--gap:10px}.face b{font-size:12px}.face span,.face em{font-size:11px}}
+
 @media (prefers-reduced-motion:reduce){.dup-stage{height:auto}.dup-sticky{position:static;min-height:0}.card,.reads s,.group-badge{transition:none}}
 
 /* safety */
