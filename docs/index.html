@@ -3,12 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Headroom – Free Mac Disk Space Analyzer, Duplicate Finder & Cleaner (formerly DiskTree)</title>
+<title>Headroom - Free Mac Disk Space Analyzer, Duplicate Finder & Cleaner (formerly DiskTree)</title>
 <meta name="description" content="Headroom is a 100% free, open-source Mac disk space analyzer and cleaner. Every feature unlocked: treemap, one-click cleanup, developer deep scan, safe-to-delete hints. No Pro tier, no subscription, no ads, no tracking.">
 <meta name="keywords" content="free Mac disk cleaner, free disk space analyzer Mac, no subscription disk cleaner, open source disk cleaner macOS, all features free, no Pro version, Mac disk space analyzer, macOS storage visualizer, free disk cleaner Mac, treemap, find large files Mac, clean Xcode DerivedData, delete node_modules, WizTree for Mac, TreeSize alternative Mac, DaisyDisk alternative">
 <meta name="author" content="Ryware">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-<meta name="theme-color" content="#4f46e5">
+<meta name="theme-color" content="#0f0f14" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f6f6f8" media="(prefers-color-scheme: light)">
 <meta name="color-scheme" content="dark light">
 <link rel="canonical" href="https://ryware.github.io/Headroom/">
 
@@ -19,7 +20,7 @@
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Headroom">
-<meta property="og:title" content="Headroom – Free Mac disk cleaner. Every feature unlocked.">
+<meta property="og:title" content="Headroom - Free Mac disk cleaner. Every feature unlocked.">
 <meta property="og:description" content="100% free and open source. Treemap, one-click cleanup, developer deep scan and safety hints, all unlocked. No Pro tier, no subscription, no tracking.">
 <meta property="og:url" content="https://ryware.github.io/Headroom/">
 <meta property="og:image" content="https://ryware.github.io/Headroom/og-image.png">
@@ -28,14 +29,15 @@
 <meta property="og:image:alt" content="Headroom app icon next to a dashboard showing disk usage by category">
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Headroom – Free Mac disk cleaner. Every feature unlocked.">
+<meta name="twitter:title" content="Headroom - Free Mac disk cleaner. Every feature unlocked.">
 <meta name="twitter:description" content="100% free, open source. No Pro tier, no subscription. Treemap, cleanup and safety hints for Mac.">
 <meta name="twitter:image" content="https://ryware.github.io/Headroom/og-image.png">
 <meta name="twitter:image:alt" content="Headroom dashboard screenshot">
 
 <link rel="alternate" type="text/plain" href="llms.txt" title="LLM-readable summary">
+<link rel="preload" as="font" href="fonts/geist-latin-wght-normal.woff2" type="font/woff2" crossorigin>
 <link rel="preload" as="image" href="assets/dashboard.webp" type="image/webp">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=11">
 
 <script type="application/ld+json">
 {
@@ -73,7 +75,7 @@
       "applicationCategory": "UtilitiesApplication",
       "applicationSubCategory": "Disk space analyzer",
       "operatingSystem": "macOS 14 Sonoma or later",
-      "softwareVersion": "1.0.1",
+      "softwareVersion": "1.0.2",
       "license": "https://opensource.org/licenses/MIT",
       "isAccessibleForFree": true,
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": "https://schema.org/InStock", "description": "Free forever. All features included. No Pro tier, subscription, trial or in-app purchases." },
@@ -148,263 +150,417 @@
   ]
 }
 </script>
+<script>try{var t=localStorage.getItem('headroom-theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EE4D7SZGJC"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-EE4D7SZGJC',{anonymize_ip:true,site_host:location.hostname});</script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
 
-<header class="nav">
-  <a class="brand" href="#top" aria-label="Headroom home">
-    <img src="icon-192.png" width="32" height="32" alt="" decoding="async">
-    <span>Headroom</span>
-  </a>
-  <nav aria-label="Primary">
-    <a href="#free">Free</a>
-    <a href="#features">Features</a>
-    <a href="#duplicates">Duplicates</a>
-    <a href="#screens">Screenshots</a>
-    <a href="#safety">Safety</a>
-    <a href="#faq">FAQ</a>
-    <a class="btn small" href="https://github.com/Ryware/Headroom/releases/latest">Download</a>
-  </nav>
+<header class="nav" role="banner">
+  <div class="wrap nav-row">
+    <a class="brand" href="#top" aria-label="Headroom home">
+      <img src="icon-512.png" width="28" height="28" alt="">
+      <span>Headroom</span>
+    </a>
+    <nav aria-label="Primary">
+      <a href="#features">Features</a>
+      <a href="#menubar">Menu bar</a>
+      <a href="#duplicates">Duplicates</a>
+      <a href="#safety">Safety</a>
+      <a href="#faq">FAQ</a>
+      <a class="nav-gh" href="https://github.com/Ryware/Headroom" aria-label="GitHub"><svg class="ic" viewBox="0 0 256 256" aria-hidden="true" fill="currentColor"><path d="M208.31,75.68A59.78,59.78,0,0,0,202.93,28,8,8,0,0,0,196,24a59.75,59.75,0,0,0-48,24H124A59.75,59.75,0,0,0,76,24a8,8,0,0,0-6.93,4,59.78,59.78,0,0,0-5.38,47.68A58.14,58.14,0,0,0,56,104v8a56.06,56.06,0,0,0,48.44,55.47A39.8,39.8,0,0,0,96,192v8H72a24,24,0,0,1-24-24A40,40,0,0,0,8,136a8,8,0,0,0,0,16,24,24,0,0,1,24,24,40,40,0,0,0,40,40H96v16a8,8,0,0,0,16,0V192a24,24,0,0,1,48,0v40a8,8,0,0,0,16,0V192a39.8,39.8,0,0,0-8.44-24.53A56.06,56.06,0,0,0,216,112v-8A58.14,58.14,0,0,0,208.31,75.68ZM200,112a40,40,0,0,1-40,40H112a40,40,0,0,1-40-40v-8a41.74,41.74,0,0,1,6.9-22.48A8,8,0,0,0,80,73.83a43.81,43.81,0,0,1,.79-33.58,43.88,43.88,0,0,1,32.32,20.06A8,8,0,0,0,119.82,64h32.35a8,8,0,0,0,6.74-3.69,43.87,43.87,0,0,1,32.32-20.06A43.81,43.81,0,0,1,192,73.83a8.09,8.09,0,0,0,1,7.65A41.72,41.72,0,0,1,200,104Z"/></svg></a>
+      <button class="tt" type="button" id="theme-toggle" aria-label="Switch color theme" title="Switch theme">
+        <svg class="ic sun" viewBox="0 0 256 256" aria-hidden="true" fill="currentColor"><path d="M120,40V16a8,8,0,0,1,16,0V40a8,8,0,0,1-16,0Zm72,88a64,64,0,1,1-64-64A64.07,64.07,0,0,1,192,128Zm-16,0a48,48,0,1,0-48,48A48.05,48.05,0,0,0,176,128ZM58.34,69.66A8,8,0,0,0,69.66,58.34l-16-16A8,8,0,0,0,42.34,53.66Zm0,116.68-16,16a8,8,0,0,0,11.32,11.32l16-16a8,8,0,0,0-11.32-11.32ZM192,72a8,8,0,0,0,5.66-2.34l16-16a8,8,0,0,0-11.32-11.32l-16,16A8,8,0,0,0,192,72Zm5.66,114.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32-11.32ZM48,128a8,8,0,0,0-8-8H16a8,8,0,0,0,0,16H40A8,8,0,0,0,48,128Zm80,80a8,8,0,0,0-8,8v24a8,8,0,0,0,16,0V216A8,8,0,0,0,128,208Zm112-88H216a8,8,0,0,0,0,16h24a8,8,0,0,0,0-16Z"/></svg>
+        <svg class="ic moon" viewBox="0 0 256 256" aria-hidden="true" fill="currentColor"><path d="M233.54,142.23a8,8,0,0,0-8-2,88.08,88.08,0,0,1-109.8-109.8,8,8,0,0,0-10-10,104.84,104.84,0,0,0-52.91,37A104,104,0,0,0,136,224a103.09,103.09,0,0,0,62.52-20.88,104.84,104.84,0,0,0,37-52.91A8,8,0,0,0,233.54,142.23ZM188.9,190.34A88,88,0,0,1,65.66,67.11a89,89,0,0,1,31.4-26A106,106,0,0,0,96,56,104.11,104.11,0,0,0,200,160a106,106,0,0,0,14.92-1.06A89,89,0,0,1,188.9,190.34Z"/></svg>
+      </button>
+      <a class="btn btn-primary btn-sm" href="https://github.com/Ryware/Headroom/releases/latest">Download</a>
+    </nav>
+  </div>
+  <div class="progress" aria-hidden="true"></div>
 </header>
 
 <main id="main">
+
   <section class="hero" id="top">
-    <div class="orb o1" aria-hidden="true"></div>
-    <div class="orb o2" aria-hidden="true"></div>
-    <div class="wrap hero-grid">
-      <div class="hero-copy">
-        <p class="pill reveal">100% free · Every feature unlocked · Open source · v1.0</p>
-        <h1 class="reveal d1">See what's eating your Mac's disk.<br><span class="grad-text">Give it some headroom.</span></h1>
-        <p class="lead reveal d2">Headroom (formerly DiskTree) is a fast, native disk space analyzer that turns a crowded drive into a map you can read, finds duplicate files, tells you what is safe to delete, and clears the junk in seconds.</p>
-        <div class="cta reveal d3">
-          <a class="btn primary" href="https://github.com/Ryware/Headroom/releases/latest">Download for macOS</a>
-          <a class="btn ghost" href="https://github.com/Ryware/Headroom">View on GitHub</a>
-        </div>
-        <ul class="facts reveal d4" aria-label="Key facts">
-          <li><strong><span class="count" data-to="1.26" data-dec="2">0</span>M</strong> files scanned in ~20 s</li>
-          <li><strong>$0, forever</strong> no Pro tier, no subscription</li>
-          <li><strong>macOS 14+</strong> Apple silicon &amp; Intel</li>
-        </ul>
+    <div class="wrap hero-head">
+      <p class="hero-strip reveal">Free and open source for macOS 14 and up</p>
+      <h1 class="reveal d1">See what fills your disk.<br>Give it some headroom.</h1>
+      <p class="lead reveal d2">A fast, native disk space analyzer and duplicate finder that tells you what is safe to delete.</p>
+      <div class="cta reveal d3">
+        <a class="btn btn-primary" href="https://github.com/Ryware/Headroom/releases/latest"><svg class="ic" viewBox="0 0 256 256" aria-hidden="true" fill="currentColor"><path d="M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z"/></svg>Download for Mac</a>
+        <a class="btn btn-ghost" href="https://github.com/Ryware/Headroom">View source</a>
       </div>
-      <figure class="frame hero-shot reveal d2">
-        <div class="ring-demo" aria-hidden="true">
-          <svg viewBox="0 0 44 44" class="ring"><circle class="track" cx="22" cy="22" r="18"/><circle class="arc" cx="22" cy="22" r="18"/></svg>
-          <span class="ring-label">42 GB free</span>
+    </div>
+    <div class="wrap">
+      <div class="demo reveal d3" id="demo" aria-label="Interactive treemap demo with sample data">
+        <div class="demo-bar">
+          <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
+          <nav class="demo-crumbs" aria-label="Treemap path"></nav>
+          <ul class="demo-legend" aria-label="Legend"><li style="--c:#4a5fa8;--cl:#8fa3e6">Media</li><li style="--c:#5a4f8f;--cl:#a79bdf">Apps</li><li style="--c:#8a6b3d;--cl:#dcb784">Documents</li><li style="--c:#2f7f85;--cl:#7fc3c8">Code</li><li style="--c:#8a4b6a;--cl:#d59ab6">Caches</li><li style="--c:#3f9d6a;--cl:#7fcf9f">Safe to clean</li></ul>
+          <span class="demo-label">Sample data</span>
         </div>
-        <img src="assets/dashboard.webp" srcset="assets/dashboard-800.webp 800w, assets/dashboard.webp 1600w" sizes="(min-width: 960px) 620px, 92vw" width="1600" height="1006" alt="Headroom dashboard on macOS showing free disk space, 133 GB scanned, cleanup candidates and space by category" fetchpriority="high" decoding="async">
+        <div class="demo-canvas">
+          <canvas></canvas>
+          <div class="demo-tip" hidden></div>
+          <p class="demo-hint">Hover for the verdict. Click a folder to zoom in.</p>
+        </div>
+        <div class="demo-status">
+          <span class="st"><em data-stat=state>Ready</em></span>
+          <span class="st"><strong data-stat=files>0</strong> files</span>
+          <span class="st"><strong data-stat=used>0</strong> used</span>
+          <span class="st st-free"><svg class="demo-ring" viewBox="0 0 24 24" aria-hidden="true"><circle class="track" cx="12" cy="12" r="9"/><circle class="arc" cx="12" cy="12" r="9"/></svg><strong data-stat=free>0</strong> free</span>
+          <span class="st st-safe"><strong data-stat=safe>0</strong> safe to clean</span>
+          <button class="btn btn-primary btn-sm demo-clean" type="button">Clean safe items</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="numbers" aria-label="Benchmarks">
+    <div class="wrap numbers-row">
+      <div><strong class="num" data-to="1.26" data-dec="2" data-suffix="M">0M</strong><span>files scanned in about 20 seconds</span></div>
+      <div><strong class="num" data-to="150" data-suffix="+">0+</strong><span>known locations with a safety verdict</span></div>
+      <div><strong>$0</strong><span>no Pro tier, no subscription, no trial</span></div>
+      <div><strong>MIT</strong><span>open source, builds in one command</span></div>
+    </div>
+  </section>
+
+  <section class="section" id="features">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Everything a disk cleaner sells. Nothing held back.</h2>
+        <p>Scan a folder or the whole disk, understand where the space went, and remove only what is safe to remove.</p>
+      </div>
+      <div class="bento">
+        <article class="cell cell-wide cell-img reveal">
+          <img src="assets/treemap.webp" srcset="assets/treemap-800.webp 800w, assets/treemap.webp 1600w" sizes="(min-width: 1024px) 760px, 92vw" width="1600" height="1005" loading="lazy" alt="Headroom treemap colored by file age">
+          <div class="cell-text">
+            <h3>Interactive treemap</h3>
+            <p>Every rectangle is a file or folder, sized by what it takes on disk. Color by category, age or safety. Double-click to zoom.</p>
+          </div>
+        </article>
+        <article class="cell cell-accent reveal d1">
+          <svg class="mini-map" viewBox="0 0 120 48" aria-hidden="true"><rect x="0" y="0" width="52" height="30" rx="2" style="--i:0"/><rect x="54" y="0" width="34" height="30" rx="2" style="--i:1"/><rect x="90" y="0" width="30" height="14" rx="2" style="--i:2"/><rect x="90" y="16" width="30" height="14" rx="2" style="--i:3"/><rect x="0" y="32" width="28" height="16" rx="2" style="--i:4"/><rect x="30" y="32" width="22" height="16" rx="2" style="--i:5"/><rect x="54" y="32" width="20" height="16" rx="2" style="--i:6"/><rect x="76" y="32" width="44" height="16" rx="2" style="--i:7"/></svg>
+          <h3>Scans a million files in seconds</h3>
+          <p>Built on <code>getattrlistbulk</code>, the fastest directory read macOS offers, fanned out across every core.</p>
+        </article>
+        <article class="cell reveal d2">
+          <svg class="ic-lg" viewBox="0 0 256 256" aria-hidden="true" fill="currentColor"><path d="M160,112h48a16,16,0,0,0,16-16V48a16,16,0,0,0-16-16H160a16,16,0,0,0-16,16V64H128a24,24,0,0,0-24,24v32H72v-8A16,16,0,0,0,56,96H24A16,16,0,0,0,8,112v32a16,16,0,0,0,16,16H56a16,16,0,0,0,16-16v-8h32v32a24,24,0,0,0,24,24h16v16a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V160a16,16,0,0,0-16-16H160a16,16,0,0,0-16,16v16H128a8,8,0,0,1-8-8V88a8,8,0,0,1,8-8h16V96A16,16,0,0,0,160,112ZM56,144H24V112H56v32Zm104,16h48v48H160Zm0-112h48V96H160Z"/></svg>
+          <h3>Folder tree that never stalls</h3>
+          <p>A virtualized outline with sortable sizes, share of parent and a safety column. Folders sort only when shown.</p>
+        </article>
+        <article class="cell reveal d1">
+          <svg class="ic-lg" viewBox="0 0 256 256" aria-hidden="true" fill="currentColor"><path d="M216,32H88a8,8,0,0,0-8,8V80H40a8,8,0,0,0-8,8V216a8,8,0,0,0,8,8H168a8,8,0,0,0,8-8V176h40a8,8,0,0,0,8-8V40A8,8,0,0,0,216,32ZM160,208H48V96H160Zm48-48H176V88a8,8,0,0,0-8-8H96V48H208Z"/></svg>
+          <h3>Duplicate finder</h3>
+          <p>Byte-for-byte copies, ranked by the space one copy gives back. Four passes, so a 40 GB disk image is never read in full to prove it differs. <a href="#duplicates">See how it works</a></p>
+        </article>
+        <article class="cell reveal">
+          <svg class="ic-lg" viewBox="0 0 256 256" aria-hidden="true" fill="currentColor"><path d="M235.5,216.81c-22.56-11-35.5-34.58-35.5-64.8V134.73a15.94,15.94,0,0,0-10.09-14.87L165,110a8,8,0,0,1-4.48-10.34l21.32-53a28,28,0,0,0-16.1-37,28.14,28.14,0,0,0-35.82,16,.61.61,0,0,0,0,.12L108.9,79a8,8,0,0,1-10.37,4.49L73.11,73.14A15.89,15.89,0,0,0,55.74,76.8C34.68,98.45,24,123.75,24,152a111.45,111.45,0,0,0,31.18,77.53A8,8,0,0,0,61,232H232a8,8,0,0,0,3.5-15.19ZM67.14,88l25.41,10.3a24,24,0,0,0,31.23-13.45l21-53c2.56-6.11,9.47-9.27,15.43-7a12,12,0,0,1,6.88,15.92L145.69,93.76a24,24,0,0,0,13.43,31.14L184,134.73V152c0,.33,0,.66,0,1L55.77,101.71A108.84,108.84,0,0,1,67.14,88Zm48,128a87.53,87.53,0,0,1-24.34-42,8,8,0,0,0-15.49,4,105.16,105.16,0,0,0,18.36,38H64.44A95.54,95.54,0,0,1,40,152a85.9,85.9,0,0,1,7.73-36.29l137.8,55.12c3,18,10.56,33.48,21.89,45.16Z"/></svg>
+          <h3>Developer cleanup</h3>
+          <p>DerivedData, node_modules, npm, pnpm, pip, Gradle and Cargo caches, build output and logs, found and sized for review.</p>
+        </article>
+        <article class="cell reveal d1">
+          <svg class="ic-lg" viewBox="0 0 256 256" aria-hidden="true" fill="currentColor"><path d="M208,80H176V56a48,48,0,0,0-96,0V80H48A16,16,0,0,0,32,96V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V96A16,16,0,0,0,208,80ZM96,56a32,32,0,0,1,64,0V80H96ZM208,208H48V96H208V208Z"/></svg>
+          <h3>Private by design</h3>
+          <p>Everything runs on your Mac. No account, no analytics, no cloud. The code is public.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-tint mbsec" id="menubar">
+    <div class="wrap mb-grid">
+      <div class="mb-copy">
+        <h2>It watches, so you do not have to.</h2>
+        <p class="sub">Headroom sits in the menu bar and records free space on your startup disk while it runs. When space gets low it tells you, and the fix is one click away.</p>
+        <ol class="mb-points">
+          <li data-phase="1"><strong>A ring that changes color.</strong> Full when there is room, amber under 40 GB, red under 16 GB. The thresholds are yours to set.</li>
+          <li data-phase="2"><strong>A local notification.</strong> No account, no cloud. Just macOS telling you the disk is low and how much is safe to clean.</li>
+          <li data-phase="3"><strong>One click.</strong> Caches, logs and build output that macOS and your tools recreate on their own go to the Trash. Nothing else.</li>
+        </ol>
+      </div>
+      <div class="mb-demo reveal d1" id="mbdemo" data-phase="0" aria-label="Menu bar demo: the ring drains, a notification arrives, one click cleans">
+        <div class="mb-bar" aria-hidden="true">
+          <span class="mb-left"><i class="mb-apple"></i><b>Finder</b><span>File</span><span>Edit</span><span>View</span><span>Go</span><span>Window</span><span>Help</span></span>
+          <span class="mb-right">
+            <span class="mb-item"><svg class="mb-ring" viewBox="0 0 24 24"><circle class="track" cx="12" cy="12" r="8.5"/><circle class="arc" cx="12" cy="12" r="8.5"/></svg><em data-mb="free">120 GB</em></span>
+            <span class="mb-item mb-clock">Mon 9:41</span>
+          </span>
+        </div>
+        <div class="mb-stage">
+          <div class="mb-note" hidden>
+            <img src="icon-512.png" width="44" height="44" alt="">
+            <div><b>Headroom</b><span>Startup disk is getting low</span><small><em data-mb="free2">14 GB</em> free. 38.3 GB of safe caches and build output can go.</small></div>
+            <button type="button" class="mb-clean">Clean</button>
+          </div>
+          <svg class="mb-spark" viewBox="0 0 300 90" aria-hidden="true">
+            <path class="spark-fill" d=""/>
+            <path class="spark-line" d="" pathLength="1"/>
+            <path class="spark-up" d="" pathLength="1"/>
+          </svg>
+          <p class="mb-status"><span data-mb="status">Free space, last 7 days</span><button type="button" class="mb-replay" hidden>Replay</button></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tint dup" id="duplicates">
+    <div class="dup-stage" id="dup-stage" data-pass="0">
+      <div class="dup-sticky">
+        <div class="wrap dup-inner">
+          <div class="dup-head">
+            <h2>Duplicate finder</h2>
+            <p class="sub">Five files that look alike. Four passes, each cheaper than reading a file. Only byte-for-byte copies survive.</p>
+          </div>
+          <ol class="rail" aria-label="Passes">
+            <li data-i="1"><b>1</b><span>Size</span></li>
+            <li data-i="2"><b>2</b><span>Header</span></li>
+            <li data-i="3"><b>3</b><span>Samples</span></li>
+            <li data-i="4"><b>4</b><span>Full hash</span></li>
+          </ol>
+          <p class="rail-desc" data-p0="Scroll to run the passes." data-p1="Files that share an exact size become candidates. Everything else is ignored without a single read." data-p2="The first 64 KB of each candidate is hashed. Cheap, and decisive for most look-alikes." data-p3="64 KB from the middle and the end, so a 40 GB disk image is never read in full just to prove it differs." data-p4="A full SHA-256 confirms the survivors are identical. One copy always stays; the rest can go.">Scroll to run the passes.</p>
+          <ul class="cards" aria-label="Candidate files">
+          <li class="card same d1">
+            <div class="face front">
+              <div class="thumb"><svg viewBox="0 0 160 90" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="160" height="90" fill="#f3b27a"/><rect y="0" width="160" height="40" fill="#f7c99a"/><circle cx="112" cy="38" r="13" fill="#fff0c2"/><path d="M0 62 L30 34 L52 52 L74 28 L100 56 L124 40 L160 64 V90 H0Z" fill="#6c5ce7" opacity=".9"/><path d="M0 74 L26 56 L48 68 L70 50 L96 72 L120 60 L160 78 V90 H0Z" fill="#4b3fa8"/><path d="M0 90 H160 V80 Q120 70 80 82 Q40 92 0 80Z" fill="#2f2a63"/></svg></div>
+              <b>IMG_4021.heic</b><span>Pictures / 2024</span><em>14.2 MB</em>
+              <i class="reads" aria-hidden="true"><s class="head"></s><s class="mid"></s><s class="tail"></s><s class="full"></s></i>
+            </div>
+            <div class="face back"><b>Identical</b><span>Newest copy, kept</span></div>
+          </li>
+          <li class="card decoy-size">
+            <div class="face front">
+              <div class="thumb"><svg viewBox="0 0 160 90" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="160" height="90" fill="#bfe6f2"/><circle cx="36" cy="22" r="10" fill="#fff7d6"/><rect y="44" width="160" height="30" fill="#4fb3c9"/><path d="M0 50 Q20 46 40 50 T80 50 T120 50 T160 50 V56 H0Z" fill="#8ad3e3"/><path d="M0 74 Q40 66 80 72 T160 70 V90 H0Z" fill="#f0dcae"/><path d="M118 30 l6 -18 l6 18z M118 30 q6 -6 12 0" fill="#2e8f6a"/><rect x="123" y="30" width="2" height="44" fill="#8a5a2b"/></svg></div>
+              <b>IMG_4022.heic</b><span>Downloads</span><em>9.8 MB</em>
+              <i class="reads" aria-hidden="true"><s class="head"></s><s class="mid"></s><s class="tail"></s><s class="full"></s></i>
+            </div>
+            <div class="face back"><b>Different size</b><span>Dropped without a single read</span></div>
+          </li>
+          <li class="card same d2">
+            <div class="face front">
+              <div class="thumb"><svg viewBox="0 0 160 90" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="160" height="90" fill="#f3b27a"/><rect y="0" width="160" height="40" fill="#f7c99a"/><circle cx="112" cy="38" r="13" fill="#fff0c2"/><path d="M0 62 L30 34 L52 52 L74 28 L100 56 L124 40 L160 64 V90 H0Z" fill="#6c5ce7" opacity=".9"/><path d="M0 74 L26 56 L48 68 L70 50 L96 72 L120 60 L160 78 V90 H0Z" fill="#4b3fa8"/><path d="M0 90 H160 V80 Q120 70 80 82 Q40 92 0 80Z" fill="#2f2a63"/></svg></div>
+              <b>IMG_4021.heic</b><span>Downloads</span><em>14.2 MB</em>
+              <i class="reads" aria-hidden="true"><s class="head"></s><s class="mid"></s><s class="tail"></s><s class="full"></s></i>
+            </div>
+            <div class="face back"><b>Identical</b><span>To the Trash</span></div>
+          </li>
+          <li class="card decoy-head">
+            <div class="face front">
+              <div class="thumb"><svg viewBox="0 0 160 90" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="160" height="90" fill="#1b1f3a"/><circle cx="128" cy="22" r="9" fill="#e9e6ff"/><circle cx="124" cy="19" r="8" fill="#1b1f3a"/><g fill="#fff" opacity=".8"><circle cx="20" cy="14" r="1"/><circle cx="48" cy="28" r="1"/><circle cx="76" cy="10" r="1.2"/><circle cx="100" cy="30" r=".9"/><circle cx="150" cy="40" r="1"/><circle cx="60" cy="40" r=".8"/></g><path d="M0 90 V62 H12 V50 H22 V62 H30 V40 H40 V62 H52 V54 H62 V34 H70 V54 H82 V62 H94 V46 H104 V62 H116 V56 H128 V62 H140 V48 H150 V62 H160 V90Z" fill="#2c3166"/><g fill="#ffd98a" opacity=".9"><rect x="34" y="46" width="2" height="2"/><rect x="64" y="40" width="2" height="2"/><rect x="66" y="48" width="2" height="2"/><rect x="98" y="52" width="2" height="2"/><rect x="144" y="52" width="2" height="2"/><rect x="14" y="54" width="2" height="2"/></g><path d="M0 90 H160 V80 Q80 72 0 80Z" fill="#141733"/></svg></div>
+              <b>panorama.heic</b><span>Pictures / Screens</span><em>14.2 MB</em>
+              <i class="reads" aria-hidden="true"><s class="head"></s><s class="mid"></s><s class="tail"></s><s class="full"></s></i>
+            </div>
+            <div class="face back"><b>Header differs</b><span>Dropped after 64 KB</span></div>
+          </li>
+          <li class="card same d3">
+            <div class="face front">
+              <div class="thumb"><svg viewBox="0 0 160 90" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="160" height="90" fill="#f3b27a"/><rect y="0" width="160" height="40" fill="#f7c99a"/><circle cx="112" cy="38" r="13" fill="#fff0c2"/><path d="M0 62 L30 34 L52 52 L74 28 L100 56 L124 40 L160 64 V90 H0Z" fill="#6c5ce7" opacity=".9"/><path d="M0 74 L26 56 L48 68 L70 50 L96 72 L120 60 L160 78 V90 H0Z" fill="#4b3fa8"/><path d="M0 90 H160 V80 Q120 70 80 82 Q40 92 0 80Z" fill="#2f2a63"/></svg></div>
+              <b>IMG_4021 copy.heic</b><span>Desktop / old</span><em>14.2 MB</em>
+              <i class="reads" aria-hidden="true"><s class="head"></s><s class="mid"></s><s class="tail"></s><s class="full"></s></i>
+            </div>
+            <div class="face back"><b>Identical</b><span>To the Trash</span></div>
+          </li>
+          </ul>
+          <div class="group-badge" aria-hidden="true">3 identical, 28.4 MB back</div>
+          <p class="dup-foot">Bytes read: <strong data-p0="0" data-p1="0" data-p2="256 KB" data-p3="640 KB" data-p4="42.6 MB">0</strong><span class="demo-steps"><i></i><i></i><i></i><i></i></span></p>
+        </div>
+      </div>
+    </div>
+    <div class="wrap">
+      <figure class="shot wide-shot dup-shot reveal" id="dup-shot">
+        <img src="assets/duplicates.webp" srcset="assets/duplicates-800.webp 800w, assets/duplicates.webp 1600w" sizes="(min-width: 1024px) 1080px, 92vw" width="1600" height="1005" loading="lazy" alt="Headroom Duplicates pane listing groups of identical files ranked by reclaimable space" onerror="this.closest('figure').hidden=true">
+        <figcaption>The Duplicates pane. Groups are ranked by the space one copy would give back; select with one click and send the rest to the Trash.</figcaption>
       </figure>
     </div>
   </section>
 
-  <section class="band" aria-label="What Headroom does">
-    <div class="wrap trio">
-      <p><strong>Scan.</strong> Parallel <code>getattrlistbulk</code> reads millions of files in seconds.</p>
-      <p><strong>Understand.</strong> Tree, treemap and categories show exactly where space went.</p>
-      <p><strong>Clean.</strong> Safety badges say what is safe, then one click removes it.</p>
-    </div>
-  </section>
-
-  <section class="section free" id="free">
-    <div class="wrap reveal">
-      <h2>Free. Really free. Everything unlocked.</h2>
-      <p class="sub">No Pro tier. No subscription. No lifetime upgrade. No trial that ends. No “upgrade to clean” button. The features other Mac disk cleaners keep behind a paywall are simply part of Headroom.</p>
-      <ul class="unlocked" aria-label="Features included for free">
-        <li>Interactive treemap</li><li>One-click cleanup</li><li>Developer deep scan</li><li>Xcode, Gradle, npm, pip &amp; Cargo caches</li>
-        <li>node_modules finder</li><li>Safe-to-delete hints</li><li>Trash-first deletion</li><li>Fast permanent delete</li>
-        <li>Largest files &amp; apps</li><li>Category breakdown</li><li>Unlimited scans</li><li>Open source (MIT)</li>
-      </ul>
-      <p class="note">Made to be enjoyed, not sold. No ads, no accounts, no analytics. If you like it, a GitHub star is the only payment we'd ever ask for.</p>
-    </div>
-  </section>
-
-  <section class="wrap section" id="features">
-    <h2>Everything you need to reclaim space</h2>
-    <p class="sub">A TreeSize- and WizTree-style analyzer, built natively for macOS with SwiftUI and AppKit.</p>
-    <div class="cards">
-      <article class="card reveal"><span class="ico" aria-hidden="true">⚡</span><h3>Blazing scanner</h3><p>Uses the macOS <code>getattrlistbulk(2)</code> system call and fans out across every core. Sizes are bytes allocated on disk, not guesses.</p></article>
-      <article class="card reveal"><span class="ico" aria-hidden="true">🌳</span><h3>Virtualized folder tree</h3><p>Built on <code>NSOutlineView</code>, so folders with hundreds of thousands of items expand instantly. Sort by size, share, files, safety or date.</p></article>
-      <article class="card reveal"><span class="ico" aria-hidden="true">🗺️</span><h3>Interactive treemap</h3><p>A squarified map of your disk. Color by category, file age or deletion safety. Double-click to zoom, right-click to act.</p></article>
-      <article class="card reveal"><span class="ico" aria-hidden="true">👯</span><h3>Duplicate finder</h3><p>Files that exist more than once, compared byte for byte and ranked by the space one copy gives back. Keep newest, oldest or pick by hand; one copy always stays.</p></article>
-      <article class="card reveal"><span class="ico" aria-hidden="true">🛡️</span><h3>Safe-to-delete hints</h3><p>A rule base of about 150 macOS and developer locations explains what a folder is and whether removing it is safe.</p></article>
-      <article class="card reveal"><span class="ico" aria-hidden="true">🧹</span><h3>Developer cleanup</h3><p>Finds DerivedData, <code>node_modules</code>, npm/pnpm/pip/Gradle/Cargo caches, build output, logs and more. You review before anything goes.</p></article>
-      <article class="card reveal"><span class="ico" aria-hidden="true">🔒</span><h3>Private by design</h3><p>Everything runs locally. No account, no analytics, no cloud. Open source under the MIT license.</p></article>
-    </div>
-  </section>
-
-  <section class="section alt" id="screens">
+  <section class="section" id="safety">
     <div class="wrap">
-      <h2>See it in action</h2>
-      <p class="sub">Real screenshots from a real 133 GB home folder.</p>
-
-      <div class="showcase">
-        <figure class="frame reveal">
-          <img src="assets/treemap.webp" srcset="assets/treemap-800.webp 800w, assets/treemap.webp 1600w" sizes="(min-width: 960px) 960px, 92vw" width="1600" height="1005" alt="Headroom treemap of a home folder colored by file age, with Library, Documents and Android SDK as the largest blocks" loading="lazy" decoding="async">
-          <figcaption><strong>Treemap.</strong> Every rectangle is a folder or file, sized by disk usage. Color by category, age or safety.</figcaption>
-        </figure>
-        <div class="two">
-          <figure class="frame reveal">
-            <img src="assets/folder-tree.webp" srcset="assets/folder-tree-800.webp 800w, assets/folder-tree.webp 1600w" sizes="(min-width: 960px) 480px, 92vw" width="1600" height="1009" alt="Headroom folder tree with size bars, percent of parent, file counts, safety badges and categories" loading="lazy" decoding="async">
-            <figcaption><strong>Folder tree.</strong> Sortable sizes, share of parent and a “Safe to delete?” column.</figcaption>
-          </figure>
-          <figure class="frame reveal">
-            <img src="assets/categories.webp" srcset="assets/categories-800.webp 800w, assets/categories.webp 1600w" sizes="(min-width: 960px) 480px, 92vw" width="1600" height="1003" alt="Headroom category breakdown showing virtual machines, applications, dependencies, caches and other file types" loading="lazy" decoding="async">
-            <figcaption><strong>Categories.</strong> See VMs, dependencies, caches and media at a glance.</figcaption>
-          </figure>
-        </div>
-        <div class="two">
-          <figure class="frame menubar-shot reveal">
-            <img src="assets/menu-bar.webp" width="680" height="845" loading="lazy" alt="Headroom menu bar popover showing 41.88 GB free of 494 GB, a 7-day free-space chart, and a one-click Clean 12.34 GB safe items button">
-            <figcaption><strong>Menu bar monitor.</strong> A ring that shows free space at a glance, a 7-day trend, local alerts, and one-click cleanup of safe caches.</figcaption>
-          </figure>
-          <figure class="frame menubar-text reveal d1">
-            <figcaption>
-              <strong>Always one click away.</strong>
-              <ul>
-                <li>Ring turns amber, then red, as space runs low</li>
-                <li>Free / used / total and a Healthy · Getting low · Low status</li>
-                <li>Alerts when space drops below your threshold or falls fast — local notifications only</li>
-                <li>“Reclaimable now” adds up safe caches, logs and build output</li>
-                <li>Optional: show the free space as text, hide the Dock icon, open at login</li>
-              </ul>
-            </figcaption>
-          </figure>
-        </div>
+      <div class="section-head">
+        <h2>Know before you delete</h2>
+        <p>Every recognized item gets a plain-language verdict and a note on what deleting it affects.</p>
       </div>
+      <div class="levels">
+        <div class="level reveal"><span class="dot safe" aria-hidden="true"></span><h3>Safe</h3><p>Regenerable data such as caches, build output and package stores.</p></div>
+        <div class="level reveal d1"><span class="dot usually" aria-hidden="true"></span><h3>Usually safe</h3><p>Rebuilt on demand, may take a while or a re-download to recreate.</p></div>
+        <div class="level reveal d2"><span class="dot caution" aria-hidden="true"></span><h3>Check first</h3><p>Settings or user data. Read the note in the Inspector before removing.</p></div>
+        <div class="level reveal d3"><span class="dot never" aria-hidden="true"></span><h3>Never</h3><p>Keychains, Mail, Photos library, the system itself. Headroom will tell you so.</p></div>
+      </div>
+      <figure class="shot wide-shot reveal">
+        <img src="assets/folder-tree.webp" srcset="assets/folder-tree-800.webp 800w, assets/folder-tree.webp 1600w" sizes="(min-width: 1024px) 1080px, 92vw" width="1600" height="1009" loading="lazy" alt="Headroom folder tree with sizes, share of parent and a Safe to delete column">
+        <figcaption>Trash mode is the default and fully recoverable. Permanent mode uses a parallel delete engine for huge folders and cannot be undone.</figcaption>
+      </figure>
     </div>
   </section>
 
-  <section class="section dup" id="duplicates">
-    <div class="wrap split">
-      <div class="reveal">
-        <p class="eyebrow">New in 1.0</p>
-        <h2>Duplicate finder</h2>
-        <p class="sub left">The same photo in three folders. The same installer in Downloads twice. Headroom finds files that exist more than once, byte for byte, and ranks them by the space one copy would give back.</p>
-        <ol class="steps">
-          <li><strong>Size first.</strong> Files that share an exact size become candidates; everything else is ignored without a single read.</li>
-          <li><strong>Then a 64 KB header hash.</strong> Cheap and decisive for most look-alikes.</li>
-          <li><strong>Then samples from the middle and the end.</strong> So a 40 GB disk image is never read in full just to prove it differs.</li>
-          <li><strong>Then a full SHA-256.</strong> Only true byte-for-byte copies make the list. No false positives.</li>
-          <li><strong>You choose.</strong> Keep the newest, the oldest, or pick by hand. One copy always stays.</li>
-        </ol>
-      </div>
-      <div class="dup-demo reveal d1" aria-hidden="true">
-        <div class="dup-window">
-          <div class="dup-head"><span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span><span class="dup-title">Duplicates · <b>8.2 GB</b> reclaimable</span></div>
-          <div class="dup-group">
-            <div class="dup-row keep"><span class="chk"></span><span class="file"></span><span class="name">IMG_4021.heic</span><span class="path">~/Pictures/2025</span><span class="tag">newest</span></div>
-            <div class="dup-row"><span class="chk"></span><span class="file"></span><span class="name">IMG_4021.heic</span><span class="path">~/Downloads</span></div>
-            <div class="dup-row"><span class="chk"></span><span class="file"></span><span class="name">IMG_4021 copy.heic</span><span class="path">~/Desktop/old</span></div>
-          </div>
-          <div class="dup-group">
-            <div class="dup-row keep"><span class="chk"></span><span class="file"></span><span class="name">Xcode_16.xip</span><span class="path">~/Downloads</span><span class="tag">newest</span></div>
-            <div class="dup-row"><span class="chk"></span><span class="file"></span><span class="name">Xcode_16.xip</span><span class="path">~/Desktop</span></div>
-          </div>
-          <div class="dup-foot"><span class="dup-btn">Move 4 copies to Trash · 8.2 GB</span></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="wrap section" id="safety">
-    <h2>Know before you delete</h2>
-    <p class="sub">Every recognized item gets a plain-language verdict, so you never have to guess.</p>
-    <div class="levels">
-      <div class="lvl reveal"><span class="dot safe"></span><h3>Safe</h3><p>Regenerable data such as caches and package stores.</p></div>
-      <div class="lvl reveal"><span class="dot usually"></span><h3>Usually safe</h3><p>Rebuilt on demand, may take time to recreate.</p></div>
-      <div class="lvl reveal"><span class="dot caution"></span><h3>Caution</h3><p>Contains settings or user data. Review first.</p></div>
-      <div class="lvl reveal"><span class="dot never"></span><h3>Never</h3><p>Critical system or irreplaceable data.</p></div>
-    </div>
-    <p class="note"><strong>Trash mode</strong> is the default and is fully recoverable. <strong>Permanent mode</strong> uses a parallel rimraf-style engine for huge folders and cannot be undone.</p>
-  </section>
-
-  <section class="section alt" id="fast">
-    <div class="wrap split">
+  <section class="section section-tint" id="install">
+    <div class="wrap install-grid">
       <div>
-        <h2>Why it's fast</h2>
-        <p class="sub left">APFS has no equivalent of NTFS's Master File Table, so Headroom does the next best thing.</p>
+        <h2>Up and running in a minute</h2>
         <ol class="steps">
-          <li><strong>Batch reads.</strong> <code>getattrlistbulk(2)</code> returns names, types, dates and allocated sizes for whole directories in one call.</li>
-          <li><strong>Parallel everything.</strong> One task per directory across Swift's cooperative pool, so all cores stay busy.</li>
-          <li><strong>Instant deletes.</strong> Roots are renamed out of the way, then removed with <code>unlinkat</code> in parallel, deepest folders last.</li>
-          <li><strong>Only draw what you see.</strong> The outline view creates just the visible rows, so scrolling stays smooth.</li>
+          <li><span>1</span><div><strong>Download</strong> the DMG from GitHub Releases. Signed with a Developer ID and notarized by Apple.</div></li>
+          <li><span>2</span><div><strong>Drag</strong> Headroom to Applications and open it.</div></li>
+          <li><span>3</span><div><strong>Scan</strong> a folder, your home folder or the whole startup disk.</div></li>
+          <li><span>4</span><div><strong>Clean</strong> what the safety verdicts say is safe.</div></li>
         </ol>
+        <p class="fine">macOS 14 Sonoma or newer, Apple silicon and Intel. Prefer to build it yourself? <code>git clone</code> and run <code>./build.sh run</code>.</p>
       </div>
-      <div class="stat-card reveal" aria-label="Benchmark">
-        <p class="big"><span class="count" data-to="20" data-prefix="~" data-suffix=" s">~0 s</span></p>
-        <p>to scan <strong>1,256,000 files</strong> in <strong>216,000 folders</strong> (133 GB) on a MacBook.</p>
-      </div>
+      <figure class="shot reveal d1">
+        <img src="assets/categories.webp" srcset="assets/categories-800.webp 800w, assets/categories.webp 1600w" sizes="(min-width: 1024px) 560px, 92vw" width="1600" height="1003" loading="lazy" alt="Headroom storage by category: virtual machines, applications, dependencies, caches and media">
+      </figure>
     </div>
   </section>
 
-  <section class="wrap section" id="install">
-    <h2>Get started in a minute</h2>
-    <ol class="steps big-steps">
-      <li><strong>Download</strong> the latest DMG from <a href="https://github.com/Ryware/Headroom/releases/latest">GitHub Releases</a>.</li>
-      <li><strong>Drag</strong> Headroom into Applications and open it.</li>
-      <li><strong>Scan</strong> a folder, your Home folder or the whole Startup Disk.</li>
-      <li><strong>Clean</strong> what the safety badges say is safe.</li>
-    </ol>
-    <p class="note">Prefer to build it yourself? Clone the repo and run <code>./build.sh run</code> (Xcode 15+). Requires macOS 14 Sonoma or later. Grant Full Disk Access only if you want to scan Mail, Messages or Safari data.</p>
-    <p class="cta center"><a class="btn primary" href="https://github.com/Ryware/Headroom/releases/latest">Download Headroom</a> <a class="btn ghost" href="https://github.com/Ryware/Headroom#build-from-source">Build from source</a></p>
-  </section>
-
-  <section class="section alt" id="faq">
-    <div class="wrap narrow">
-      <h2>Frequently asked questions</h2>
-      <details><summary>Is there a Pro version of Headroom?</summary><p>No. There is no Pro tier, subscription, lifetime purchase, trial or in-app purchase. Every feature is free and unlocked for everyone: the treemap, one-click cleanup, developer deep scan, safety hints, Trash-first deletion and fast permanent deletion.</p></details>
-      <details><summary>Is there a free Mac disk cleaner with no subscription?</summary><p>Yes, this one. Headroom is a free, open-source Mac disk space analyzer and cleaner that never locks cleanup or developer scans behind a paywall, and never asks for an account or payment.</p></details>
-      <details><summary>Is Headroom the same app as DiskTree?</summary><p>Yes. Headroom was called DiskTree until version 1.0 (October 2026): same app, same settings, same bundle id, so updates install in place. It is not affiliated with the paid DiskTree app at disktree.org or with any other app named Headroom. The code is at <a href="https://github.com/Ryware/Headroom">github.com/Ryware/Headroom</a>.</p></details>
-      <details><summary>How does the duplicate finder work?</summary><p>Files are grouped by size, then by a hash of their first 64 KB, then by samples from the middle and end, then by a full SHA-256 of the whole file. Only files that still match after the last step are listed, so every group is byte-for-byte identical. Files under 1 MB and files inside app bundles are skipped, and Headroom always keeps one copy of each file unless you turn that guard off.</p></details>
-      <details open><summary>What is Headroom?</summary><p>Headroom is a free, open-source, native macOS app that shows what is using space on your Mac. It scans a folder or disk, visualizes the result as a folder tree, treemap and category charts, explains whether items are safe to delete and helps you clean them up.</p></details>
-      <details><summary>Is Headroom really free?</summary><p>Yes. It is MIT-licensed with no ads, subscriptions, accounts, in-app purchases or analytics. It was made to be enjoyed.</p></details>
-      <details><summary>How do I see what is taking up space on my Mac?</summary><p>Open Headroom, choose Home or Startup Disk and wait for the scan. The dashboard shows free and used space and the biggest categories, the folder tree lists folders by size, and the treemap draws every file as a rectangle sized by how much space it uses.</p></details>
-      <details><summary>Is it safe to delete node_modules, DerivedData or cache folders?</summary><p>Usually yes, because they are regenerable: <code>node_modules</code> can be reinstalled, Xcode DerivedData is rebuilt on the next build and caches are recreated on demand. Headroom labels recognized items Safe, Usually safe, Caution or Never and explains the effect. Keep Trash mode on if you want to be able to undo.</p></details>
-      <details><summary>What is the difference between Trash and Permanent mode?</summary><p>Trash mode moves items to the macOS Trash so you can restore them until you empty it. Permanent mode removes them immediately with a fast parallel engine like rimraf and cannot be undone.</p></details>
-      <details><summary>How fast is Headroom?</summary><p>It uses <code>getattrlistbulk(2)</code> and scans directories in parallel across all cores. A home folder with about 1.26 million files and 216,000 folders scanned in roughly 20 seconds.</p></details>
-      <details><summary>Does Headroom send my data anywhere?</summary><p>No. Scanning and analysis happen entirely on your Mac. There is no account system, analytics SDK or cloud service.</p></details>
-      <details><summary>Is there a WizTree or TreeSize alternative for Mac?</summary><p>Headroom is a free, native Mac app in the same spirit: a fast scan, a sortable size tree and a treemap, plus safety explanations and one-click developer cleanup.</p></details>
-      <details><summary>What are the system requirements?</summary><p>macOS 14 Sonoma or newer on Apple silicon or Intel. Full Disk Access is only needed for protected locations such as Mail, Messages and Safari data.</p></details>
+  <section class="section" id="faq">
+    <div class="wrap faq-grid">
+      <div class="faq-intro">
+        <h2>Questions</h2>
+        <p>Short answers. The README has the long ones.</p>
+      </div>
+      <div class="faq-list">
+        <details><summary>Is there a Pro version of Headroom?<span class="plus" aria-hidden="true"></span></summary><div class="answer"><p>No. There is no Pro tier, subscription, lifetime purchase, trial or in-app purchase. Every feature is free and unlocked for everyone: the treemap, one-click cleanup, developer deep scan, safety hints, Trash-first deletion and fast permanent deletion.</p></div></details>
+        <details><summary>Is there a free Mac disk cleaner with no subscription?<span class="plus" aria-hidden="true"></span></summary><div class="answer"><p>Yes, this one. Headroom is a free, open-source Mac disk space analyzer and cleaner that never locks cleanup or developer scans behind a paywall, and never asks for an account or payment.</p></div></details>
+        <details><summary>Is Headroom the same app as DiskTree?<span class="plus" aria-hidden="true"></span></summary><div class="answer"><p>Yes. Headroom was called DiskTree until version 1.0 (October 2026): same app, same settings, same bundle id, so updates install in place. It is not affiliated with the paid DiskTree app at disktree.org or with any other app named Headroom. The code is at <a href="https://github.com/Ryware/Headroom">github.com/Ryware/Headroom</a>.</p></div></details>
+        <details><summary>How does the duplicate finder work?<span class="plus" aria-hidden="true"></span></summary><div class="answer"><p>Files are grouped by size, then by a hash of their first 64 KB, then by samples from the middle and end, then by a full SHA-256 of the whole file. Only files that still match after the last step are listed, so every group is byte-for-byte identical. Files under 1 MB and files inside app bundles are skipped, and Headroom always keeps one copy of each file unless you turn that guard off.</p></div></details>
+        <details><summary>What is Headroom?<span class="plus" aria-hidden="true"></span></summary><div class="answer"><p>Headroom is a free, open-source, native macOS app that shows what is using space on your Mac. It scans a folder or disk, visualizes the result as a folder tree, treemap and category charts, explains whether items are safe to delete and helps you clean them up.</p></div></details>
+        <details><summary>Is Headroom really free?<span class="plus" aria-hidden="true"></span></summary><div class="answer"><p>Yes. It is MIT-licensed with no ads, subscriptions, accounts, in-app purchases or analytics. It was made to be enjoyed.</p></div></details>
+        <details><summary>How do I see what is taking up space on my Mac?<span class="plus" aria-hidden="true"></span></summary><div class="answer"><p>Open Headroom, choose Home or Startup Disk and wait for the scan. The dashboard shows free and used space and the biggest categories, the folder tree lists folders by size, and the treemap draws every file as a rectangle sized by how much space it uses.</p></div></details>
+        <details><summary>Is it safe to delete node_modules, DerivedData or cache folders?<span class="plus" aria-hidden="true"></span></summary><div class="answer"><p>Usually yes, because they are regenerable: <code>node_modules</code> can be reinstalled, Xcode DerivedData is rebuilt on the next build and caches are recreated on demand. Headroom labels recognized items Safe, Usually safe, Caution or Never and explains the effect. Keep Trash mode on if you want to be able to undo.</p></div></details>
+        <details><summary>What is the difference between Trash and Permanent mode?<span class="plus" aria-hidden="true"></span></summary><div class="answer"><p>Trash mode moves items to the macOS Trash so you can restore them until you empty it. Permanent mode removes them immediately with a fast parallel engine like rimraf and cannot be undone.</p></div></details>
+        <details><summary>How fast is Headroom?<span class="plus" aria-hidden="true"></span></summary><div class="answer"><p>It uses <code>getattrlistbulk(2)</code> and scans directories in parallel across all cores. A home folder with about 1.26 million files and 216,000 folders scanned in roughly 20 seconds.</p></div></details>
+        <details><summary>Does Headroom send my data anywhere?<span class="plus" aria-hidden="true"></span></summary><div class="answer"><p>No. Scanning and analysis happen entirely on your Mac. There is no account system, analytics SDK or cloud service in the app. This website uses Google Analytics to count visits and downloads; the app itself sends nothing.</p></div></details>
+        <details><summary>Is there a WizTree or TreeSize alternative for Mac?<span class="plus" aria-hidden="true"></span></summary><div class="answer"><p>Headroom is a free, native Mac app in the same spirit: a fast scan, a sortable size tree and a treemap, plus safety explanations and one-click developer cleanup.</p></div></details>
+        <details><summary>What are the system requirements?<span class="plus" aria-hidden="true"></span></summary><div class="answer"><p>macOS 14 Sonoma or newer on Apple silicon or Intel. Full Disk Access is only needed for protected locations such as Mail, Messages and Safari data.</p></div></details>
+      </div>
     </div>
   </section>
 
   <section class="final">
-    <div class="wrap center">
-      <img src="icon-512.png" width="96" height="96" alt="Headroom app icon" loading="lazy" decoding="async">
-      <h2>Give your disk some room to breathe. Free, forever.</h2>
-      <p class="cta center"><a class="btn primary" href="https://github.com/Ryware/Headroom/releases/latest">Download Headroom – free, all features</a></p>
+    <div class="wrap final-row">
+      <img src="icon-512.png" width="72" height="72" alt="" loading="lazy">
+      <div>
+        <h2>Give your disk some room to breathe.</h2>
+        <p>Free, open source, every feature included.</p>
+      </div>
+      <a class="btn btn-primary" href="https://github.com/Ryware/Headroom/releases/latest"><svg class="ic" viewBox="0 0 256 256" aria-hidden="true" fill="currentColor"><path d="M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z"/></svg>Download for Mac</a>
     </div>
   </section>
 </main>
 
 <footer>
   <div class="wrap foot">
-    <p>© 2026 <a href="https://github.com/Ryware">Ryware</a> · MIT License · Made with SwiftUI</p>
-    <p><a href="https://github.com/Ryware/Headroom">GitHub</a> · <a href="https://github.com/Ryware/Headroom/blob/main/PRIVACY.md">Privacy</a> · <a href="https://github.com/Ryware/Headroom/blob/main/CHANGELOG.md">Changelog</a> · <a href="llms.txt">llms.txt</a></p>
+    <p>Headroom, formerly DiskTree. Made with SwiftUI by <a href="https://github.com/Ryware">Ryware</a>. MIT License.</p>
+    <nav aria-label="Footer"><a href="https://github.com/Ryware/Headroom">GitHub</a><a href="https://github.com/Ryware/Headroom/releases">Releases</a><a href="https://github.com/Ryware/Headroom/blob/main/PRIVACY.md">Privacy</a><a href="https://github.com/Ryware/Headroom/blob/main/CHANGELOG.md">Changelog</a></nav>
   </div>
 </footer>
 
+<script src="demo.js?v=11" defer></script>
 <script>
+(function(){
+  /* analytics events: every interaction the page offers, plus section views */
+  var host = location.hostname;
+  function track(name, params){ params = params || {}; params.site_host = host; if (typeof gtag === 'function') gtag('event', name, params); }
+  var once = {};
+  function trackOnce(key, name, params){ if (once[key]) return; once[key] = true; track(name, params); }
+  function sectionOf(el){ var s = el.closest('section, header, footer'); return s ? (s.id || s.className.split(' ')[0]) : 'page'; }
+  /* CTAs and links */
+  document.querySelectorAll('a[href*="/releases"]').forEach(function(a){ a.addEventListener('click', function(){ track('download_click', { location: sectionOf(a) }); }); });
+  document.querySelectorAll('a[href="https://github.com/Ryware/Headroom"]').forEach(function(a){ a.addEventListener('click', function(){ track('source_click', { location: sectionOf(a) }); }); });
+  document.querySelectorAll('.nav nav a[href^="#"]').forEach(function(a){ a.addEventListener('click', function(){ track('nav_click', { target: a.getAttribute('href').slice(1) }); }); });
+  document.querySelectorAll('footer a, .faq-list a').forEach(function(a){ a.addEventListener('click', function(){ track('link_click', { url: a.href, location: sectionOf(a) }); }); });
+  var tt = document.getElementById('theme-toggle'); if (tt) tt.addEventListener('click', function(){ setTimeout(function(){ track('theme_toggle', { theme: document.documentElement.getAttribute('data-theme') || 'system' }); }, 50); });
+  /* hero treemap demo */
+  var demo = document.getElementById('demo');
+  if (demo) {
+    var canvas = demo.querySelector('canvas');
+    canvas.addEventListener('mousemove', function(){ trackOnce('demo_hover', 'demo_hover'); });
+    canvas.addEventListener('click', function(){ track('demo_click'); });
+    new MutationObserver(function(){ if (demo.classList.contains('scanned')) trackOnce('demo_scanned', 'demo_scan_complete'); if (demo.classList.contains('cleaned')) track('demo_cleaned'); }).observe(demo, { attributes: true, attributeFilter: ['class'] });
+    var crumbs = demo.querySelector('.demo-crumbs');
+    new MutationObserver(function(){ var b = crumbs.querySelectorAll('button'); if (b.length > 1) track('demo_zoom', { folder: b[b.length - 1].textContent, depth: b.length - 1 }); }).observe(crumbs, { childList: true });
+    var dc = demo.querySelector('.demo-clean'); if (dc) dc.addEventListener('click', function(){ track(dc.textContent.indexOf('Reset') === 0 ? 'demo_reset' : 'demo_clean'); });
+  }
+  /* menu bar demo */
+  var mb = document.getElementById('mbdemo');
+  if (mb) {
+    var note = mb.querySelector('.mb-note');
+    new MutationObserver(function(){ if (note.classList.contains('in')) trackOnce('mb_note', 'menubar_notification_shown'); }).observe(note, { attributes: true, attributeFilter: ['class'] });
+    var mc = mb.querySelector('.mb-clean'); if (mc) mc.addEventListener('click', function(){ track('menubar_clean'); });
+    var mr = mb.querySelector('.mb-replay'); if (mr) mr.addEventListener('click', function(){ track('menubar_replay'); });
+  }
+  /* duplicate finder passes */
+  var dup = document.getElementById('dup-stage');
+  if (dup) new MutationObserver(function(){ var p = dup.getAttribute('data-pass'); if (p && p !== '0') trackOnce('dup' + p, 'duplicates_pass', { pass: parseInt(p, 10) }); }).observe(dup, { attributes: true, attributeFilter: ['data-pass'] });
+  /* FAQ */
+  document.querySelectorAll('.faq-list details').forEach(function(d){ d.addEventListener('toggle', function(){ if (d.open) track('faq_open', { question: d.querySelector('summary').textContent.trim().slice(0, 80) }); }); });
+  /* section views, once each */
+  if ('IntersectionObserver' in window) {
+    var sio = new IntersectionObserver(function(entries){ entries.forEach(function(en){ if (en.isIntersecting) { trackOnce('sec_' + en.target.id, 'section_view', { section: en.target.id }); sio.unobserve(en.target); } }); }, { threshold: 0.4 });
+    document.querySelectorAll('main section[id]').forEach(function(sec){ sio.observe(sec); });
+  }
+  /* reduced motion and theme at load, for context */
+  track('page_context', { reduced_motion: window.matchMedia('(prefers-reduced-motion: reduce)').matches, color_scheme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light', theme_override: document.documentElement.getAttribute('data-theme') || 'none' });
+})();
 (function(){
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var els = document.querySelectorAll('.reveal');
-  if (reduce || !('IntersectionObserver' in window)) { els.forEach(function(e){ e.classList.add('in'); }); runCounters(); return; }
+  function finish(){ document.querySelectorAll('.num').forEach(function(c){ c.textContent = (c.dataset.prefix||'') + c.dataset.to + (c.dataset.suffix||''); }); }
+  if (reduce || !('IntersectionObserver' in window)) { els.forEach(function(e){ e.classList.add('in'); }); finish(); return; }
   var io = new IntersectionObserver(function(entries){
     entries.forEach(function(en){ if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
-  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+  }, { rootMargin: '0px 0px -10% 0px', threshold: 0.1 });
   els.forEach(function(e){ io.observe(e); });
   var cio = new IntersectionObserver(function(entries){
-    entries.forEach(function(en){ if (en.isIntersecting) { animateCount(en.target); cio.unobserve(en.target); } });
+    entries.forEach(function(en){ if (en.isIntersecting) { count(en.target); cio.unobserve(en.target); } });
   }, { threshold: 0.6 });
-  document.querySelectorAll('.count').forEach(function(c){ cio.observe(c); });
-  function runCounters(){ document.querySelectorAll('.count').forEach(function(c){ c.textContent = (c.dataset.prefix||'') + c.dataset.to + (c.dataset.suffix||''); }); }
-  function animateCount(el){
+  document.querySelectorAll('.num').forEach(function(c){ cio.observe(c); });
+  function count(el){
     var to = parseFloat(el.dataset.to), dec = parseInt(el.dataset.dec||'0',10), pre = el.dataset.prefix||'', suf = el.dataset.suffix||'';
-    var t0 = null, dur = 1100;
-    function step(ts){ if (!t0) t0 = ts; var p = Math.min(1, (ts - t0)/dur); p = 1 - Math.pow(1-p, 3);
-      el.textContent = pre + (to*p).toFixed(dec) + suf; if (p < 1) requestAnimationFrame(step); }
+    var t0 = null, dur = 900;
+    function step(ts){ if (!t0) t0 = ts; var p = Math.min(1,(ts-t0)/dur); p = 1-Math.pow(1-p,3);
+      el.textContent = pre + (to*p).toFixed(dec) + suf; if (p<1) requestAnimationFrame(step); }
     requestAnimationFrame(step);
   }
+})();
+(function(){
+  /* theme toggle with a View Transition cross-fade */
+  var root = document.documentElement, btn = document.getElementById('theme-toggle'), key = 'headroom-theme';
+  if (!btn) return;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  btn.addEventListener('click', function(){
+    var cur = root.getAttribute('data-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    var next = cur === 'dark' ? 'light' : 'dark';
+    var go = function(){ root.setAttribute('data-theme', next); try { localStorage.setItem(key, next); } catch (e) {} };
+    if (document.startViewTransition && !reduce) document.startViewTransition(go); else go();
+  });
+})();
+(function(){
+  /* pinned duplicate-finder explainer: scroll progress drives data-pass 1..4 */
+  var stage = document.getElementById('dup-stage');
+  if (!stage) return;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var narrow = window.matchMedia('(max-width: 900px)');
+  var swaps = stage.querySelectorAll('[data-p0]');
+  function set(p){
+    if (stage.getAttribute('data-pass') === String(p)) return;
+    stage.setAttribute('data-pass', p);
+    swaps.forEach(function(el){ el.textContent = el.getAttribute('data-p' + p); });
+  }
+  function update(){
+    if (reduce || narrow.matches) { set(4); return; }
+    var r = stage.getBoundingClientRect();
+    var total = stage.offsetHeight - window.innerHeight;
+    var prog = total > 0 ? Math.min(1, Math.max(0, -r.top / total)) : 1;
+    var p = prog < 0.12 ? 0 : prog < 0.34 ? 1 : prog < 0.56 ? 2 : prog < 0.78 ? 3 : 4;
+    set(p);
+  }
+  var ticking = false;
+  function onScroll(){ if (!ticking) { ticking = true; requestAnimationFrame(function(){ ticking = false; update(); }); } }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  narrow.addEventListener ? narrow.addEventListener('change', update) : narrow.addListener(update);
+  update();
 })();
 </script>
 </body>

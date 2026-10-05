@@ -119,7 +119,7 @@ struct OutlineTreeView: NSViewRepresentable {
         }
 
         func outlineView(_ ov: NSOutlineView, sortDescriptorsDidChange oldDescriptors: [NSSortDescriptor]) {
-            guard let root, let d = ov.sortDescriptors.first, let key = d.key else { return }
+            guard root != nil, let d = ov.sortDescriptors.first, let key = d.key else { return }
             let order: SortOrder = d.ascending ? .forward : .reverse
             let comparators: [KeyPathComparator<FileNode>]
             switch key {

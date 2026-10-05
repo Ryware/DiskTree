@@ -32,6 +32,7 @@ badges-out/
 release-notes-*.md
 scripts/workflow-ci.yml
 scripts/workflow-release.yml
+scripts/workflow-site-test.yml
 secrets-for-github.txt
 _to_delete/
 logs/
@@ -48,3 +49,10 @@ AppStore/
 history-rewrite.bundle
 purge-secrets.log
 _to_delete/
+
+# Agent skills installed with `npx skills add` (local tooling, not part of the app)
+.agents/
+.claude/
+skills-lock.json
+node_modules/
+package-lock.json

@@ -1,0 +1,34 @@
+name: Site tests
+
+# Drives the landing page in a real browser: demos, scroll explainer, theme, FAQ,
+# analytics events, phone layout and reduced motion. See scripts/site-test.mjs.
+
+on:
+  push:
+    paths: ["docs/**", "scripts/site-test.mjs", ".github/workflows/site-test.yml"]
+  pull_request:
+    paths: ["docs/**", "scripts/site-test.mjs"]
+  workflow_dispatch:
+  schedule:
+    - cron: "17 6 * * 1"   # weekly against the live site
+
+permissions:
+  contents: read
+
+jobs:
+  site:
+    name: Landing page in Chromium
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Install Playwright
+        run: npm i --no-save playwright && npx playwright install --with-deps chromium
+      - name: Serve docs/
+        run: (cd docs && python3 -m http.server 8765 >/dev/null 2>&1 &) && sleep 1
+      - name: Test the local build
+        run: node scripts/site-test.mjs http://localhost:8765/index.html
+      - name: Test the live site
+        if: github.event_name == 'schedule' || github.ref == 'refs/heads/main'
+        run: node scripts/site-test.mjs https://ryware.github.io/Headroom/

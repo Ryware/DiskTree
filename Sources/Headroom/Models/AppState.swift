@@ -275,7 +275,7 @@ final class AppState: ObservableObject {
         }
         duplicateTask = Task.detached(priority: .userInitiated) { [weak self] in
             let result = try? await DuplicateFinder(counters: counters).find(in: root)
-            await MainActor.run {
+            await MainActor.run { [weak self] in
                 timer.invalidate()
                 guard let self else { return }
                 self.duplicateProgress = nil

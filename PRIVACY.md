@@ -29,3 +29,7 @@ If Headroom’s data practices change, this policy and the App Store privacy dis
 ## Contact
 
 For privacy questions, open an issue in the [Headroom repository](https://github.com/Ryware/Headroom/issues). Do not include private file names, paths, or other sensitive information in a public issue.
+
+## The website
+
+The landing page at ryware.github.io/Headroom uses Google Analytics (GA4, IP anonymization on) to count page views, downloads and which demos get used. This applies to the website only. The Headroom app contains no analytics and makes no network requests.
