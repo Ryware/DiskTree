@@ -103,8 +103,21 @@ final class DuplicateFinderTests: XCTestCase {
         let counters = DuplicateCounters()
         _ = try await DuplicateFinder(counters: counters, options: DuplicateOptions(minimumSize: 0)).find(in: root)
         let s = counters.snapshot
-        XCTAssertEqual(s.done, 4)        // 2 prefix + 2 full
+        XCTAssertGreaterThanOrEqual(s.done, 2)   // last phase: 2 full hashes
         XCTAssertGreaterThan(s.bytes, 0)
+    }
+
+    func testSamplesCatchMiddleDifference() async throws {
+        var a = blob(8, 2_000_000)
+        var b = a
+        b[b.count / 2] ^= 0xFF              // same head, same tail, differs in the middle
+        try writeContent("a.bin", a); try writeContent("b.bin", b)
+        a.removeAll(); b.removeAll()
+        let (root, _) = try await TestSupport.scan(dir)
+        let counters = DuplicateCounters()
+        let r = try await DuplicateFinder(counters: counters, options: DuplicateOptions(minimumSize: 0)).find(in: root)
+        XCTAssertTrue(r.groups.isEmpty)
+        XCTAssertEqual(r.filesHashed, 0, "the sampling pass must eliminate the pair before any full read")
     }
 
     func testHashHelper() throws {

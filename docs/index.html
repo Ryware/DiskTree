@@ -116,7 +116,7 @@
         { "@type": "Question", "name": "Is there a free Mac disk cleaner with no subscription?",
           "acceptedAnswer": { "@type": "Answer", "text": "Yes. Headroom is a free, open-source Mac disk space analyzer and cleaner. It does not lock cleanup, developer scans or any other feature behind a paywall, and it never asks for an account or payment." } },
         { "@type": "Question", "name": "How does the duplicate finder work?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Files are grouped by size, then by a hash of their first 64 KB, then by a full SHA-256 of the whole file, so every listed group is byte-for-byte identical. Files under 1 MB and files inside app bundles are skipped, and one copy of each file is always kept unless the guard is turned off." } },
+          "acceptedAnswer": { "@type": "Answer", "text": "Files are grouped by size, then by a hash of their first 64 KB, then by samples from the middle and end, then by a full SHA-256 of the whole file, so every listed group is byte-for-byte identical. Files under 1 MB and files inside app bundles are skipped, and one copy of each file is always kept unless the guard is turned off." } },
         { "@type": "Question", "name": "Is Headroom the same app as DiskTree?",
           "acceptedAnswer": { "@type": "Answer", "text": "Headroom was called DiskTree until version 1.0. It is the free, open-source macOS app by Ryware and is not affiliated with the paid DiskTree app at disktree.org or with any other app named Headroom. The GitHub repository is github.com/Ryware/Headroom." } },
         { "@type": "Question", "name": "What is Headroom?",
@@ -282,7 +282,8 @@
         <p class="sub left">The same photo in three folders. The same installer in Downloads twice. Headroom finds files that exist more than once, byte for byte, and ranks them by the space one copy would give back.</p>
         <ol class="steps">
           <li><strong>Size first.</strong> Files that share an exact size become candidates; everything else is ignored without a single read.</li>
-          <li><strong>Then a 64 KB prefix hash.</strong> Cheap and decisive for most look-alikes.</li>
+          <li><strong>Then a 64 KB header hash.</strong> Cheap and decisive for most look-alikes.</li>
+          <li><strong>Then samples from the middle and the end.</strong> So a 40 GB disk image is never read in full just to prove it differs.</li>
           <li><strong>Then a full SHA-256.</strong> Only true byte-for-byte copies make the list. No false positives.</li>
           <li><strong>You choose.</strong> Keep the newest, the oldest, or pick by hand. One copy always stays.</li>
         </ol>
@@ -354,7 +355,7 @@
       <details><summary>Is there a Pro version of Headroom?</summary><p>No. There is no Pro tier, subscription, lifetime purchase, trial or in-app purchase. Every feature is free and unlocked for everyone: the treemap, one-click cleanup, developer deep scan, safety hints, Trash-first deletion and fast permanent deletion.</p></details>
       <details><summary>Is there a free Mac disk cleaner with no subscription?</summary><p>Yes, this one. Headroom is a free, open-source Mac disk space analyzer and cleaner that never locks cleanup or developer scans behind a paywall, and never asks for an account or payment.</p></details>
       <details><summary>Is Headroom the same app as DiskTree?</summary><p>Yes. Headroom was called DiskTree until version 1.0 (October 2026): same app, same settings, same bundle id, so updates install in place. It is not affiliated with the paid DiskTree app at disktree.org or with any other app named Headroom. The code is at <a href="https://github.com/Ryware/Headroom">github.com/Ryware/Headroom</a>.</p></details>
-      <details><summary>How does the duplicate finder work?</summary><p>Files are grouped by size, then by a hash of their first 64 KB, then by a full SHA-256 of the whole file. Only files that still match after the last step are listed, so every group is byte-for-byte identical. Files under 1 MB and files inside app bundles are skipped, and Headroom always keeps one copy of each file unless you turn that guard off.</p></details>
+      <details><summary>How does the duplicate finder work?</summary><p>Files are grouped by size, then by a hash of their first 64 KB, then by samples from the middle and end, then by a full SHA-256 of the whole file. Only files that still match after the last step are listed, so every group is byte-for-byte identical. Files under 1 MB and files inside app bundles are skipped, and Headroom always keeps one copy of each file unless you turn that guard off.</p></details>
       <details open><summary>What is Headroom?</summary><p>Headroom is a free, open-source, native macOS app that shows what is using space on your Mac. It scans a folder or disk, visualizes the result as a folder tree, treemap and category charts, explains whether items are safe to delete and helps you clean them up.</p></details>
       <details><summary>Is Headroom really free?</summary><p>Yes. It is MIT-licensed with no ads, subscriptions, accounts, in-app purchases or analytics. It was made to be enjoyed.</p></details>
       <details><summary>How do I see what is taking up space on my Mac?</summary><p>Open Headroom, choose Home or Startup Disk and wait for the scan. The dashboard shows free and used space and the biggest categories, the folder tree lists folders by size, and the treemap draws every file as a rectangle sized by how much space it uses.</p></details>

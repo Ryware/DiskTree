@@ -25,10 +25,10 @@ struct DuplicateScanResult {
 
 /// Progress the UI polls while a duplicate scan runs.
 final class DuplicateCounters: @unchecked Sendable {
-    private let lock = OSAllocatedUnfairLock(initialState: (done: 0, total: 0, bytes: Int64(0), current: ""))
-    func setTotal(_ n: Int) { lock.withLock { $0.total = n } }
+    private let lock = OSAllocatedUnfairLock(initialState: (done: 0, total: 0, bytes: Int64(0), current: "", phase: ""))
+    func start(phase: String, total: Int) { lock.withLock { $0.phase = phase; $0.total = total; $0.done = 0 } }
     func tick(bytes: Int64, current: String) { lock.withLock { $0.done += 1; $0.bytes += bytes; $0.current = current } }
-    var snapshot: (done: Int, total: Int, bytes: Int64, current: String) { lock.withLock { $0 } }
+    var snapshot: (done: Int, total: Int, bytes: Int64, current: String, phase: String) { lock.withLock { $0 } }
 }
 
 struct DuplicateOptions {
@@ -56,7 +56,8 @@ struct DuplicateFinder {
     func find(in root: FileNode) async throws -> DuplicateScanResult {
         var result = DuplicateScanResult()
 
-        // Pass 1: size buckets.
+        // Pass 1: size buckets. Free: the scan already knows every size.
+        counters.start(phase: "Grouping by size", total: 0)
         var bySize: [Int64: [FileNode]] = [:]
         root.walk { n in
             guard !n.isDirectory, !(options.skipSymlinks && n.isSymlink),
@@ -65,32 +66,52 @@ struct DuplicateFinder {
             result.filesConsidered += 1
             bySize[n.logicalSize, default: []].append(n)
         }
-        let candidates = bySize.values.filter { $0.count > 1 }.flatMap { $0 }
-        counters.setTotal(candidates.count)
-        guard !candidates.isEmpty else { return result }
+        var groups = bySize.values.filter { $0.count > 1 }
+        guard !groups.isEmpty else { return result }
         try Task.checkCancellation()
 
-        // Pass 2: prefix hash. Pass 3: full hash. Both parallel over files, grouped afterwards.
-        let prefixKeys = try await Self.hashAll(candidates, counters: counters, full: false)
-        var byPrefix: [String: [FileNode]] = [:]
-        for (node, key) in prefixKeys { byPrefix[key, default: []].append(node) }
-        let stillMatching = byPrefix.values.filter { $0.count > 1 }.flatMap { $0 }
+        // Pass 2: first 64 KB. Pass 3: 64 KB from the middle and the end (big files only).
+        // Pass 4: full SHA-256 of whatever still matches. Each pass only reads files that
+        // survived the previous one, so large files that merely share a size are never read in full.
+        groups = try await Self.refine(groups, mode: .head, phase: "Comparing file headers", counters: counters).groups
         try Task.checkCancellation()
+        groups = try await Self.refine(groups, mode: .samples, phase: "Sampling large files", counters: counters).groups
+        try Task.checkCancellation()
+        let survivors = groups.flatMap { $0 }
+        result.filesHashed = survivors.count
+        result.bytesHashed = survivors.reduce(0) { $0 + $1.logicalSize }
+        let final = try await Self.refine(groups, mode: .full, phase: "Verifying byte for byte", counters: counters)
 
-        counters.setTotal(stillMatching.count)
-        let fullKeys = try await Self.hashAll(stillMatching, counters: counters, full: true)
-        var byHash: [String: [FileNode]] = [:]
-        for (node, key) in fullKeys { byHash[key, default: []].append(node) }
-
-        result.filesHashed = stillMatching.count
-        result.bytesHashed = stillMatching.reduce(0) { $0 + $1.logicalSize }
-        result.groups = byHash.compactMap { hash, nodes -> DuplicateGroup? in
-            guard nodes.count > 1, let size = nodes.first?.logicalSize else { return nil }
+        result.groups = final.groups.compactMap { nodes -> DuplicateGroup? in
+            guard nodes.count > 1, let first = nodes.first else { return nil }
             let sorted = nodes.sorted { ($0.modified ?? .distantPast) > ($1.modified ?? .distantPast) }
-            return DuplicateGroup(id: hash, size: size, files: sorted)
+            let id = final.keys[ObjectIdentifier(first)] ?? "\(first.logicalSize):\(first.id.uuidString)"
+            return DuplicateGroup(id: id, size: first.logicalSize, files: sorted)
         }
         .sorted { $0.wasted == $1.wasted ? $0.id < $1.id : $0.wasted > $1.wasted }
         return result
+    }
+
+    enum HashMode { case head, samples, full }
+
+    /// Hashes every file of every group with `mode` and splits the groups by the result.
+    /// Groups that end up with a single member are dropped. Files too small for `mode`
+    /// (samples on a file shorter than three chunks) keep their group untouched.
+    private static func refine(_ groups: [[FileNode]], mode: HashMode, phase: String,
+                               counters: DuplicateCounters) async throws -> (groups: [[FileNode]], keys: [ObjectIdentifier: String]) {
+        let needsWork = groups.filter { g in mode != .samples || (g.first?.logicalSize ?? 0) > Int64(3 * prefixBytes) }
+        let untouched = groups.filter { g in mode == .samples && (g.first?.logicalSize ?? 0) <= Int64(3 * prefixBytes) }
+        let nodes = needsWork.flatMap { $0 }
+        guard !nodes.isEmpty else { return (groups, [:]) }
+        counters.start(phase: phase, total: nodes.count)
+        let keyed = try await hashAll(nodes, counters: counters, mode: mode)
+        var byKey: [String: [FileNode]] = [:]
+        var keys: [ObjectIdentifier: String] = [:]
+        for (node, key) in keyed {
+            byKey[key, default: []].append(node)
+            keys[ObjectIdentifier(node)] = key
+        }
+        return (byKey.values.filter { $0.count > 1 } + untouched, keys)
     }
 
     // MARK: - Helpers
@@ -106,36 +127,60 @@ struct DuplicateFinder {
 
     /// Hashes files in parallel. Keys are "size:hex" so two different sizes can never collide.
     /// A file that cannot be read gets a unique key and so never matches anything.
-    private static func hashAll(_ nodes: [FileNode], counters: DuplicateCounters, full: Bool) async throws -> [(FileNode, String)] {
+    private static func hashAll(_ nodes: [FileNode], counters: DuplicateCounters, mode: HashMode) async throws -> [(FileNode, String)] {
         let results = OSAllocatedUnfairLock(initialState: [(FileNode, String)]())
         results.withLock { $0.reserveCapacity(nodes.count) }
+        // Bound parallel I/O: hashing is disk-bound, and hundreds of concurrent large reads thrash.
+        let width = max(2, min(8, ProcessInfo.processInfo.activeProcessorCount))
+        let stride = max(1, (nodes.count + width - 1) / width)
         await Task.detached(priority: .userInitiated) {
-            DispatchQueue.concurrentPerform(iterations: nodes.count) { i in
-                if Task.isCancelled { return }
-                let node = nodes[i]
-                let key: String
-                if let digest = hash(path: node.path, full: full) {
-                    key = "\(node.logicalSize):\(digest)"
-                } else {
-                    key = "unreadable:\(node.id.uuidString)"
+            DispatchQueue.concurrentPerform(iterations: width) { lane in
+                let lo = lane * stride, hi = min(nodes.count, lo + stride)
+                guard lo < hi else { return }
+                for i in lo..<hi {
+                    if Task.isCancelled { return }
+                    let node = nodes[i]
+                    let key: String
+                    if let digest = hash(path: node.path, mode: mode, size: node.logicalSize) {
+                        key = "\(node.logicalSize):\(digest)"
+                    } else {
+                        key = "unreadable:\(node.id.uuidString)"
+                    }
+                    let read: Int64
+                    switch mode {
+                    case .head: read = Int64(min(prefixBytes, Int(node.logicalSize)))
+                    case .samples: read = Int64(2 * prefixBytes)
+                    case .full: read = node.logicalSize
+                    }
+                    counters.tick(bytes: read, current: node.path)
+                    results.withLock { $0.append((node, key)) }
                 }
-                counters.tick(bytes: full ? node.logicalSize : Int64(min(prefixBytes, Int(node.logicalSize))), current: node.path)
-                results.withLock { $0.append((node, key)) }
             }
         }.value
         try Task.checkCancellation()
         return results.withLock { $0 }
     }
 
-    /// SHA-256 of the first 64 KB (prefix) or the whole file (full), streamed in 1 MB chunks.
-    static func hash(path: String, full: Bool) -> String? {
+    /// SHA-256 of the first 64 KB (head), of 64 KB from the middle plus the last 64 KB (samples),
+    /// or of the whole file streamed in 1 MB chunks (full).
+    static func hash(path: String, mode: HashMode, size: Int64) -> String? {
         guard let handle = FileHandle(forReadingAtPath: path) else { return nil }
         defer { try? handle.close() }
         var hasher = SHA256()
-        if !full {
+        switch mode {
+        case .head:
             guard let data = try? handle.read(upToCount: prefixBytes) else { return nil }
             hasher.update(data: data)
-        } else {
+        case .samples:
+            let chunk = UInt64(prefixBytes)
+            let mid = UInt64(max(0, size / 2 - Int64(prefixBytes / 2)))
+            let tail = UInt64(max(0, size - Int64(prefixBytes)))
+            for offset in [mid, tail] {
+                guard (try? handle.seek(toOffset: offset)) != nil,
+                      let data = try? handle.read(upToCount: Int(chunk)) else { return nil }
+                hasher.update(data: data)
+            }
+        case .full:
             let chunk = 1 << 20
             while true {
                 guard let data = try? handle.read(upToCount: chunk) else { return nil }
@@ -145,5 +190,11 @@ struct DuplicateFinder {
             }
         }
         return hasher.finalize().map { String(format: "%02x", $0) }.joined()
+    }
+
+    /// Convenience used by tests and tooling.
+    static func hash(path: String, full: Bool) -> String? {
+        let size = (try? FileManager.default.attributesOfItem(atPath: path)[.size] as? Int64) ?? 0
+        return hash(path: path, mode: full ? .full : .head, size: size)
     }
 }

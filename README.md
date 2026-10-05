@@ -49,7 +49,7 @@ Headroom turns a crowded drive into an understandable map. Scan a folder or disk
 - **Understand it visually** — explore a detailed folder tree, a squarified treemap, file categories, and the largest individual files and bundles.
 - **Delete with context** — safety badges explain what an item is, whether it is usually safe to remove, and what deletion may affect.
 - **Clean developer clutter** — discover caches, DerivedData, `node_modules`, package stores, build output, logs, virtual machines, and other regenerable data.
-- **Find duplicates** — byte-for-byte identical files (size → prefix hash → full SHA-256), grouped and ranked by reclaimable space, with one-click "keep newest" selection and a keep-one-copy guard.
+- **Find duplicates** — byte-for-byte identical files (size → header hash → samples → full SHA-256), grouped and ranked by reclaimable space, with one-click "keep newest" selection and a keep-one-copy guard.
 - **Watch it from the menu bar** — a live free-space ring, 7-day trend, low-space and sudden-drop alerts, and one-click cleanup of safe caches.
 - **Stay in control** — choose recoverable Trash mode or an explicit permanent-delete mode.
 - **Keep data private** — analysis happens locally on your Mac; Headroom does not require an account or send scan data anywhere.
@@ -113,10 +113,11 @@ Finds files that exist more than once with identical content and shows how much 
 **How it works.** Three passes, each cheaper than the next:
 
 1. **Size.** Every file from the scan is bucketed by exact byte size. Sizes that occur once are discarded without reading anything.
-2. **Prefix hash.** Files that share a size get the first 64 KB hashed (SHA-256). Different prefixes mean different files.
-3. **Full hash.** Only files that still match get read end to end and hashed. Two files are listed as duplicates only when their full hashes are identical, so there are no false positives.
+2. **Header hash.** Files that share a size get the first 64 KB hashed (SHA-256). Different headers mean different files.
+3. **Samples.** Files larger than 192 KB that still match get 64 KB from the middle and the last 64 KB hashed. This is what keeps huge videos, disk images and VM files from being read end to end just to prove they differ.
+4. **Full hash.** Only files that survive all of that are read end to end. Two files are listed as duplicates only when their full hashes are identical, so there are no false positives.
 
-Hashing runs in parallel across cores and can be cancelled. Files under 1 MB are skipped (they add noise and free nothing), as are files inside app bundles and other packages, which legitimately share resources. Symlinks are never content.
+Hashing runs on a bounded number of parallel lanes (disk-bound work thrashes with too many concurrent reads), shows which pass it is in, and can be cancelled. Files under 1 MB are skipped (they add noise and free nothing), as are files inside app bundles and other packages, which legitimately share resources. Symlinks are never content.
 
 **Choosing what to delete.** Each group lists every copy with its folder, modification date and the safety verdict from the knowledge base. Tick copies by hand, or use **Select** to keep the newest, the oldest, or the copy highest in the folder tree and mark the rest. The *keep at least one copy* guard is on by default, so a group can never be emptied by accident. Deletion uses the same Trash or permanent mode as everywhere else; removed copies disappear from the groups without a rescan.
 

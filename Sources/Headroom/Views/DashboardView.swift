@@ -163,7 +163,7 @@ struct DashboardView: View {
             if let p = state.duplicateProgress {
                 HStack(spacing: 10) {
                     ProgressView(value: p.fraction).frame(maxWidth: 260)
-                    Text("Comparing \(p.done.formatted()) of \(p.total.formatted()) files…").font(.callout).foregroundStyle(.secondary)
+                    Text(p.phase.isEmpty ? "Preparing…" : "\(p.phase)… \(p.done.formatted()) of \(p.total.formatted())").font(.callout).foregroundStyle(.secondary)
                 }
             } else if let d = state.duplicates {
                 if d.groups.isEmpty {

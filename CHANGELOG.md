@@ -6,7 +6,7 @@ First stable release. DiskTree is now **Headroom**: the name describes what the 
 
 ### 🚀 New feature
 
-- **Duplicate finder.** Finds files that exist more than once with identical content, grouped and sorted by how much space one copy would give back. Files are bucketed by size, then compared by a 64 KB prefix hash, then by a full SHA-256, so only true byte-for-byte copies are listed and only candidates are ever read in full. Files under 1 MB and files inside app bundles are skipped. Select with one click (keep newest / oldest / highest in the tree), keep-one-copy protection on by default, delete to the Trash or permanently.
+- **Duplicate finder.** Finds files that exist more than once with identical content, grouped and sorted by how much space one copy would give back. Files are bucketed by size, then compared by a 64 KB header hash, then by samples from the middle and the end, then by a full SHA-256, so only true byte-for-byte copies are listed and large files are read in full only when every cheaper check says they match. Files under 1 MB and files inside app bundles are skipped. Select with one click (keep newest / oldest / highest in the tree), keep-one-copy protection on by default, delete to the Trash or permanently.
 - **Dashboard card** showing reclaimable duplicate space with a jump to the new Duplicates pane.
 
 ### ✨ Changed

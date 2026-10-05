@@ -9,6 +9,7 @@ struct DuplicatesView: View {
     @State private var expanded: Set<String> = []
     @State private var filter = ""
     @State private var keepOneCopy = true
+    @State private var shown = 150
 
     private var groups: [DuplicateGroup] {
         guard let d = state.duplicates else { return [] }
@@ -96,8 +97,9 @@ struct DuplicatesView: View {
     private func progress(_ p: DuplicateProgress) -> some View {
         VStack(spacing: 12) {
             ProgressView(value: p.fraction).frame(width: 320)
-            Text("Comparing \(p.done.formatted()) of \(p.total.formatted()) candidate files · \(p.bytes.humanBytes) read")
-                .font(.callout).monospacedDigit()
+            Text(p.phase.isEmpty ? "Preparing…" : p.phase).font(.headline)
+            Text(p.total > 0 ? "\(p.done.formatted()) of \(p.total.formatted()) candidate files · \(p.bytes.humanBytes) read" : "\(p.bytes.humanBytes) read")
+                .font(.callout).monospacedDigit().foregroundStyle(.secondary)
             Text(p.current).font(.caption).foregroundStyle(.secondary).lineLimit(1).truncationMode(.middle).frame(maxWidth: 480)
             Button("Cancel") { state.cancelDuplicateScan() }
         }
@@ -116,7 +118,7 @@ struct DuplicatesView: View {
 
     private var list: some View {
         List {
-            ForEach(groups) { g in
+            ForEach(groups.prefix(shown)) { g in
                 Section {
                     ForEach(g.files) { f in row(f, in: g) }
                 } header: {
@@ -131,8 +133,19 @@ struct DuplicatesView: View {
                     .font(.callout)
                 }
             }
+            if groups.count > shown {
+                Section {
+                    HStack {
+                        Spacer()
+                        Button("Show \(min(200, groups.count - shown)) more of \(groups.count.formatted()) groups") { shown += 200 }
+                        Spacer()
+                    }
+                    .padding(.vertical, 6)
+                }
+            }
         }
         .listStyle(.inset)
+        .onChange(of: filter) { _, _ in shown = 150 }
         .safeAreaInset(edge: .bottom) {
             HStack {
                 Toggle("Always keep at least one copy of each file", isOn: $keepOneCopy)

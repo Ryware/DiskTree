@@ -21,6 +21,7 @@ struct DuplicateProgress {
     var total = 0
     var bytes: Int64 = 0
     var current = ""
+    var phase = ""
     var fraction: Double { total == 0 ? 0 : Double(done) / Double(total) }
 }
 
@@ -269,7 +270,7 @@ final class AppState: ObservableObject {
             let s = counters.snapshot
             Task { @MainActor in
                 guard self?.duplicateProgress != nil else { return }
-                self?.duplicateProgress = DuplicateProgress(done: s.done, total: s.total, bytes: s.bytes, current: s.current)
+                self?.duplicateProgress = DuplicateProgress(done: s.done, total: s.total, bytes: s.bytes, current: s.current, phase: s.phase)
             }
         }
         duplicateTask = Task.detached(priority: .userInitiated) { [weak self] in

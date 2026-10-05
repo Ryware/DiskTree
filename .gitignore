@@ -45,3 +45,6 @@ ExportOptions.plist
 
 # Local App Store Connect tooling and screenshots (never published)
 AppStore/
+history-rewrite.bundle
+purge-secrets.log
+_to_delete/
