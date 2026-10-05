@@ -40,6 +40,7 @@ async function newPage(opts = {}) {
 
   const fonts = await page.evaluate(() => document.fonts.check('600 20px Geist') && document.fonts.check('12px "Geist Mono"'));
   check('self-hosted Geist fonts are active', fonts);
+  check('stylesheet is inlined (no render-blocking CSS request)', (await page.$$('link[rel=stylesheet]')).length === 0);
 
   const broken = await page.$$eval('img', (imgs) => imgs.filter((i) => i.complete && i.naturalWidth === 0 && !i.src.includes('duplicates')).map((i) => i.getAttribute('src')));
   check('no broken images', broken.length === 0, broken.join(', '));

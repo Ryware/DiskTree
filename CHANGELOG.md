@@ -4,7 +4,7 @@
 
 ### ✨ Changed
 
-- **New landing page** at [ryware.github.io/Headroom](https://ryware.github.io/Headroom/): an interactive treemap demo in the hero that scans sample data, shows verdicts on hover, zooms on click and lets you clean the safe items; native CSS, self-hosted Geist, a bento feature grid with real screenshots, a scroll-driven explainer that walks through the duplicate finder's four passes on a mock group of files, and light and dark modes with a toggle. Motion is native CSS and respects Reduce Motion. No frameworks. The site uses Google Analytics for visit and download counts; the app still sends nothing.
+- **New landing page** at [headroom-app.org](https://headroom-app.org/): an interactive treemap demo in the hero that scans sample data, shows verdicts on hover, zooms on click and lets you clean the safe items; native CSS, self-hosted Geist, a bento feature grid with real screenshots, a scroll-driven explainer that walks through the duplicate finder's four passes on a mock group of files, and light and dark modes with a toggle. Motion is native CSS and respects Reduce Motion. No frameworks. The site uses Google Analytics for visit and download counts; the app still sends nothing.
 - README and site documentation cover the duplicate finder's four comparison passes and the menu bar popover.
 
 ### 🧹 Chores

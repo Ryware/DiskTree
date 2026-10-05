@@ -32,4 +32,4 @@ For privacy questions, open an issue in the [Headroom repository](https://github
 
 ## The website
 
-The landing page at ryware.github.io/Headroom uses Google Analytics (GA4, IP anonymization on) to count page views, downloads and which demos get used. This applies to the website only. The Headroom app contains no analytics and makes no network requests.
+The landing page at headroom-app.org uses Google Analytics (GA4, IP anonymization on) to count page views, downloads and which demos get used. This applies to the website only. The Headroom app contains no analytics and makes no network requests.
