@@ -33,6 +33,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 }
 
 @main
+enum HeadroomMain {
+    static func main() {
+        // `Headroom --mcp` serves the Model Context Protocol on stdio instead of opening the UI.
+        if CommandLine.arguments.dropFirst().contains("--mcp") { MCPServer.run() }
+        HeadroomApp.main()
+    }
+}
+
 struct HeadroomApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var state = AppState()

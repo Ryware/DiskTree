@@ -212,6 +212,38 @@ The duplicate finder hashes with `pread(2)` into one reusable buffer per worker,
 
 A notarized release should open normally through Gatekeeper. If you build locally, the ad-hoc signed development build is placed in `build/Headroom.app`.
 
+## Use with AI agents (MCP)
+
+Headroom includes a [Model Context Protocol](https://modelcontextprotocol.io) server, so Claude Code, Claude Desktop, Cursor and other MCP clients can analyze your disk with the same scanner and safety rules as the app. Run the app binary with `--mcp`; it talks JSON-RPC on stdio and opens no window.
+
+```sh
+claude mcp add headroom -- /Applications/Headroom.app/Contents/MacOS/Headroom --mcp
+```
+
+For clients configured with JSON (Claude Desktop, Cursor, …):
+
+```json
+{
+  "mcpServers": {
+    "headroom": {
+      "command": "/Applications/Headroom.app/Contents/MacOS/Headroom",
+      "args": ["--mcp"]
+    }
+  }
+}
+```
+
+| Tool | What it does |
+| --- | --- |
+| `disk_status` | Free, used and total space on a volume |
+| `scan_folder` | Size, largest subfolders and files, space by category |
+| `find_cleanup` | Caches, `node_modules`, DerivedData, build output, logs and Trash, with safety advice. Without a path, checks the well-known cache locations |
+| `explain_path` | What a file or folder is and whether it is safe to delete |
+| `find_duplicates` | Byte-for-byte identical files, ranked by wasted space |
+| `move_to_trash` | Moves items to the Trash (recoverable). Refuses anything marked *Do not delete* and top-level system and home folders |
+
+Everything except `move_to_trash` is read-only, and permanent deletion is not exposed. Like the app, the server reads only what macOS lets it: grant Headroom Full Disk Access to scan protected locations. The sandboxed App Store build can only scan paths the sandbox allows; use the direct download for MCP.
+
 ## Build from source
 
 Requires Xcode 15 or newer.
@@ -257,6 +289,8 @@ Sources/Headroom
 │   ├── Deleter.swift
 │   ├── SafetyInfo.swift
 │   └── Scanner.swift
+├── MCP
+│   └── MCPServer.swift
 └── Views
     ├── DashboardView.swift
     ├── OutlineTreeView.swift

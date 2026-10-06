@@ -1,0 +1,130 @@
+import XCTest
+@testable import Headroom
+
+final class MCPServerTests: XCTestCase {
+    private func request(_ method: String, id: Int = 1, params: [String: Any] = [:]) async -> [String: Any]? {
+        await MCPServer.handle(["jsonrpc": "2.0", "id": id, "method": method, "params": params])
+    }
+
+    /// Calls a tool and decodes the JSON text it returns.
+    private func call(_ name: String, _ args: [String: Any]) async throws -> (isError: Bool, body: Any?) {
+        let response = await request("tools/call", params: ["name": name, "arguments": args])
+        let result = try XCTUnwrap(response?["result"] as? [String: Any])
+        let content = try XCTUnwrap(result["content"] as? [[String: Any]])
+        let text = try XCTUnwrap(content.first?["text"] as? String)
+        return (result["isError"] as? Bool ?? false, try? JSONSerialization.jsonObject(with: Data(text.utf8)))
+    }
+
+    func testInitializeAdvertisesTools() async throws {
+        let response = await request("initialize")
+        let result = try XCTUnwrap(response?["result"] as? [String: Any])
+        XCTAssertEqual(result["protocolVersion"] as? String, MCPServer.protocolVersion)
+        XCTAssertNotNil((result["capabilities"] as? [String: Any])?["tools"])
+        XCTAssertEqual((result["serverInfo"] as? [String: Any])?["name"] as? String, "headroom")
+    }
+
+    func testNotificationsGetNoResponse() async {
+        let response = await MCPServer.handle(["jsonrpc": "2.0", "method": "notifications/initialized"])
+        XCTAssertNil(response)
+    }
+
+    func testToolsListHasSchemas() async throws {
+        let response = await request("tools/list")
+        let result = try XCTUnwrap(response?["result"] as? [String: Any])
+        let tools = try XCTUnwrap(result["tools"] as? [[String: Any]])
+        XCTAssertEqual(tools.compactMap { $0["name"] as? String },
+                       ["disk_status", "scan_folder", "find_cleanup", "explain_path", "find_duplicates", "move_to_trash"])
+        for tool in tools {
+            XCTAssertEqual((tool["inputSchema"] as? [String: Any])?["type"] as? String, "object")
+        }
+        let trash = try XCTUnwrap(tools.first { $0["name"] as? String == "move_to_trash" })
+        XCTAssertEqual((trash["annotations"] as? [String: Any])?["destructiveHint"] as? Bool, true)
+    }
+
+    func testUnknownMethodAndToolAreErrors() async throws {
+        let methodResponse = await request("nope")
+        let method = try XCTUnwrap(methodResponse?["error"] as? [String: Any])
+        XCTAssertEqual(method["code"] as? Int, -32601)
+        let toolResponse = await request("tools/call", params: ["name": "nope"])
+        let tool = try XCTUnwrap(toolResponse?["error"] as? [String: Any])
+        XCTAssertEqual(tool["code"] as? Int, -32602)
+    }
+
+    func testDiskStatus() async throws {
+        let (isError, body) = try await call("disk_status", [:])
+        XCTAssertFalse(isError)
+        let total = try XCTUnwrap((body as? [String: Any])?["total"] as? [String: Any])
+        XCTAssertGreaterThan(total["bytes"] as? Int64 ?? 0, 0)
+    }
+
+    func testScanFolderSummarizesTree() async throws {
+        let root = try TestSupport.makeTempDir("mcp-scan")
+        defer { try? FileManager.default.removeItem(at: root) }
+        try TestSupport.write(root.appendingPathComponent("big/movie.mov"), bytes: 300_000)
+        try TestSupport.write(root.appendingPathComponent("small.txt"), bytes: 10)
+
+        let (isError, body) = try await call("scan_folder", ["path": root.path, "limit": 5])
+        XCTAssertFalse(isError)
+        let out = try XCTUnwrap(body as? [String: Any])
+        XCTAssertEqual(out["files"] as? Int, 2)
+        let children = try XCTUnwrap(out["largest_children"] as? [[String: Any]])
+        XCTAssertEqual(children.first?["path"] as? String, root.appendingPathComponent("big").path)
+        XCTAssertEqual(children.first?["kind"] as? String, "folder")
+        let items = try XCTUnwrap(out["largest_items"] as? [[String: Any]])
+        XCTAssertEqual(items.first?["path"] as? String, root.appendingPathComponent("big/movie.mov").path)
+    }
+
+    func testFindCleanupInFolder() async throws {
+        let root = try TestSupport.makeTempDir("mcp-cleanup")
+        defer { try? FileManager.default.removeItem(at: root) }
+        try TestSupport.write(root.appendingPathComponent("proj/node_modules/pkg/index.js"), bytes: 2 << 20)
+
+        let (_, body) = try await call("find_cleanup", ["path": root.path])
+        let candidates = try XCTUnwrap((body as? [String: Any])?["candidates"] as? [[String: Any]])
+        XCTAssertEqual(candidates.count, 1)
+        XCTAssertEqual(candidates.first?["kind"] as? String, "dependencies")
+        XCTAssertEqual((candidates.first?["safety"] as? [String: Any])?["level"] as? String, "safe")
+    }
+
+    func testExplainPathInheritsFromAncestors() async throws {
+        let (_, body) = try await call("explain_path", ["path": "/System/Library"])
+        XCTAssertEqual((body as? [String: Any])?["level"] as? String, "never")
+        let missing = try await call("explain_path", ["path": "/definitely/not/here"])
+        XCTAssertTrue(missing.isError)
+    }
+
+    func testFindDuplicates() async throws {
+        let root = try TestSupport.makeTempDir("mcp-dupes")
+        defer { try? FileManager.default.removeItem(at: root) }
+        try TestSupport.write(root.appendingPathComponent("a.bin"), bytes: 2_000_000)
+        try TestSupport.write(root.appendingPathComponent("b/a-copy.bin"), bytes: 2_000_000)
+
+        let (_, body) = try await call("find_duplicates", ["path": root.path])
+        let out = try XCTUnwrap(body as? [String: Any])
+        XCTAssertEqual(out["groups"] as? Int, 1)
+        let group = try XCTUnwrap((out["top_groups"] as? [[String: Any]])?.first)
+        XCTAssertEqual(group["copies"] as? Int, 2)
+    }
+
+    func testMoveToTrashRefusesProtectedPaths() async throws {
+        let (isError, body) = try await call("move_to_trash", ["paths": ["/", "~", "/System/Library", "/definitely/not/here"]])
+        XCTAssertFalse(isError)
+        let out = try XCTUnwrap(body as? [String: Any])
+        XCTAssertEqual((out["moved_to_trash"] as? [String])?.count, 0)
+        XCTAssertEqual((out["refused"] as? [[String: Any]])?.count, 4)
+    }
+
+    func testMissingArgumentsAreToolErrors() async throws {
+        let noPath = try await call("scan_folder", [:])
+        XCTAssertTrue(noPath.isError)
+        let noPaths = try await call("move_to_trash", ["paths": [String]()])
+        XCTAssertTrue(noPaths.isError)
+    }
+
+    func testChainLinksParents() {
+        let nodes = MCPServer.chain(to: "/usr/bin")
+        XCTAssertEqual(nodes.map(\.name), ["/", "usr", "bin"])
+        XCTAssertTrue(nodes.last?.parent === nodes[1])
+        XCTAssertTrue(MCPServer.chain(to: "/definitely/not/here").isEmpty)
+    }
+}

@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### 🚀 New feature
+
+- **MCP server for AI agents.** `Headroom --mcp` serves the Model Context Protocol on stdio, so Claude Code, Claude Desktop, Cursor and other MCP clients can check free space, scan folders, find cleanup candidates and duplicates, and ask whether a path is safe to delete, using the same engine and safety rules as the app. The only write is `move_to_trash`, which is recoverable and refuses items marked *Do not delete*. See [Use with AI agents](README.md#use-with-ai-agents-mcp).
+
 ## 1.0.3 — October 6, 2026
 
 ### 🐛 Fixed
