@@ -34,10 +34,16 @@
 <p align="center">
   <a href="../../releases/latest"><strong>Download the latest release</strong></a>
   ·
+  <a href="#install">Install with Homebrew</a>
+  ·
   <a href="#build-from-source">Build from source</a>
   ·
   <a href="#safety-and-privacy">Safety & privacy</a>
 </p>
+
+```sh
+brew install ryware/tap/headroom
+```
 
 ![Headroom dashboard showing disk usage, cleanup candidates, and space by category](Screenshots/dashboard.jpeg)
 
@@ -227,20 +233,48 @@ The duplicate finder hashes with `pread(2)` into one reusable buffer per worker,
 
 ## Install
 
-With [Homebrew](https://brew.sh):
+Headroom needs macOS 14 Sonoma or newer and runs natively on Apple silicon and Intel Macs. It is free, and both ways of installing get the same signed, notarized app.
+
+### Option 1: Homebrew (recommended)
+
+If you don't have [Homebrew](https://brew.sh) yet, install it first by pasting this into **Terminal** (Applications › Utilities):
+
+```sh
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+Then install Headroom:
 
 ```sh
 brew install ryware/tap/headroom
 ```
 
-`brew upgrade headroom` picks up new releases. Or download the DMG:
+That's it. Headroom is now in your Applications folder. To manage it later:
 
-1. Open the [latest release](../../releases/latest).
-2. Download `Headroom-<version>.dmg`.
-3. Drag **Headroom** to **Applications**.
-4. Open Headroom and choose a folder, your home directory, or the startup disk.
+| To | Run |
+| --- | --- |
+| Update to the latest version | `brew upgrade headroom` |
+| Uninstall | `brew uninstall headroom` |
+| Uninstall and remove its settings and history | `brew uninstall --zap headroom` |
 
-A notarized release should open normally through Gatekeeper. If you build locally, the ad-hoc signed development build is placed in `build/Headroom.app`.
+### Option 2: Download the DMG
+
+1. Open the [latest release](../../releases/latest) and download `Headroom-<version>.dmg`.
+2. Open the DMG and drag **Headroom** onto **Applications**.
+3. Eject the DMG, then open Headroom from Applications or Launchpad.
+
+To update, download the new DMG and replace the app. To uninstall, drag Headroom from Applications to the Trash.
+
+### First launch
+
+1. Choose what to scan: a folder, your home folder, or the startup disk.
+2. To scan protected places such as Mail, Messages or Safari data, Headroom asks for **Full Disk Access**. Turn it on in **System Settings › Privacy & Security › Full Disk Access** and reopen Headroom. You can skip this if you only scan your own folders.
+
+### Troubleshooting
+
+- **"Headroom can't be opened" or "cannot verify the developer":** release builds are notarized by Apple and should open normally. If you see this, make sure you downloaded from this repository's [releases page](../../releases/latest) or used Homebrew, then right-click Headroom in Applications and choose **Open**.
+- **`brew` says "command not found":** finish the Homebrew installer's "Next steps" (it prints two commands that add `brew` to your PATH), then open a new Terminal window.
+- **Building yourself:** `./build.sh` places an ad-hoc signed development build in `build/Headroom.app` (see [Build from source](#build-from-source)).
 
 ## Build from source
 
