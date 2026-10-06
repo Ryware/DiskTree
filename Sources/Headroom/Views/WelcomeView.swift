@@ -110,7 +110,11 @@ struct WelcomeView: View {
                             } label: {
                                 HStack {
                                     Image(systemName: location.symbol).frame(width: 18)
-                                    Text(location.title).lineLimit(1).truncationMode(.middle)
+                                    Text(location.name).lineLimit(1)
+                                    if location.kind == .folder {
+                                        Text(location.detail).lineLimit(1).truncationMode(.middle)
+                                            .foregroundStyle(.white.opacity(0.55))
+                                    }
                                     Spacer()
                                     Image(systemName: "arrow.right").foregroundStyle(.white.opacity(0.5))
                                 }
@@ -168,7 +172,7 @@ struct ScanningView: View {
             HStack(spacing: 48) {
                 BentoLoader().frame(width: 220, height: 220)
                 VStack(alignment: .leading, spacing: 14) {
-                    Text("Analyzing \(state.rootLocation?.title ?? "")")
+                    Text("Analyzing \(state.rootLocation?.name ?? "")")
                         .font(.title2.weight(.semibold)).foregroundStyle(.white).lineLimit(1).truncationMode(.middle)
                     HStack(spacing: 28) {
                         Stat(value: state.progress.bytes.humanBytes, label: "found")

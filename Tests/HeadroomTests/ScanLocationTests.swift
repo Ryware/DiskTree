@@ -2,8 +2,9 @@ import XCTest
 @testable import Headroom
 
 final class ScanLocationTests: XCTestCase {
-    private func location(_ path: String, volume: Bool = false, volumeName: String? = nil) -> ScanLocation {
-        ScanLocation(path: path, isVolumeRoot: volume, volumeName: volumeName, homePath: "/Users/ann", userName: "ann")
+    private func location(_ path: String, volume: Bool = false, volumeName: String? = nil,
+                          displayName: String? = nil) -> ScanLocation {
+        ScanLocation(path: path, isVolumeRoot: volume, volumeName: volumeName, displayName: displayName, homePath: "/Users/ann")
     }
 
     func testRootIsNamedAfterTheStartupDisk() {
@@ -27,14 +28,27 @@ final class ScanLocationTests: XCTestCase {
         XCTAssertEqual(l.symbol, "externaldrive")
     }
 
-    func testHomeFolder() {
+    func testHomeFolderIsNamedLikeFinder() {
         let l = location("/Users/ann/")
         XCTAssertEqual(l.kind, .home)
-        XCTAssertEqual(l.name, "Home (ann)")
+        XCTAssertEqual(l.name, "ann")
         XCTAssertEqual(l.symbol, "house")
-        XCTAssertEqual(l.phrase, "in Home (ann)")
-        XCTAssertEqual(l.title, "Home (ann)")
+        XCTAssertEqual(l.phrase, "in ann")
         XCTAssertEqual(l.detail, "/Users/ann")
+    }
+
+    func testFoldersUseFinderDisplayName() {
+        let l = location("/Users/ann/Downloads", displayName: "Загрузки")
+        XCTAssertEqual(l.kind, .folder)
+        XCTAssertEqual(l.name, "Загрузки")
+        XCTAssertEqual(l.phrase, "in Загрузки")
+    }
+
+    func testRealHomeURLMatchesFinder() {
+        let home = NSHomeDirectory()
+        let l = ScanLocation(url: URL(fileURLWithPath: home))
+        XCTAssertEqual(l.kind, .home)
+        XCTAssertEqual(l.name, FileManager.default.displayName(atPath: home))
     }
 
     func testPlainFolderKeepsItsNameAndPath() {
@@ -42,7 +56,6 @@ final class ScanLocationTests: XCTestCase {
         XCTAssertEqual(l.kind, .folder)
         XCTAssertEqual(l.name, "Caches")
         XCTAssertEqual(l.detail, "/Library/Caches")
-        XCTAssertEqual(l.title, "/Library/Caches")
         XCTAssertEqual(l.phrase, "in Caches")
     }
 
