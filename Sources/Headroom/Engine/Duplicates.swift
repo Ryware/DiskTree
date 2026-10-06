@@ -183,10 +183,15 @@ struct DuplicateFinder {
             // 50 GB file holds 50 GB in memory until the read loop ends.
             let chunk = 1 << 20
             while true {
+                // nil from read means end of file (sizes in whole MiB end on one); only a throw is a failure.
                 let more: Bool? = autoreleasepool {
-                    guard let data = try? handle.read(upToCount: chunk) else { return nil }
-                    hasher.update(data: data)
-                    return data.count == chunk
+                    do {
+                        guard let data = try handle.read(upToCount: chunk) else { return false }
+                        hasher.update(data: data)
+                        return data.count == chunk
+                    } catch {
+                        return nil
+                    }
                 }
                 guard let more else { return nil }
                 if !more { break }

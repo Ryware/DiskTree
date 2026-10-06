@@ -120,6 +120,16 @@ final class DuplicateFinderTests: XCTestCase {
         XCTAssertEqual(r.filesHashed, 0, "the sampling pass must eliminate the pair before any full read")
     }
 
+    func testFilesSizedInWholeMebibytesAreDuplicates() async throws {
+        // The full hash reads 1 MiB chunks; at EOF FileHandle returns nil rather than empty Data.
+        let a = blob(3, 2 << 20)
+        try writeContent("one.bin", a)
+        try writeContent("two.bin", a)
+        XCTAssertNotNil(DuplicateFinder.hash(path: dir.appendingPathComponent("one.bin").path, full: true))
+        let r = try await find()
+        XCTAssertEqual(r.groups.first?.count, 2)
+    }
+
     func testHashHelper() throws {
         let url = dir.appendingPathComponent("h.bin")
         try Data("hello".utf8).write(to: url)
