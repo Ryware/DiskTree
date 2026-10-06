@@ -113,7 +113,7 @@ jobs:
           fi
           gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json url -q .url
 
-      # Publishes `brew install --cask ryware/tap/headroom`. Needs a HOMEBREW_TAP_TOKEN secret:
+      # Publishes `brew install ryware/tap/headroom`. Needs a HOMEBREW_TAP_TOKEN secret:
       # a fine-grained token with Contents: read and write on Ryware/homebrew-tap. Skipped without it.
       - name: Update Homebrew cask
         env:
