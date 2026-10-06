@@ -30,6 +30,8 @@ enum Pane: String, CaseIterable, Identifiable {
 struct ContentView: View {
     @EnvironmentObject var state: AppState
     @State private var pane: Pane = .dashboard
+    /// Category to open By Category with, set when the Dashboard links to one.
+    @State private var categoryFocus: FileCategory?
     @State private var showInspector = false
     @State private var pendingDelete: [FileNode] = []
     @State private var showDeleteConfirm = false
@@ -117,10 +119,10 @@ struct ContentView: View {
             WelcomeView()
         } else {
             switch pane {
-            case .dashboard: DashboardView(pane: $pane)
+            case .dashboard: DashboardView(pane: $pane, categoryFocus: $categoryFocus)
             case .tree: TreeView()
             case .treemap: TreemapView()
-            case .categories: CategoriesView()
+            case .categories: CategoriesView(initial: categoryFocus).onDisappear { categoryFocus = nil }
             case .largest: LargestFilesView()
             case .duplicates: DuplicatesView()
             case .cleanup: CleanupView()

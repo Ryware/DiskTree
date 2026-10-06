@@ -9,6 +9,10 @@ struct CategoriesView: View {
     @State private var items: [FileNode] = []
     @State private var itemSelection: Set<FileNode.ID> = []
 
+    init(initial: FileCategory? = nil) {
+        _selected = State(initialValue: initial)
+    }
+
     private struct Row: Identifiable {
         let category: FileCategory
         let bytes: Int64
