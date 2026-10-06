@@ -33,7 +33,8 @@ final class MCPServerTests: XCTestCase {
         let result = try XCTUnwrap(response?["result"] as? [String: Any])
         let tools = try XCTUnwrap(result["tools"] as? [[String: Any]])
         XCTAssertEqual(tools.compactMap { $0["name"] as? String },
-                       ["disk_status", "scan_folder", "find_cleanup", "explain_path", "find_duplicates", "move_to_trash"])
+                       ["disk_status", "headroom_state", "scan_folder", "list_folder", "largest_files", "find_cleanup",
+                        "explain_path", "find_duplicates", "open_in_headroom", "move_to_trash"])
         for tool in tools {
             XCTAssertEqual((tool["inputSchema"] as? [String: Any])?["type"] as? String, "object")
         }
@@ -119,6 +120,91 @@ final class MCPServerTests: XCTestCase {
         XCTAssertTrue(noPath.isError)
         let noPaths = try await call("move_to_trash", ["paths": [String]()])
         XCTAssertTrue(noPaths.isError)
+    }
+
+    func testScansAreCachedUntilRefresh() async throws {
+        let root = try TestSupport.makeTempDir("mcp-cache")
+        defer { try? FileManager.default.removeItem(at: root) }
+        try TestSupport.write(root.appendingPathComponent("sub/a.bin"), bytes: 50_000)
+
+        let first = try await call("scan_folder", ["path": root.path])
+        let firstScan = try XCTUnwrap((first.body as? [String: Any])?["scan"] as? [String: Any])
+        XCTAssertEqual(firstScan["source"] as? String, "mcp")
+
+        // A subfolder of a cached tree is answered from the cache, even after the disk changes.
+        try TestSupport.write(root.appendingPathComponent("sub/b.bin"), bytes: 50_000)
+        let cached = try await call("scan_folder", ["path": root.appendingPathComponent("sub").path])
+        XCTAssertEqual(((cached.body as? [String: Any])?["scan"] as? [String: Any])?["root"] as? String, root.path)
+        XCTAssertEqual((cached.body as? [String: Any])?["files"] as? Int, 1)
+
+        let fresh = try await call("scan_folder", ["path": root.appendingPathComponent("sub").path, "refresh": true])
+        XCTAssertEqual((fresh.body as? [String: Any])?["files"] as? Int, 2)
+    }
+
+    func testListFolderExpandsToDepth() async throws {
+        let root = try TestSupport.makeTempDir("mcp-list")
+        defer { try? FileManager.default.removeItem(at: root) }
+        try TestSupport.write(root.appendingPathComponent("a/b/deep.bin"), bytes: 40_000)
+        try TestSupport.write(root.appendingPathComponent("top.txt"), bytes: 10)
+
+        let (_, body) = try await call("list_folder", ["path": root.path, "depth": 2, "refresh": true])
+        let tree = try XCTUnwrap((body as? [String: Any])?["tree"] as? [String: Any])
+        let children = try XCTUnwrap(tree["children"] as? [[String: Any]])
+        XCTAssertEqual(children.first?["path"] as? String, root.appendingPathComponent("a").path)
+        let grandchildren = try XCTUnwrap(children.first?["children"] as? [[String: Any]])
+        XCTAssertEqual(grandchildren.first?["path"] as? String, root.appendingPathComponent("a/b").path)
+        XCTAssertNil(grandchildren.first?["children"], "depth 2 stops below the grandchildren")
+    }
+
+    func testListFolderSummarizesTruncatedChildren() async throws {
+        let root = try TestSupport.makeTempDir("mcp-more")
+        defer { try? FileManager.default.removeItem(at: root) }
+        for i in 0..<5 { try TestSupport.write(root.appendingPathComponent("f\(i).bin"), bytes: 10_000) }
+
+        let (_, body) = try await call("list_folder", ["path": root.path, "limit": 2, "refresh": true])
+        let tree = try XCTUnwrap((body as? [String: Any])?["tree"] as? [String: Any])
+        XCTAssertEqual((tree["children"] as? [Any])?.count, 2)
+        XCTAssertEqual((tree["more"] as? [String: Any])?["items"] as? Int, 3)
+    }
+
+    func testLargestFilesByCategory() async throws {
+        let root = try TestSupport.makeTempDir("mcp-largest")
+        defer { try? FileManager.default.removeItem(at: root) }
+        try TestSupport.write(root.appendingPathComponent("movie.mov"), bytes: 300_000)
+        try TestSupport.write(root.appendingPathComponent("photo.jpg"), bytes: 100_000)
+        try TestSupport.write(root.appendingPathComponent("node_modules/lib.js"), bytes: 200_000)
+
+        let video = try await call("largest_files", ["path": root.path, "category": "video", "refresh": true])
+        let videoItems = try XCTUnwrap((video.body as? [String: Any])?["items"] as? [[String: Any]])
+        XCTAssertEqual(videoItems.map { $0["path"] as? String }, [root.appendingPathComponent("movie.mov").path])
+
+        // Files take the category forced by their folder (node_modules → packages).
+        let packages = try await call("largest_files", ["path": root.path, "category": "packages"])
+        let packageItems = try XCTUnwrap((packages.body as? [String: Any])?["items"] as? [[String: Any]])
+        XCTAssertEqual(packageItems.first?["path"] as? String, root.appendingPathComponent("node_modules/lib.js").path)
+
+        let all = try await call("largest_files", ["path": root.path, "limit": 2])
+        XCTAssertEqual(((all.body as? [String: Any])?["items"] as? [Any])?.count, 2)
+
+        let bad = try await call("largest_files", ["path": root.path, "category": "nope"])
+        XCTAssertTrue(bad.isError)
+    }
+
+    func testHeadroomStateWithoutApp() async throws {
+        let (_, body) = try await call("headroom_state", [:])
+        XCTAssertEqual((body as? [String: Any])?["app_running"] as? Bool, false)
+        let open = try await call("open_in_headroom", ["path": NSTemporaryDirectory()])
+        XCTAssertTrue(open.isError)
+    }
+
+    func testFindLocatesNodesByPath() {
+        let root = TestSupport.tree("root", path: "/r") { r in
+            [TestSupport.tree("a", path: "/r/a", parent: r) { a in [TestSupport.file("x", size: 1, parent: a)] }]
+        }
+        XCTAssertTrue(MCPServer.find("/r", in: root) === root)
+        XCTAssertEqual(MCPServer.find("/r/a/x", in: root)?.name, "x")
+        XCTAssertNil(MCPServer.find("/r/b", in: root))
+        XCTAssertNil(MCPServer.find("/rr/a", in: root))
     }
 
     func testChainLinksParents() {
