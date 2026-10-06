@@ -140,12 +140,10 @@ struct DuplicateFinder {
                 for i in lo..<hi {
                     if Task.isCancelled { return }
                     let node = nodes[i]
-                    let key: String
-                    if let digest = hash(path: node.path, mode: mode, size: node.logicalSize) {
-                        key = "\(node.logicalSize):\(digest)"
-                    } else {
-                        key = "unreadable:\(node.id.uuidString)"
-                    }
+                    // A lane runs for thousands of files and GCD only drains its pool when the lane
+                    // ends, so without this every byte read stays alive until then.
+                    let digest = autoreleasepool { hash(path: node.path, mode: mode, size: node.logicalSize) }
+                    let key = digest.map { "\(node.logicalSize):\($0)" } ?? "unreadable:\(node.id.uuidString)"
                     let read: Int64
                     switch mode {
                     case .head: read = Int64(min(prefixBytes, Int(node.logicalSize)))
@@ -181,12 +179,17 @@ struct DuplicateFinder {
                 hasher.update(data: data)
             }
         case .full:
+            // FileHandle.read returns autoreleased buffers: drain each chunk, or hashing a
+            // 50 GB file holds 50 GB in memory until the read loop ends.
             let chunk = 1 << 20
             while true {
-                guard let data = try? handle.read(upToCount: chunk) else { return nil }
-                if data.isEmpty { break }
-                hasher.update(data: data)
-                if data.count < chunk { break }
+                let more: Bool? = autoreleasepool {
+                    guard let data = try? handle.read(upToCount: chunk) else { return nil }
+                    hasher.update(data: data)
+                    return data.count == chunk
+                }
+                guard let more else { return nil }
+                if !more { break }
             }
         }
         return hasher.finalize().map { String(format: "%02x", $0) }.joined()
