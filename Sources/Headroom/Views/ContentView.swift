@@ -41,7 +41,8 @@ struct ContentView: View {
             VStack(spacing: 0) {
                 ZStack { detail }.frame(maxWidth: .infinity, maxHeight: .infinity)
                 Divider()
-                StatusBar()
+                // Duplicates has its own selection (ticked copies); the global one would be stale there.
+                StatusBar(showsSelection: pane != .duplicates)
             }
             .frame(minWidth: 520, minHeight: 420)
             .task {
@@ -184,6 +185,7 @@ struct DeleteSummary: Identifiable {
 
 struct StatusBar: View {
     @EnvironmentObject var state: AppState
+    var showsSelection = true
     var body: some View {
         HStack(spacing: 12) {
             switch state.phase {
@@ -202,7 +204,7 @@ struct StatusBar: View {
                 Text("Scan failed: \(msg)").foregroundStyle(.red)
             }
             Spacer()
-            if !state.selection.isEmpty {
+            if showsSelection && !state.selection.isEmpty {
                 let total = state.selectedNodes.reduce(0) { $0 + $1.allocatedSize }
                 Text("\(state.selection.count) selected · \(total.humanBytes)").foregroundStyle(.secondary)
             }
