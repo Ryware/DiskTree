@@ -61,6 +61,7 @@ struct IntroView: View {
     @State var page: Int = 0
     @State private var revealed = 0            // bullets shown on the current page
     @State private var artTick = 0             // drives per-page art animation
+    @State private var keyMonitor: Any?
 
     var body: some View {
         ZStack {
@@ -76,7 +77,8 @@ struct IntroView: View {
             }
         }
         .frame(width: 760, height: 460)
-        .onAppear { reveal() }
+        .onAppear { reveal(); installArrowKeys() }
+        .onDisappear { if let keyMonitor { NSEvent.removeMonitor(keyMonitor) } }
         .onChange(of: page) { _, _ in reveal() }
         .task {
             while !Task.isCancelled {
@@ -109,6 +111,26 @@ struct IntroView: View {
         .id(page)
         .transition(.asymmetric(insertion: .move(edge: .trailing).combined(with: .opacity),
                                 removal: .move(edge: .leading).combined(with: .opacity)))
+    }
+
+    /// ← / → page through the tour, whichever control has keyboard focus.
+    private func installArrowKeys() {
+        guard keyMonitor == nil else { return }
+        let page = $page
+        keyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+            guard event.window?.sheetParent != nil,
+                  event.modifierFlags.intersection([.command, .option, .control, .shift]).isEmpty else { return event }
+            switch event.keyCode {
+            case 123 where page.wrappedValue > 0:
+                withAnimation(.spring(duration: 0.45)) { page.wrappedValue -= 1 }
+                return nil
+            case 124 where page.wrappedValue < steps.count - 1:
+                withAnimation(.spring(duration: 0.45)) { page.wrappedValue += 1 }
+                return nil
+            default:
+                return event
+            }
+        }
     }
 
     private func reveal() {
@@ -152,25 +174,29 @@ struct IntroView: View {
         HStack {
             Button("Skip") { dismiss() }.buttonStyle(.plain).foregroundStyle(.white.opacity(0.7))
             Spacer()
-            HStack(spacing: 6) {
-                ForEach(steps) { s in
-                    Capsule().fill(.white.opacity(s.id == page ? 0.95 : 0.35))
-                        .frame(width: s.id == page ? 22 : 8, height: 8)
-                        .animation(.spring(duration: 0.35), value: page)
+            VStack(spacing: 6) {
+                HStack(spacing: 6) {
+                    ForEach(steps) { s in
+                        Capsule().fill(.white.opacity(s.id == page ? 0.95 : 0.35))
+                            .frame(width: s.id == page ? 22 : 8, height: 8)
+                            .animation(.spring(duration: 0.35), value: page)
+                    }
                 }
+                Text("Use ← → to move between pages").font(.caption2).foregroundStyle(.white.opacity(0.55))
             }
             Spacer()
             HStack(spacing: 8) {
                 if page > 0 {
                     Button("Back") { withAnimation(.spring(duration: 0.45)) { page -= 1 } }
                         .buttonStyle(.plain).foregroundStyle(.white.opacity(0.85))
-                        .keyboardShortcut(.leftArrow, modifiers: [])
+                        .help("Previous page (←)")
                 }
                 Button(page == steps.count - 1 ? "Get Started" : "Next") {
                     if page == steps.count - 1 { dismiss() } else { withAnimation(.spring(duration: 0.45)) { page += 1 } }
                 }
                 .buttonStyle(.borderedProminent).tint(.white).foregroundStyle(Color(red: 0.35, green: 0.25, blue: 0.9))
                 .keyboardShortcut(.defaultAction)
+                .help(page == steps.count - 1 ? "Close the tour (Return)" : "Next page (→ or Return)")
             }
         }
         .padding(.horizontal, 24).padding(.vertical, 16)

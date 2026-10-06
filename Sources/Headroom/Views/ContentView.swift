@@ -241,7 +241,8 @@ extension ContentView {
     private func installArrowKeys() {
         guard keyMonitor == nil else { return }
         keyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [nav] event in
-            guard event.modifierFlags.intersection(.deviceIndependentFlagsMask) == .command,
+            // Arrow keys also carry .function and .numericPad, so compare only the real modifiers.
+            guard event.modifierFlags.intersection([.command, .option, .control, .shift]) == .command,
                   let window = event.window, window.canBecomeMain, window.attachedSheet == nil,
                   !(window.firstResponder is NSText) else { return event }
             switch event.keyCode {
