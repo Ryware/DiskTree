@@ -438,22 +438,70 @@ private struct MenuBarArt: View {
     }
 }
 
-/// App icon that settles in once over a soft glow. Deliberately static afterwards: a looping ring
-/// around the icon reads as a progress spinner, and users waited for a scan that wasn't running.
+/// App icon floating over a soft glow, with sparkles and drifting motes of light.
+/// Alive but not "working": nothing moves in a circle, nothing travels along a track and
+/// nothing repeats in a way that reads as progress. (A ring with an orbiting light used to sit
+/// here and users waited for a scan that wasn't running.)
 private struct HeroArt: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var shown = false
+
+    /// Fixed spots around the icon; each twinkles on its own schedule.
+    private let sparkles: [(x: CGFloat, y: CGFloat, size: CGFloat, delay: Double)] = [
+        (-108, -82, 30, 0.0), (100, -100, 22, 1.1), (116, 60, 26, 2.3), (-98, 96, 18, 3.0), (8, -132, 16, 1.7),
+        (-122, 12, 14, 0.6), (126, -18, 12, 2.8),
+    ]
+
     var body: some View {
-        ZStack {
-            Circle()
-                .fill(RadialGradient(colors: [.white.opacity(0.35), .clear], center: .center, startRadius: 40, endRadius: 130))
-                .frame(width: 260, height: 260)
-                .opacity(shown ? 1 : 0)
-            Image(nsImage: NSApp.applicationIconImage).resizable().interpolation(.high)
-                .frame(width: 190, height: 190)
-                .shadow(color: .black.opacity(0.35), radius: 20, y: 12)
-                .scaleEffect(shown ? 1 : 0.8)
-                .opacity(shown ? 1 : 0)
+        TimelineView(.animation(paused: reduceMotion)) { timeline in
+            let t = reduceMotion ? 0 : timeline.date.timeIntervalSinceReferenceDate
+            let float = sin(t * 2 * .pi / 4.5)            // -1...1, one slow breath every 4.5 s
+            ZStack {
+                Circle()
+                    .fill(RadialGradient(colors: [.white.opacity(0.4), .clear], center: .center, startRadius: 30, endRadius: 135))
+                    .frame(width: 270, height: 270)
+                    .scaleEffect(1 + 0.05 * float)
+                    .opacity(shown ? 0.8 + 0.2 * float : 0)
+                ForEach(0..<16, id: \.self) { i in mote(i, t: t) }
+                Image(nsImage: NSApp.applicationIconImage).resizable().interpolation(.high)
+                    .frame(width: 190, height: 190)
+                    .shadow(color: .black.opacity(0.3 - 0.06 * float), radius: 20 + 4 * float, y: 14 + 4 * float)
+                    .rotation3DEffect(.degrees(6 * sin(t * 2 * .pi / 7)), axis: (x: 0.2, y: 1, z: 0), perspective: 0.6)
+                    .offset(y: -8 * float)
+                    .scaleEffect(shown ? 1 : 0.8)
+                    .opacity(shown ? 1 : 0)
+                ForEach(sparkles.indices, id: \.self) { i in sparkle(sparkles[i], t: t) }
+            }
+            .frame(width: 260, height: 260)
         }
-        .onAppear { withAnimation(.spring(duration: 0.7, bounce: 0.3)) { shown = true } }
+        .onAppear { withAnimation(.spring(duration: 0.8, bounce: 0.35)) { shown = true } }
+    }
+
+    /// Soft dot of light drifting up and fading, each with its own speed, lane and sway.
+    private func mote(_ i: Int, t: Double) -> some View {
+        let period = 7 + Double(i % 4) * 1.6
+        let u = (t / period + Double(i) * 0.137).truncatingRemainder(dividingBy: 1)   // 0...1 through its life
+        let lane = CGFloat((i * 53) % 220) - 110
+        let sway = CGFloat(sin(t * 0.7 + Double(i) * 1.9)) * 10
+        let size = CGFloat(4 + (i * 7) % 9)
+        return Circle()
+            .fill(.white)
+            .frame(width: size, height: size)
+            .blur(radius: size / 4)
+            .opacity(reduceMotion || !shown ? 0 : 0.75 * sin(.pi * u))
+            .offset(x: lane + sway, y: 120 - CGFloat(u) * 240)
+    }
+
+    /// Four-point star that flashes briefly, then rests.
+    private func sparkle(_ s: (x: CGFloat, y: CGFloat, size: CGFloat, delay: Double), t: Double) -> some View {
+        let phase = ((t + s.delay) / 4.2).truncatingRemainder(dividingBy: 1)
+        let flash = reduceMotion ? 0.6 : pow(max(0, sin(phase * 2 * .pi)), 3)
+        return Image(systemName: "sparkle")
+            .font(.system(size: s.size, weight: .medium))
+            .foregroundStyle(.white)
+            .shadow(color: .white.opacity(0.9), radius: 8)
+            .scaleEffect(0.4 + 0.6 * flash)
+            .opacity(shown ? flash : 0)
+            .offset(x: s.x, y: s.y)
     }
 }
