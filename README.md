@@ -227,6 +227,14 @@ The duplicate finder hashes with `pread(2)` into one reusable buffer per worker,
 
 ## Install
 
+With [Homebrew](https://brew.sh):
+
+```sh
+brew install --cask ryware/tap/headroom
+```
+
+`brew upgrade --cask headroom` picks up new releases. Or download the DMG:
+
 1. Open the [latest release](../../releases/latest).
 2. Download `Headroom-<version>.dmg`.
 3. Drag **Headroom** to **Applications**.
