@@ -258,7 +258,7 @@ Releases are built by GitHub Actions on a macOS runner. Pushing a version tag bu
 ```sh
 # 1. bump CFBundleShortVersionString / CFBundleVersion in Info.plist (and project.yml), add a CHANGELOG section
 # 2. commit and push, then:
-git tag -a v1.0.4 -m "Headroom 1.0.4" && git push origin v1.0.4
+git tag -a v1.0.5 -m "Headroom 1.0.5" && git push origin v1.0.5
 ```
 
 The workflow (`.github/workflows/release.yml`) needs five repository secrets: `MACOS_CERT_P12` (base64 of the exported Developer ID Application `.p12`), `MACOS_CERT_PASSWORD`, and an App Store Connect API key as `ASC_KEY_ID`, `ASC_ISSUER_ID` and `ASC_KEY_P8` (base64 of the `.p8`). The tag must match the version in `Info.plist` or the run fails before building.
@@ -320,6 +320,14 @@ An antivirus or ransomware shield on your Mac is blocking Headroom from deleting
 
 **Why does Move to Trash say "You do not have permission to move … to the trash"?**  
 The same security products refuse Trash moves too, and macOS reports it with the words it uses for a real permission problem. Headroom tells the two apart: a refusal that was held for seconds is the shield. Allow Headroom in it (AVG and Avast: Menu › Settings › General › Blocked & Allowed Apps; Bitdefender: Protection › Anti-Ransomware › Safe Files › Manage Applications), or click **Reveal in Finder** in the result and delete there, since Finder is always allowed. Without a security product, check System Settings › Privacy & Security › Files and Folders, or whether the item belongs to another user. The in-app **How to Fix** link opens the [landing-page FAQ](https://headroom-app.org/#faq-trash-blocked).
+
+## Contributors
+
+Thanks to everyone who has helped make Headroom better:
+
+- [@SonyStone](https://github.com/SonyStone): Finder-style names for scanned locations (#10), a clickable By Category chart (#11), a clickable Dashboard (#12), smooth Treemap hover (#13) and a clearer Duplicates flow (#14), each with a careful bug report first.
+
+Bug reports and pull requests are welcome on [GitHub](https://github.com/Ryware/Headroom).
 
 ## License
 

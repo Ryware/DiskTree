@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.5 — Unreleased
+## 1.0.5 — October 7, 2026
 
 ### 🚀 New feature
 
@@ -21,6 +21,10 @@
 - **Treemap hover is smooth in Safety mode.** Moving the pointer repainted every cell, and Safety colours rebuilt each cell's explanation text on every frame. The map now redraws only when its layout, colours or selection change, and colours are worked out once. Safety badges in Duplicates, Cleanup and Largest Files are cheaper too (#13).
 - The inspector showed the scanned root's location as `/..`.
 - In Duplicates, the status bar no longer shows a selection left over from Folder Tree, and the inspector follows the copy you click instead of a folder picked elsewhere (#14).
+
+### 🙏 Thanks
+
+Most of this release comes from [@SonyStone](https://github.com/SonyStone), who reported five rough edges (#4–#8) and then fixed each one: Finder-style location names (#10), the clickable By Category chart (#11) and Dashboard (#12), smooth Treemap hover (#13) and the Duplicates next step (#14). Thank you!
 
 ## 1.0.4 — October 6, 2026
 
