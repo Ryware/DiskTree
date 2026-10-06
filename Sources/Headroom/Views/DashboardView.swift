@@ -245,7 +245,9 @@ struct DashboardView: View {
         VStack(alignment: .leading, spacing: 10) {
             Label("Dashboard", systemImage: "chart.bar.xaxis")
                 .font(.system(size: 28, weight: .bold, design: .rounded))
-            Text(root.path).font(.callout).lineLimit(2).truncationMode(.middle).textSelection(.enabled)
+            Label(state.rootLocation?.summary ?? root.path, systemImage: state.rootLocation?.symbol ?? "folder")
+                .font(.callout).lineLimit(2).truncationMode(.middle).textSelection(.enabled)
+                .help(root.path)
             HStack(spacing: 12) {
                 if let finished = state.progress.finished {
                     Text("Scanned \(finished.formatted(date: .abbreviated, time: .shortened))")

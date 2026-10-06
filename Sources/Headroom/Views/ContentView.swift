@@ -91,12 +91,13 @@ struct ContentView: View {
             ForEach(Pane.allCases) { s in
                 Label(s.title, systemImage: s.symbol).tag(s)
             }
-            if let root = state.root {
+            if let root = state.root, let location = state.rootLocation {
                 Spacer().frame(height: 8)
                 Section("Scanned") {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(root.name).font(.headline).lineLimit(1)
-                        Text(root.path).font(.caption).foregroundStyle(.secondary).lineLimit(2).truncationMode(.middle)
+                        Label(location.name, systemImage: location.symbol).font(.headline).lineLimit(1)
+                        Text(location.detail).font(.caption).foregroundStyle(.secondary).lineLimit(2).truncationMode(.middle)
+                            .help(location.path)
                         Text("\(root.allocatedSize.humanBytes) · \(root.fileCount.formatted()) files")
                             .font(.caption).foregroundStyle(.secondary)
                     }

@@ -32,7 +32,7 @@ struct DuplicatesView: View {
                 progress(p)
             } else if let d = state.duplicates {
                 if d.groups.isEmpty {
-                    placeholder("No duplicate files of 1 MB or more in \(state.root?.name ?? "this folder").", symbol: "checkmark.circle")
+                    placeholder("No duplicate files of 1 MB or more \(state.rootLocation?.phrase ?? "in this folder").", symbol: "checkmark.circle")
                 } else {
                     list
                 }
@@ -86,7 +86,7 @@ struct DuplicatesView: View {
     private var start: some View {
         VStack(spacing: 14) {
             Image(systemName: "doc.on.doc").font(.system(size: 44, weight: .light)).foregroundStyle(.secondary)
-            Text("Find duplicate files in \(state.root?.name ?? "the scanned folder")").font(.title3.weight(.semibold))
+            Text("Find duplicate files \(state.rootLocation?.phrase ?? "in the scanned folder")").font(.title3.weight(.semibold))
             Text("Files are grouped by size, then compared by content hash, so only true byte-for-byte copies are listed. Files inside app bundles and files under 1 MB are skipped.")
                 .multilineTextAlignment(.center).foregroundStyle(.secondary).frame(maxWidth: 440)
             Button("Find duplicates") { state.findDuplicates() }.buttonStyle(.borderedProminent).controlSize(.large)
