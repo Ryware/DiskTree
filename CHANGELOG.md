@@ -16,6 +16,7 @@
 
 ### 🐛 Fixed
 
+- **Treemap hover is smooth in Safety mode.** Moving the pointer repainted every cell, and Safety colours rebuilt each cell's explanation text on every frame. The map now redraws only when its layout, colours or selection change, and colours are worked out once. Safety badges in Duplicates, Cleanup and Largest Files are cheaper too (#13).
 - The inspector showed the scanned root's location as `/..`.
 
 ## 1.0.4 — October 6, 2026
