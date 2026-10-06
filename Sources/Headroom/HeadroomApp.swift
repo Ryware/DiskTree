@@ -50,6 +50,7 @@ struct HeadroomApp: App {
                 .background(WindowSizing(minSize: NSSize(width: 1120, height: 680)))
                 .sheet(isPresented: $showIntro, onDismiss: { seenIntroVersion = currentIntroVersion }) {
                     IntroView(page: introPage)
+                        .environmentObject(state)
                 }
                 .task {
                     // First launch → full tour; updated app → jump to What's New.

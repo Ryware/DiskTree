@@ -58,6 +58,7 @@ private let steps: [IntroStep] = [
 
 struct IntroView: View {
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var state: AppState
     @State var page: Int = 0
     @State private var revealed = 0            // bullets shown on the current page
     @State private var artTick = 0             // drives per-page art animation
@@ -105,10 +106,22 @@ struct IntroView: View {
                     .animation(.spring(duration: 0.45, bounce: 0.2).delay(Double(i) * 0.12), value: revealed)
                 }
             }
+            if let status {
+                Label(status.text, systemImage: status.symbol)
+                    .font(.callout).foregroundStyle(.white.opacity(0.75))
+                    .padding(.top, 6)
+            }
         }
         .id(page)
         .transition(.asymmetric(insertion: .move(edge: .trailing).combined(with: .opacity),
                                 removal: .move(edge: .leading).combined(with: .opacity)))
+    }
+
+    /// Says whether anything is running behind the sheet, so the tour is never mistaken for a scan.
+    private var status: (text: String, symbol: String)? {
+        if state.isScanning { return ("Scanning in the background. You can keep reading.", "arrow.triangle.2.circlepath") }
+        if page == 0 { return ("Nothing is scanned until you pick a folder.", "hand.tap") }
+        return nil
     }
 
     private func reveal() {
@@ -123,7 +136,7 @@ struct IntroView: View {
         ZStack {
             switch step.art {
             case .hero:
-                HeroLoader()
+                HeroArt()
             case .scan:
                 BentoLoader().frame(width: 220, height: 220)
             case .tree, .treemap:
@@ -152,12 +165,16 @@ struct IntroView: View {
         HStack {
             Button("Skip") { dismiss() }.buttonStyle(.plain).foregroundStyle(.white.opacity(0.7))
             Spacer()
-            HStack(spacing: 6) {
-                ForEach(steps) { s in
-                    Capsule().fill(.white.opacity(s.id == page ? 0.95 : 0.35))
-                        .frame(width: s.id == page ? 22 : 8, height: 8)
-                        .animation(.spring(duration: 0.35), value: page)
+            HStack(spacing: 10) {
+                HStack(spacing: 6) {
+                    ForEach(steps) { s in
+                        Capsule().fill(.white.opacity(s.id == page ? 0.95 : 0.35))
+                            .frame(width: s.id == page ? 22 : 8, height: 8)
+                            .animation(.spring(duration: 0.35), value: page)
+                    }
                 }
+                Text("\(page + 1) of \(steps.count)")
+                    .font(.caption.monospacedDigit()).foregroundStyle(.white.opacity(0.65))
             }
             Spacer()
             HStack(spacing: 8) {
@@ -169,12 +186,25 @@ struct IntroView: View {
                 Button(page == steps.count - 1 ? "Get Started" : "Next") {
                     if page == steps.count - 1 { dismiss() } else { withAnimation(.spring(duration: 0.45)) { page += 1 } }
                 }
-                .buttonStyle(.borderedProminent).tint(.white).foregroundStyle(Color(red: 0.35, green: 0.25, blue: 0.9))
+                .buttonStyle(IntroPrimaryButtonStyle())
                 .keyboardShortcut(.defaultAction)
             }
         }
         .padding(.horizontal, 24).padding(.vertical, 16)
         .background(.black.opacity(0.15))
+    }
+}
+
+/// Solid white pill: the one obvious thing to press, whether or not the window is key.
+private struct IntroPrimaryButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.body.weight(.semibold))
+            .foregroundStyle(Color(red: 0.35, green: 0.25, blue: 0.9))
+            .padding(.horizontal, 22).padding(.vertical, 8)
+            .background(.white.opacity(configuration.isPressed ? 0.8 : 1), in: Capsule())
+            .shadow(color: .black.opacity(0.2), radius: 6, y: 3)
+            .contentShape(Capsule())
     }
 }
 
@@ -408,24 +438,22 @@ private struct MenuBarArt: View {
     }
 }
 
-/// App icon with an orbiting light — reads as "working", not a static picture.
-private struct HeroLoader: View {
-    @State private var spin = false
+/// App icon that settles in once over a soft glow. Deliberately static afterwards: a looping ring
+/// around the icon reads as a progress spinner, and users waited for a scan that wasn't running.
+private struct HeroArt: View {
+    @State private var shown = false
     var body: some View {
         ZStack {
             Circle()
-                .stroke(AngularGradient(colors: [.clear, .white.opacity(0.9), .clear], center: .center), lineWidth: 6)
-                .frame(width: 236, height: 236)
-                .rotationEffect(.degrees(spin ? 360 : 0))
-                .animation(.linear(duration: 2.2).repeatForever(autoreverses: false), value: spin)
-            Circle().fill(.white).frame(width: 12, height: 12).shadow(color: .white, radius: 8)
-                .offset(y: -118)
-                .rotationEffect(.degrees(spin ? 360 : 0))
-                .animation(.linear(duration: 2.2).repeatForever(autoreverses: false), value: spin)
+                .fill(RadialGradient(colors: [.white.opacity(0.35), .clear], center: .center, startRadius: 40, endRadius: 130))
+                .frame(width: 260, height: 260)
+                .opacity(shown ? 1 : 0)
             Image(nsImage: NSApp.applicationIconImage).resizable().interpolation(.high)
                 .frame(width: 190, height: 190)
                 .shadow(color: .black.opacity(0.35), radius: 20, y: 12)
+                .scaleEffect(shown ? 1 : 0.8)
+                .opacity(shown ? 1 : 0)
         }
-        .onAppear { spin = true }
+        .onAppear { withAnimation(.spring(duration: 0.7, bounce: 0.3)) { shown = true } }
     }
 }
