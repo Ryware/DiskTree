@@ -212,6 +212,59 @@ The duplicate finder hashes with `pread(2)` into one reusable buffer per worker,
 
 A notarized release should open normally through Gatekeeper. If you build locally, the ad-hoc signed development build is placed in `build/Headroom.app`.
 
+## Use with AI agents (MCP and command line)
+
+Agents can analyze your disk with the same scanner and safety rules as the app, through a command line tool or a [Model Context Protocol](https://modelcontextprotocol.io) server. While the app is open, both use the folder shown in its window, and a duplicate search an agent starts shows up there.
+
+Agents need no setup: the app carries instructions for them in `Headroom.app/Contents/Resources/AGENTS.md`, so an agent that looks for Headroom finds out how to use it. To make an agent load Headroom's tools in every session, register the MCP server below.
+
+### Command line
+
+The app binary is also a command line tool. Every command prints JSON:
+
+```sh
+H=/Applications/Headroom.app/Contents/MacOS/Headroom
+$H help                          # commands; `$H help <command>` for options
+$H status                        # free space on the startup disk
+$H scan ~ --limit 10             # sizes, categories, largest items, reclaimable total
+$H cleanup ~/Developer           # node_modules, DerivedData, caches… with safety advice
+$H duplicates ~/Downloads --min-size-mb 50
+$H explain ~/Library/Caches
+$H trash ~/Downloads/old.dmg --yes   # recoverable; --yes is required
+```
+
+### MCP server
+
+Run the app binary with `--mcp`; it talks JSON-RPC on stdio and opens no window. While the app is open it also serves MCP over HTTP at `http://127.0.0.1:47120/mcp`.
+
+```sh
+claude mcp add headroom -- /Applications/Headroom.app/Contents/MacOS/Headroom --mcp
+```
+
+For clients configured with JSON (Claude Desktop, Cursor, …):
+
+```json
+{
+  "mcpServers": {
+    "headroom": {
+      "command": "/Applications/Headroom.app/Contents/MacOS/Headroom",
+      "args": ["--mcp"]
+    }
+  }
+}
+```
+
+| Tool | What it does |
+| --- | --- |
+| `disk_status` | Free, used and total space on a volume |
+| `scan_folder` | Size, largest subfolders and files, space by category |
+| `find_cleanup` | Caches, `node_modules`, DerivedData, build output, logs and Trash, with safety advice. Without a path, checks the well-known cache locations |
+| `explain_path` | What a file or folder is and whether it is safe to delete |
+| `find_duplicates` | Byte-for-byte identical files, ranked by wasted space |
+| `move_to_trash` | Moves items to the Trash (recoverable). Refuses anything marked *Do not delete* and top-level system and home folders |
+
+Everything except `move_to_trash` is read-only, and permanent deletion is not exposed. Like the app, the server reads only what macOS lets it: grant Headroom Full Disk Access to scan protected locations. The sandboxed App Store build can only scan paths the sandbox allows; use the direct download for MCP.
+
 ## Build from source
 
 Requires Xcode 15 or newer.
@@ -257,6 +310,8 @@ Sources/Headroom
 │   ├── Deleter.swift
 │   ├── SafetyInfo.swift
 │   └── Scanner.swift
+├── MCP
+│   └── MCPServer.swift
 └── Views
     ├── DashboardView.swift
     ├── OutlineTreeView.swift
