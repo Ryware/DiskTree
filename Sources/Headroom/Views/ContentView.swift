@@ -67,10 +67,7 @@ struct ContentView: View {
             }
             Button("Cancel", role: .cancel) { pendingDelete = [] }
         } message: {
-            let total = pendingDelete.reduce(0) { $0 + $1.allocatedSize }
-            Text(state.deleteMode == .trash
-                 ? "\(total.humanBytes) will be moved to the Trash."
-                 : "\(total.humanBytes) will be removed permanently. This cannot be undone.")
+            Text(confirmMessage(for: pendingDelete, mode: state.deleteMode))
         }
         .overlay(alignment: .bottom) {
             if let r = state.lastDeleteResult {
@@ -217,6 +214,20 @@ struct StatusBar: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
     }
+}
+
+/// What the delete confirmation says. Mentions an installed security product up front when the
+/// items sit in a folder it guards, so a stop a moment later is not a mystery.
+private func confirmMessage(for nodes: [FileNode], mode: DeleteMode) -> String {
+    let total = nodes.reduce(0) { $0 + $1.allocatedSize }
+    var text = mode == .trash
+        ? "\(total.humanBytes) will be moved to the Trash."
+        : "\(total.humanBytes) will be removed permanently. This cannot be undone."
+    let suspects = SecuritySuites.suspects
+    if !suspects.isEmpty, nodes.contains(where: { SecuritySuites.isGuarded($0.path) }) {
+        text += "\n\n" + SecuritySuites.warning(for: suspects)
+    }
+    return text
 }
 
 struct DeleteProgressSheet: View {

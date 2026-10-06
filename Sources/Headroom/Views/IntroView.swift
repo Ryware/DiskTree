@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// Bump when "What's new" changes; the intro re-opens on the What's New page for existing users.
-let currentIntroVersion = 5
+let currentIntroVersion = 6
 
 struct IntroStep: Identifiable {
     let id: Int
@@ -49,10 +49,10 @@ private let steps: [IntroStep] = [
                         ("chart.pie", "Menu bar ring, 7-day trend and local alerts (from 0.2)"),
                         ("checkmark.shield", "Same app, same settings, same bundle. Nothing to reinstall")],
               art: .menuBar),
-    IntroStep(id: 7, eyebrow: "NEW IN 1.0.3", title: "Lighter and more honest",
+    IntroStep(id: 7, eyebrow: "NEW IN 1.0.4", title: "Lighter and more honest",
               bullets: [("memorychip", "Duplicate scans stay at a few MB, however big the tree"),
                         ("xmark.circle", "Permanent delete shows every file and can be cancelled"),
-                        ("shield.lefthalf.filled", "If an antivirus blocks deletes, Headroom stops and says so")],
+                        ("shield.lefthalf.filled", "If an antivirus blocks deletes, Headroom names it and shows how to allow")],
               art: .whatsNew),
 ]
 

@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.0.4 — October 6, 2026
+
+### 🚀 New feature
+
+- **Security products are named, not guessed at.** Headroom looks for installed antivirus and ransomware shields (AVG, Avast, Bitdefender, Trend Micro, Norton, McAfee, Kaspersky, ESET, Sophos, Malwarebytes, Microsoft Defender, CrowdStrike, SentinelOne, Jamf Protect). When a delete is refused inside a folder they guard, the result names the likely product and the exact setting to change, with an **Open ⟨product⟩** button next to **Reveal in Finder**, since Finder is always allowed.
+- **Warned before, not after.** The confirmation for a delete inside Documents, Desktop, Downloads or Pictures says which product guards the folder and what to do if the delete stops.
+- **Move to Trash names the real cause when it is refused.** macOS reports an antivirus refusal, a privacy-folder denial and a root-owned item with the same "You do not have permission" text. Headroom now tells them apart (a refusal that was held for seconds is a ransomware shield such as AVG or Bitdefender) and says where the fix is. The result has a **Reveal in Finder** button, because Finder is allowed through by every security product, and a **How to Fix** link to the FAQ with the per-product steps.
+
+### ✨ Changed
+
+- Permanent delete tries one file on its own before the parallel pass. A held refusal there stops the delete within seconds instead of after a round of parallel waits.
+- The result toast's Details alert has a **How to Fix…** button that opens the landing page's answer for refused deletes.
+
+### 🧰 Chores
+
+- 91 unit tests: product detection, guarded-folder matching, message wording, the pre-flight stall rule, and the Trash-refusal explanations.
+
 ## 1.0.3 — October 6, 2026
 
 ### 🐛 Fixed

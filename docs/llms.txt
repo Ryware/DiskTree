@@ -12,7 +12,7 @@
 - Delete modes: Trash (recoverable) or Permanent (parallel unlinkat, not recoverable).
 - Privacy: all analysis on-device; no analytics SDK, no cloud.
 - Menu bar monitor: free-space ring, 7-day trend, low-space and sudden-drop alerts, one-click cleanup of safe caches.
-- Current version: 1.0.3 (October 2026).
+- Current version: 1.0.4 (October 2026).
 - Compared with other Mac tools: a free alternative to DaisyDisk (paid) for visualizing disk usage; like GrandPerspective it is open source with a treemap, and adds a folder tree, duplicate finder, safety hints and cleanup; covers the disk-cleanup part of CleanMyMac without a subscription, but is not a full maintenance suite.
 - Similar in spirit to WizTree and TreeSize (Windows), for macOS.
 
@@ -25,6 +25,11 @@
 
 ## Duplicate finder
 Finds byte-for-byte identical files in four passes (size bucket → 64 KB prefix hash → samples from the middle and end → full SHA-256), groups them and ranks groups by reclaimable space. Keep newest / oldest / highest in tree, or pick by hand; one copy is always kept unless the guard is turned off. Files under 1 MB and files inside app bundles are skipped.
+
+## Troubleshooting
+- "You do not have permission to move … to the Trash" almost always means an antivirus or ransomware shield (AVG, Avast, Bitdefender, Norton) is refusing an unknown app in Documents, Desktop, Downloads or Pictures. Allow Headroom in that product (AVG/Avast: Settings → General → Blocked & Allowed Apps; Bitdefender: Protection → Anti-Ransomware → Safe Files → Manage Applications), or use Reveal in Finder and delete there. Details: https://headroom-app.org/#faq-trash-blocked
+- Permanent delete stops on its own when every removal is held and refused for the same reason. Since 1.0.4 Headroom detects installed security products (AVG, Avast, Bitdefender, Trend Micro, Norton, McAfee, Kaspersky, ESET, Sophos, Malwarebytes, Microsoft Defender, CrowdStrike, SentinelOne, Jamf Protect), names the likely one in the result with the exact setting to change, warns before a delete inside a guarded folder, and offers "Open <product>" and "Reveal in Finder" buttons.
+- "N unreadable" after a scan: items macOS protects (Mail, Messages, Safari data) need Full Disk Access.
 
 ## Name
 Headroom was called DiskTree until 1.0 (October 2026). The bundle id is unchanged, so updates install in place.

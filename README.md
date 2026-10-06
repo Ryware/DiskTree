@@ -191,7 +191,7 @@ Permanent deletion follows a parallel POSIX strategy:
 2. directories use their own `dirfd` and remove entries with `unlinkat`, avoiding repeated full-path walks; and
 3. empty directories are removed deepest-first, with each level processed in parallel.
 
-If a security product (an antivirus or ransomware shield with an Endpoint Security extension) holds every removal for seconds and then refuses it, Headroom notices after a few consecutive refusals, stops instead of grinding for hours, renames any hidden folder back, and says so in the result. Add Headroom to that product's allowed apps, or use Trash mode for folders it protects.
+If a security product (an antivirus or ransomware shield with an Endpoint Security extension) holds every removal for seconds and then refuses it, Headroom notices (one file is tried alone before the parallel pass, and a held refusal there stops the delete within seconds), renames any hidden folder back, names the product it finds installed and says where to allow Headroom. Before a delete inside a guarded folder the confirmation already warns about it.
 
 Trash mode uses the standard macOS Trash API instead.
 
@@ -236,7 +236,7 @@ Releases are built by GitHub Actions on a macOS runner. Pushing a version tag bu
 ```sh
 # 1. bump CFBundleShortVersionString / CFBundleVersion in Info.plist (and project.yml), add a CHANGELOG section
 # 2. commit and push, then:
-git tag -a v1.0.3 -m "Headroom 1.0.3" && git push origin v1.0.3
+git tag -a v1.0.4 -m "Headroom 1.0.4" && git push origin v1.0.4
 ```
 
 The workflow (`.github/workflows/release.yml`) needs five repository secrets: `MACOS_CERT_P12` (base64 of the exported Developer ID Application `.p12`), `MACOS_CERT_PASSWORD`, and an App Store Connect API key as `ASC_KEY_ID`, `ASC_ISSUER_ID` and `ASC_KEY_P8` (base64 of the `.p8`). The tag must match the version in `Info.plist` or the run fails before building.
@@ -294,7 +294,10 @@ No. Disk space is reclaimed after you empty Trash.
 No. Use Trash mode unless you are certain the selected items are disposable.
 
 **Why did a permanent delete stop with "every file removal was held for seconds and then refused"?**  
-An antivirus or ransomware shield on your Mac is blocking Headroom from deleting inside a folder it protects (usually Documents, Desktop or Pictures). Each removal waits for the security product's verdict and is then refused, so Headroom stops rather than spend hours deleting nothing. Add Headroom to that product's allowed applications, or use Trash mode for those folders.
+An antivirus or ransomware shield on your Mac is blocking Headroom from deleting inside a folder it guards (usually Documents, Desktop, Downloads or Pictures). Each removal waits for the security product's verdict and is then refused, so Headroom stops rather than spend hours deleting nothing. Headroom names the product it finds installed, with the setting to change (for example Bitdefender › Protection › Anti-Ransomware › Safe Files › Manage Applications, or AVG › Settings › General › Blocked & Allowed Apps), and offers Open ⟨product⟩ and Reveal in Finder buttons; Finder is always allowed. Trash mode is refused the same way until Headroom is allowed.
+
+**Why does Move to Trash say "You do not have permission to move … to the trash"?**  
+The same security products refuse Trash moves too, and macOS reports it with the words it uses for a real permission problem. Headroom tells the two apart: a refusal that was held for seconds is the shield. Allow Headroom in it (AVG and Avast: Menu › Settings › General › Blocked & Allowed Apps; Bitdefender: Protection › Anti-Ransomware › Safe Files › Manage Applications), or click **Reveal in Finder** in the result and delete there, since Finder is always allowed. Without a security product, check System Settings › Privacy & Security › Files and Folders, or whether the item belongs to another user. The in-app **How to Fix** link opens the [landing-page FAQ](https://headroom-app.org/#faq-trash-blocked).
 
 ## License
 

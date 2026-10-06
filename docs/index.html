@@ -348,7 +348,7 @@ h1{font-size:clamp(36px,5.2vw,68px);line-height:1.02;font-weight:600;letter-spac
 /* faq */
 .faq-grid{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:48px;align-items:start}
 .faq-intro p{margin-top:10px;color:var(--fg-2)}
-.faq-list details{border-top:1px solid var(--line)}
+.faq-list details{border-top:1px solid var(--line);scroll-margin-top:88px}
 .faq-list details:last-child{border-bottom:1px solid var(--line)}
 summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 0;font-weight:500;font-size:16.5px}
 summary::-webkit-details-marker{display:none}
@@ -412,7 +412,7 @@ footer{padding:24px 0;border-top:1px solid var(--line);font-size:14px;color:var(
       "applicationCategory": "UtilitiesApplication",
       "applicationSubCategory": "Disk space analyzer",
       "operatingSystem": "macOS 14 Sonoma or later",
-      "softwareVersion": "1.0.3",
+      "softwareVersion": "1.0.4",
       "datePublished": "2026-09-30",
       "dateModified": "2026-10-06",
       "license": "https://opensource.org/licenses/MIT",
@@ -481,7 +481,9 @@ footer{padding:24px 0;border-top:1px solid var(--line);font-size:14px;color:var(
         { "@type": "Question", "name": "Is Headroom a free alternative to CleanMyMac?",
           "acceptedAnswer": { "@type": "Answer", "text": "For finding and freeing disk space, yes. Headroom covers disk analysis, large files, duplicates and cache and developer cleanup for free, with no subscription. It is not a full maintenance suite: it has no malware scanner, app uninstaller or performance tools." } },
         { "@type": "Question", "name": "What are the system requirements?",
-          "acceptedAnswer": { "@type": "Answer", "text": "macOS 14 Sonoma or newer on an Apple silicon or Intel Mac. Full Disk Access is only needed if you want to scan protected locations such as Mail, Messages and Safari data." } }
+          "acceptedAnswer": { "@type": "Answer", "text": "macOS 14 Sonoma or newer on an Apple silicon or Intel Mac. Full Disk Access is only needed if you want to scan protected locations such as Mail, Messages and Safari data." } },
+        { "@type": "Question", "name": "Headroom says it does not have permission to move a folder to the Trash. What now?",
+          "acceptedAnswer": { "@type": "Answer", "text": "This almost always comes from an antivirus or ransomware shield (AVG, Avast, Bitdefender, Norton and similar), which guards Documents, Desktop, Downloads and Pictures and refuses unknown apps that change files there; macOS reports it with the same words as a real permission problem. Add Headroom to the product's allowed apps: in AVG and Avast open Menu, Settings, General, Blocked & Allowed Apps and allow Headroom; in Bitdefender open Protection, Anti-Ransomware, Safe Files, Manage Applications and set Headroom to Allowed. On a managed work Mac ask IT. Headroom also detects installed security products, names the likely one in the result with the setting to change, warns before a delete inside a guarded folder, and shows an Open button for that product. Alternatively click Reveal in Finder in the result and delete the item there, since Finder is always allowed. If no security product is installed, check System Settings, Privacy & Security, Files and Folders, and whether the item belongs to another user." } }
       ]
     },
     {
@@ -776,6 +778,7 @@ footer{padding:24px 0;border-top:1px solid var(--line);font-size:14px;color:var(
         <details><summary>How is Headroom different from GrandPerspective?<span class="plus" aria-hidden="true"></span></summary><div class="answer"><p>Both are open source and both draw a treemap of your disk. GrandPerspective focuses on the treemap view. Headroom adds a sortable folder tree, category breakdown, duplicate finder, safety explanations for what you are about to delete, one-click developer cleanup and a menu bar monitor.</p></div></details>
         <details><summary>Is Headroom a free alternative to CleanMyMac?<span class="plus" aria-hidden="true"></span></summary><div class="answer"><p>For finding and freeing disk space, yes. Headroom covers disk analysis, large files, duplicates and cache and developer cleanup for free, with no subscription. It is not a full maintenance suite: it has no malware scanner, app uninstaller or performance tools.</p></div></details>
         <details><summary>What are the system requirements?<span class="plus" aria-hidden="true"></span></summary><div class="answer"><p>macOS 14 Sonoma or newer on Apple silicon or Intel. Full Disk Access is only needed for protected locations such as Mail, Messages and Safari data.</p></div></details>
+        <details id="faq-trash-blocked"><summary>Headroom says it does not have permission to move a folder to the Trash. What now?<span class="plus" aria-hidden="true"></span></summary><div class="answer"><p>This almost always comes from an antivirus or ransomware shield (AVG, Avast, Bitdefender, Norton and similar). They guard Documents, Desktop, Downloads and Pictures and refuse unknown apps that change files there, and macOS reports it with the same words as a real permission problem. Add Headroom to the product&rsquo;s allowed apps:</p><ul><li><strong>AVG and Avast:</strong> Menu &rsaquo; Settings &rsaquo; General &rsaquo; Blocked &amp; Allowed Apps &rsaquo; Allow app &rsaquo; Headroom.</li><li><strong>Bitdefender:</strong> Protection &rsaquo; Anti-Ransomware &rsaquo; Safe Files &rsaquo; Manage Applications &rsaquo; set Headroom to Allowed.</li><li><strong>Managed work Mac</strong> (CrowdStrike, SentinelOne, Jamf Protect): ask IT to allow the app.</li></ul><p>Or click <strong>Reveal in Finder</strong> in the result and delete the item there: Finder is always allowed. Headroom also looks for installed security products, names the likely one in the result with the setting to change, warns before a delete inside a guarded folder, and shows an <strong>Open</strong> button for that product. If no security product is installed, check System Settings &rsaquo; Privacy &amp; Security &rsaquo; Files and Folders, and whether the item belongs to another user.</p></div></details>
       </div>
     </div>
   </section>
@@ -837,6 +840,7 @@ footer{padding:24px 0;border-top:1px solid var(--line);font-size:14px;color:var(
   var dup = document.getElementById('dup-stage');
   if (dup) new MutationObserver(function(){ var p = dup.getAttribute('data-pass'); if (p && p !== '0') trackOnce('dup' + p, 'duplicates_pass', { pass: parseInt(p, 10) }); }).observe(dup, { attributes: true, attributeFilter: ['data-pass'] });
   /* FAQ */
+  (function(){ var h = location.hash && document.querySelector('.faq-list ' + location.hash); if (h) { h.open = true; h.scrollIntoView(); } })();
   document.querySelectorAll('.faq-list details').forEach(function(d){ d.addEventListener('toggle', function(){ if (d.open) track('faq_open', { question: d.querySelector('summary').textContent.trim().slice(0, 80) }); }); });
   /* section views, once each */
   if ('IntersectionObserver' in window) {
