@@ -19,6 +19,7 @@
 ## Links
 - [Home page](https://headroom-app.org/): overview, screenshots, FAQ
 - [Download](https://github.com/Ryware/Headroom/releases/latest): latest release
+- Install with Homebrew: `brew install ryware/tap/headroom` (update: `brew upgrade headroom`)
 - [Source code](https://github.com/Ryware/Headroom): README, build instructions
 - [Privacy](https://github.com/Ryware/Headroom/blob/main/PRIVACY.md)
 - [Changelog](https://github.com/Ryware/Headroom/blob/main/CHANGELOG.md)

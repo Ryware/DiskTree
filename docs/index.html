@@ -343,7 +343,18 @@ h1{font-size:clamp(36px,5.2vw,68px);line-height:1.02;font-weight:600;letter-spac
 .steps li span{flex:none;width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font:600 14px/28px "Geist Mono",monospace;text-align:center}
 .steps strong{color:var(--fg)}
 .fine{margin-top:22px;font-size:14px;color:var(--fg-3)}
-@media (max-width:900px){.install-grid{grid-template-columns:1fr;gap:28px}}
+.brew{margin-top:22px}
+.brew-label{font-size:14px;color:var(--fg-2);margin-bottom:8px}
+.brew-label a{color:inherit}
+.brew-cmd{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line-strong);border-radius:10px;padding:10px 10px 10px 14px}
+.brew-cmd code{flex:1;min-width:0;background:none;padding:0;color:var(--fg);font-size:14px;overflow-x:auto;white-space:nowrap}
+.brew-cmd code::before{content:"$ ";color:var(--fg-3)}
+.brew-copy{flex:none;font:500 13px/1 inherit;font-family:inherit;color:var(--fg-2);background:transparent;border:1px solid var(--line-strong);border-radius:7px;padding:7px 10px;cursor:pointer}
+.brew-copy:hover{color:var(--fg)}
+.brew-or{margin-top:22px;font-size:14px;color:var(--fg-3)}
+.brew .fine code{white-space:nowrap}
+@media (max-width:520px){.brew-cmd{padding-left:12px}.brew-cmd code{font-size:12.5px}}
+@media (max-width:900px){.install-grid{grid-template-columns:minmax(0,1fr);gap:28px}}
 
 /* faq */
 .faq-grid{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,8fr);gap:48px;align-items:start}
@@ -442,7 +453,7 @@ footer{padding:24px 0;border-top:1px solid var(--line);font-size:14px;color:var(
       "totalTime": "PT5M",
       "tool": { "@type": "HowToTool", "name": "Headroom" },
       "step": [
-        { "@type": "HowToStep", "position": 1, "name": "Download and open Headroom", "text": "Get Headroom from the GitHub releases page, drag it to Applications and open it." },
+        { "@type": "HowToStep", "position": 1, "name": "Download and open Headroom", "text": "Run brew install ryware/tap/headroom in Terminal, or get the DMG from the GitHub releases page, drag Headroom to Applications and open it." },
         { "@type": "HowToStep", "position": 2, "name": "Scan a folder or your disk", "text": "Choose Scan Folder, Home or Startup Disk. Headroom reads allocated sizes in parallel and shows the result in seconds." },
         { "@type": "HowToStep", "position": 3, "name": "Explore the biggest items", "text": "Switch between the dashboard, folder tree, treemap, categories and largest files to see what uses the most space." },
         { "@type": "HowToStep", "position": 4, "name": "Check the safety badge", "text": "Each recognized item shows whether it is safe to delete, usually safe, needs caution or should never be removed, with a plain-language explanation." },
@@ -452,6 +463,8 @@ footer{padding:24px 0;border-top:1px solid var(--line);font-size:14px;color:var(
     {
       "@type": "FAQPage",
       "mainEntity": [
+        { "@type": "Question", "name": "Can I install Headroom with Homebrew?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Run brew install ryware/tap/headroom in Terminal. It installs the same signed, notarized app as the DMG. Update with brew upgrade headroom and uninstall with brew uninstall headroom." } },
         { "@type": "Question", "name": "Is there a Pro version of Headroom?",
           "acceptedAnswer": { "@type": "Answer", "text": "No. Headroom has no Pro tier, subscription, lifetime purchase, trial or in-app purchases. Every feature is free and unlocked for everyone: the treemap, one-click cleanup, developer deep scan, safety hints, Trash-first deletion and fast permanent deletion." } },
         { "@type": "Question", "name": "Is there a free Mac disk cleaner with no subscription?",
@@ -742,8 +755,14 @@ footer{padding:24px 0;border-top:1px solid var(--line);font-size:14px;color:var(
     <div class="wrap install-grid">
       <div>
         <h2>Up and running in a minute</h2>
+        <div class="brew">
+          <p class="brew-label">With <a href="https://brew.sh">Homebrew</a>, paste this into Terminal:</p>
+          <div class="brew-cmd"><code id="brew-cmd">brew install ryware/tap/headroom</code><button class="brew-copy" type="button" data-copy="brew-cmd" aria-label="Copy the Homebrew command">Copy</button></div>
+          <p class="fine">Update with <code>brew upgrade headroom</code>. Uninstall with <code>brew uninstall headroom</code>.</p>
+        </div>
+        <p class="brew-or">Or download it yourself:</p>
         <ol class="steps">
-          <li><span>1</span><div><strong>Download</strong> the DMG from GitHub Releases. Signed with a Developer ID and notarized by Apple.</div></li>
+          <li><span>1</span><div><strong>Download</strong> the DMG from <a href="https://github.com/Ryware/Headroom/releases/latest">GitHub Releases</a>. Signed with a Developer ID and notarized by Apple.</div></li>
           <li><span>2</span><div><strong>Drag</strong> Headroom to Applications and open it.</div></li>
           <li><span>3</span><div><strong>Scan</strong> a folder, your home folder or the whole startup disk.</div></li>
           <li><span>4</span><div><strong>Clean</strong> what the safety verdicts say is safe.</div></li>
@@ -763,6 +782,7 @@ footer{padding:24px 0;border-top:1px solid var(--line);font-size:14px;color:var(
         <p>Short answers. The README has the long ones.</p>
       </div>
       <div class="faq-list">
+        <details id="faq-homebrew"><summary>Can I install Headroom with Homebrew?<span class="plus" aria-hidden="true"></span></summary><div class="answer"><p>Yes. Run <code>brew install ryware/tap/headroom</code> in Terminal. It installs the same signed, notarized app as the DMG. Update with <code>brew upgrade headroom</code>, uninstall with <code>brew uninstall headroom</code>, or use <code>brew uninstall --zap headroom</code> to also remove its settings and history. If you don't have Homebrew yet, the one-line installer is on <a href="https://brew.sh">brew.sh</a>.</p></div></details>
         <details><summary>Is there a Pro version of Headroom?<span class="plus" aria-hidden="true"></span></summary><div class="answer"><p>No. There is no Pro tier, subscription, lifetime purchase, trial or in-app purchase. Every feature is free and unlocked for everyone: the treemap, one-click cleanup, developer deep scan, safety hints, Trash-first deletion and fast permanent deletion.</p></div></details>
         <details><summary>Is there a free Mac disk cleaner with no subscription?<span class="plus" aria-hidden="true"></span></summary><div class="answer"><p>Yes, this one. Headroom is a free, open-source Mac disk space analyzer and cleaner that never locks cleanup or developer scans behind a paywall, and never asks for an account or payment.</p></div></details>
         <details><summary>How does the duplicate finder work?<span class="plus" aria-hidden="true"></span></summary><div class="answer"><p>Files are grouped by size, then by a hash of their first 64 KB, then by samples from the middle and end, then by a full SHA-256 of the whole file. Only files that still match after the last step are listed, so every group is byte-for-byte identical. Files under 1 MB and files inside app bundles are skipped, and Headroom always keeps one copy of each file unless you turn that guard off.</p></div></details>
@@ -817,6 +837,13 @@ footer{padding:24px 0;border-top:1px solid var(--line);font-size:14px;color:var(
   document.querySelectorAll('.nav nav a[href^="#"]').forEach(function(a){ a.addEventListener('click', function(){ track('nav_click', { target: a.getAttribute('href').slice(1) }); }); });
   document.querySelectorAll('footer a, .faq-list a').forEach(function(a){ a.addEventListener('click', function(){ track('link_click', { url: a.href, location: sectionOf(a) }); }); });
   var tt = document.getElementById('theme-toggle'); if (tt) tt.addEventListener('click', function(){ setTimeout(function(){ track('theme_toggle', { theme: document.documentElement.getAttribute('data-theme') || 'system' }); }, 50); });
+  /* Homebrew copy button */
+  document.querySelectorAll('.brew-copy').forEach(function(b){ b.addEventListener('click', function(){
+    var text = document.getElementById(b.getAttribute('data-copy')).textContent;
+    var done = function(){ b.textContent = 'Copied'; setTimeout(function(){ b.textContent = 'Copy'; }, 1600); };
+    if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, function(){});
+    track('brew_copy', { location: sectionOf(b) });
+  }); });
   /* hero treemap demo */
   var demo = document.getElementById('demo');
   if (demo) {
