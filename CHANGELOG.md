@@ -6,18 +6,21 @@
 
 - **Back and Forward, like Finder.** **⌘[** goes back and **⌘]** goes forward, with **‹ ›** buttons in the toolbar and a new **Go** menu. **⌘←** and **⌘→** work too, except while typing in a text field, where they still move the cursor. Going back into By Category brings back the category you had selected.
 - **Jump to any view from the keyboard.** **⌘1** opens the Dashboard and **⌘2–⌘7** open Folder Tree, Treemap, By Category, Largest Files, Duplicates and Cleanup.
+- **Duplicates says what to do next.** After a search, a bar explains the choice and offers **Select extra copies (keep newest)** as one click, with *keep oldest* and *keep highest in the tree* under **Other ways**. With copies ticked it shows the count and size, **Clear**, and **Move N copies to Trash (size)**, and says whether they can be put back. Copies marked *Do not delete*, such as files inside `.git`, are never picked for you (#14).
 - **The Dashboard is clickable.** The four stat tiles open Treemap, Largest Files, Folder Tree and Cleanup, and a bar or row in *Space by category* opens By Category with that category selected (#12). A one-time tip shows how to come back.
 
 ### ✨ Changed
 
 - **By Category's chart selects a category** when you click a bar, its label or the empty space after a short bar, and stays in sync with the list (#11).
 - **Scanned locations are named the way Finder names them**: *Macintosh HD* with a drive icon instead of `/`, the home folder by its name with a house icon, and folders by their Finder name. This applies to the sidebar, headers, inspector, scanning screen, recent scans and Duplicates (#10).
+- **Duplicate rows lead with what tells copies apart**: the path below the folder they share, with that folder on the second line. Groups of more than six copies collapse to five with *Show N more copies*, and clicking a copy shows it in the inspector (#14).
 - Chart axes start at **0** instead of "Zero KB".
 
 ### 🐛 Fixed
 
 - **Treemap hover is smooth in Safety mode.** Moving the pointer repainted every cell, and Safety colours rebuilt each cell's explanation text on every frame. The map now redraws only when its layout, colours or selection change, and colours are worked out once. Safety badges in Duplicates, Cleanup and Largest Files are cheaper too (#13).
 - The inspector showed the scanned root's location as `/..`.
+- In Duplicates, the status bar no longer shows a selection left over from Folder Tree, and the inspector follows the copy you click instead of a folder picked elsewhere (#14).
 
 ## 1.0.4 — October 6, 2026
 

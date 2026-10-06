@@ -311,7 +311,7 @@ struct DuplicatesView: View {
             }
             for f in g.files {
                 // Never auto-pick a copy marked "Do not delete" (e.g. inside .git); tick it by hand if you mean it.
-                if f.id == keeper?.id || SafetyKB.info(for: f).level == .never { next.remove(f.id) } else { next.insert(f.id) }
+                if f.id == keeper?.id || SafetyKB.level(for: f) == .never { next.remove(f.id) } else { next.insert(f.id) }
             }
         }
         checked = next

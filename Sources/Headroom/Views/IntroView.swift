@@ -52,7 +52,7 @@ private let steps: [IntroStep] = [
     IntroStep(id: 7, eyebrow: "NEW IN 1.0.5", title: "Click anywhere, come right back",
               bullets: [("cursorarrow.click", "Dashboard tiles and category charts open their views"),
                         ("arrow.uturn.backward", "Go back with ⌘[ or ⌘←, forward with ⌘], any view with ⌘1–⌘7"),
-                        ("internaldrive", "Scanned disks are named like Finder: \"Macintosh HD\", not \"/\"")],
+                        ("doc.on.doc", "Duplicates picks the extra copies for you in one click")],
               art: .whatsNew),
 ]
 
