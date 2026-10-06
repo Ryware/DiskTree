@@ -27,11 +27,62 @@ enum Pane: String, CaseIterable, Identifiable {
     }
 }
 
+/// Back/Forward through the panes, like Finder: ⌘[ and ⌘], the toolbar arrows, and ⌘← / ⌘→
+/// outside text fields. A stop remembers the By Category selection so Back restores it.
+final class Navigation: ObservableObject {
+    struct Stop: Equatable {
+        var pane: Pane
+        var category: FileCategory?
+    }
+
+    @Published private(set) var current = Stop(pane: .dashboard)
+    @Published private(set) var back: [Stop] = []
+    @Published private(set) var forward: [Stop] = []
+    /// Category to open By Category with, set when the Dashboard links to one.
+    var categoryFocus: FileCategory?
+
+    var canGoBack: Bool { !back.isEmpty }
+    var canGoForward: Bool { !forward.isEmpty }
+
+    func go(_ pane: Pane) {
+        let category = pane == .categories ? categoryFocus : nil
+        categoryFocus = nil
+        guard pane != current.pane else { return }
+        back.append(current)
+        forward = []
+        current = Stop(pane: pane, category: category)
+    }
+
+    func goBack() {
+        guard let stop = back.popLast() else { return }
+        forward.append(current)
+        current = stop
+    }
+
+    func goForward() {
+        guard let stop = forward.popLast() else { return }
+        back.append(current)
+        current = stop
+    }
+
+    /// By Category reports its selection so Back comes back to it; not a history step.
+    func noteCategory(_ category: FileCategory?) {
+        if current.pane == .categories { current.category = category }
+    }
+
+    func reset() {
+        back = []
+        forward = []
+    }
+}
+
 struct ContentView: View {
     @EnvironmentObject var state: AppState
-    @State private var pane: Pane = .dashboard
-    /// Category to open By Category with, set when the Dashboard links to one.
-    @State private var categoryFocus: FileCategory?
+    @StateObject private var nav = Navigation()
+    @State private var keyMonitor: Any?
+    @AppStorage("seenBackTip") private var seenBackTip = false
+    @State private var showBackTip = false
+    private var pane: Pane { nav.current.pane }
     @State private var showInspector = false
     @State private var pendingDelete: [FileNode] = []
     @State private var showDeleteConfirm = false
@@ -58,6 +109,10 @@ struct ContentView: View {
             }
         }
         .toolbar { toolbar }
+        .focusedSceneObject(nav)
+        .onChange(of: state.rootURL) { _, _ in nav.reset() }
+        .onAppear(perform: installArrowKeys)
+        .onDisappear { if let keyMonitor { NSEvent.removeMonitor(keyMonitor) } }
         .sheet(isPresented: Binding(get: { state.deleting != nil }, set: { _ in })) {
             DeleteProgressSheet()
         }
@@ -81,6 +136,12 @@ struct ContentView: View {
             }
         }
         .animation(.spring(duration: 0.45, bounce: 0.25), value: state.lastDeleteResult?.freedBytes)
+        .overlay(alignment: .bottom) {
+            if showBackTip && state.lastDeleteResult == nil {
+                BackTip().padding(.bottom, 44)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
         .environment(\.requestDelete, RequestDeleteAction { nodes in
             guard !nodes.isEmpty else { return }
             pendingDelete = nodes
@@ -89,7 +150,7 @@ struct ContentView: View {
     }
 
     private var sidebar: some View {
-        List(selection: Binding<Pane?>(get: { pane }, set: { if let p = $0 { pane = p } })) {
+        List(selection: Binding<Pane?>(get: { pane }, set: { if let p = $0 { nav.go(p) } })) {
             ForEach(Pane.allCases) { s in
                 Label(s.title, systemImage: s.symbol).tag(s)
             }
@@ -119,10 +180,12 @@ struct ContentView: View {
             WelcomeView()
         } else {
             switch pane {
-            case .dashboard: DashboardView(pane: $pane, categoryFocus: $categoryFocus)
+            case .dashboard:
+                DashboardView(pane: Binding(get: { nav.current.pane }, set: { nav.go($0); offerBackTip() }),
+                              categoryFocus: Binding(get: { nav.categoryFocus }, set: { nav.categoryFocus = $0 }))
             case .tree: TreeView()
             case .treemap: TreemapView()
-            case .categories: CategoriesView(initial: categoryFocus).onDisappear { categoryFocus = nil }
+            case .categories: CategoriesView(initial: nav.current.category, onSelect: nav.noteCategory)
             case .largest: LargestFilesView()
             case .duplicates: DuplicatesView()
             case .cleanup: CleanupView()
@@ -133,6 +196,15 @@ struct ContentView: View {
     @ToolbarContentBuilder
     private var toolbar: some ToolbarContent {
         ToolbarItemGroup(placement: .navigation) {
+            ControlGroup {
+                Button { nav.goBack() } label: { Label("Back", systemImage: "chevron.left") }
+                    .disabled(!nav.canGoBack)
+                    .help("Back (⌘[)")
+                Button { nav.goForward() } label: { Label("Forward", systemImage: "chevron.right") }
+                    .disabled(!nav.canGoForward)
+                    .help("Forward (⌘])")
+            }
+            .controlGroupStyle(.navigation)
             Button { state.pickFolder() } label: { Label("Scan Folder", systemImage: "folder.badge.plus") }
                 .help("Choose a folder or volume to scan (⌘O)")
             Button { state.rescan() } label: { Label("Rescan", systemImage: "arrow.clockwise") }
@@ -150,6 +222,70 @@ struct ContentView: View {
             .help(state.deleteMode.shortNote)
             Button { showInspector.toggle() } label: { Label("Inspector", systemImage: "sidebar.trailing") }
                 .help("Show what the selected item is and whether it's safe to delete")
+        }
+    }
+}
+
+extension ContentView {
+    /// The first time the Dashboard sends someone to another view, say once how to come back.
+    private func offerBackTip() {
+        guard !seenBackTip, nav.canGoBack else { return }
+        seenBackTip = true
+        withAnimation(.spring(duration: 0.4)) { showBackTip = true }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 6) {
+            withAnimation(.easeOut(duration: 0.3)) { showBackTip = false }
+        }
+    }
+
+    /// ⌘← / ⌘→ go Back / Forward as in Safari, except while typing, where they move the caret.
+    private func installArrowKeys() {
+        guard keyMonitor == nil else { return }
+        keyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [nav] event in
+            guard event.modifierFlags.intersection(.deviceIndependentFlagsMask) == .command,
+                  let window = event.window, window.canBecomeMain, window.attachedSheet == nil,
+                  !(window.firstResponder is NSText) else { return event }
+            switch event.keyCode {
+            case 123 where nav.canGoBack: nav.goBack(); return nil      // ←
+            case 124 where nav.canGoForward: nav.goForward(); return nil // →
+            default: return event
+            }
+        }
+    }
+}
+
+private struct BackTip: View {
+    var body: some View {
+        Label {
+            Text("Tip: press **⌘[** or **‹** in the toolbar to go back, and **⌘1** for the Dashboard.")
+        } icon: {
+            Image(systemName: "arrow.uturn.backward.circle.fill").foregroundStyle(Color.accentColor)
+        }
+        .font(.callout)
+        .padding(.horizontal, 16).padding(.vertical, 10)
+        .background(.regularMaterial, in: Capsule())
+        .overlay(Capsule().strokeBorder(.primary.opacity(0.08)))
+        .shadow(color: .black.opacity(0.15), radius: 10, y: 4)
+    }
+}
+
+/// The Go menu: Back, Forward and ⌘1… for each pane.
+struct GoCommands: Commands {
+    @FocusedObject private var nav: Navigation?
+
+    var body: some Commands {
+        CommandMenu("Go") {
+            Button("Back") { nav?.goBack() }
+                .keyboardShortcut("[")
+                .disabled(!(nav?.canGoBack ?? false))
+            Button("Forward") { nav?.goForward() }
+                .keyboardShortcut("]")
+                .disabled(!(nav?.canGoForward ?? false))
+            Divider()
+            ForEach(Array(Pane.allCases.enumerated()), id: \.element) { i, pane in
+                Button(pane.title) { nav?.go(pane) }
+                    .keyboardShortcut(KeyEquivalent(Character(String(i + 1))))
+                    .disabled(nav == nil)
+            }
         }
     }
 }

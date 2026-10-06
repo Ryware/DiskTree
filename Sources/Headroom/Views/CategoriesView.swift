@@ -9,8 +9,11 @@ struct CategoriesView: View {
     @State private var items: [FileNode] = []
     @State private var itemSelection: Set<FileNode.ID> = []
 
-    init(initial: FileCategory? = nil) {
+    private let onSelect: (FileCategory?) -> Void
+
+    init(initial: FileCategory? = nil, onSelect: @escaping (FileCategory?) -> Void = { _ in }) {
         _selected = State(initialValue: initial)
+        self.onSelect = onSelect
     }
 
     private struct Row: Identifiable {
@@ -111,7 +114,7 @@ struct CategoriesView: View {
             }
             .frame(minWidth: 260)
         }
-        .onChange(of: selected) { _, cat in reload(cat) }
+        .onChange(of: selected) { _, cat in reload(cat); onSelect(cat) }
         .onChange(of: state.categoryTotals.count) { _, _ in reload(selected) }
         .onAppear { reload(selected) }
     }

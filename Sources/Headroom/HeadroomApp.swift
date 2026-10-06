@@ -61,6 +61,7 @@ struct HeadroomApp: App {
         .windowStyle(.titleBar)
         .defaultSize(width: 1280, height: 800)
         .commands {
+            GoCommands()
             CommandGroup(replacing: .appInfo) {
                 Button("About Headroom") {
                     let credits = NSAttributedString(string: "See what's eating your disk. Clean it in one click.\n\nScanning uses getattrlistbulk(2) and fans out across all cores; permanent deletion renames first, then unlinks in parallel.", attributes: [.font: NSFont.systemFont(ofSize: 11)])

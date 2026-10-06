@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.0.5 — Unreleased
+
+### 🚀 New feature
+
+- **Back and Forward, like Finder.** **⌘[** goes back and **⌘]** goes forward, with **‹ ›** buttons in the toolbar and a new **Go** menu. **⌘←** and **⌘→** work too, except while typing in a text field, where they still move the cursor. Going back into By Category brings back the category you had selected.
+- **Jump to any view from the keyboard.** **⌘1** opens the Dashboard and **⌘2–⌘7** open Folder Tree, Treemap, By Category, Largest Files, Duplicates and Cleanup.
+- **The Dashboard is clickable.** The four stat tiles open Treemap, Largest Files, Folder Tree and Cleanup, and a bar or row in *Space by category* opens By Category with that category selected (#12). A one-time tip shows how to come back.
+
+### ✨ Changed
+
+- **By Category's chart selects a category** when you click a bar, its label or the empty space after a short bar, and stays in sync with the list (#11).
+- **Scanned locations are named the way Finder names them**: *Macintosh HD* with a drive icon instead of `/`, the home folder by its name with a house icon, and folders by their Finder name. This applies to the sidebar, headers, inspector, scanning screen, recent scans and Duplicates (#10).
+- Chart axes start at **0** instead of "Zero KB".
+
+### 🐛 Fixed
+
+- The inspector showed the scanned root's location as `/..`.
+
 ## 1.0.4 — October 6, 2026
 
 ### 🚀 New feature

@@ -94,6 +94,8 @@ A clear overview of the scanned location with:
 - category usage; and
 - links to the five largest files and apps.
 
+Every tile is a link: *Size on disk* opens the Treemap, *Files* opens Largest Files, *Folders* opens the Folder Tree, *Cleanup candidates* opens Cleanup, and a category bar opens By Category with that category selected.
+
 ### Folder Tree
 
 A virtualized `NSOutlineView` creates only the visible rows and recycles cells, so even enormous dependency folders remain practical to explore. Sizes show bytes allocated on disk, with inline share-of-parent bars and sortable columns.
@@ -165,6 +167,24 @@ History is stored only on your Mac in `~/Library/Application Support/Headroom/`,
 ### Safety Inspector
 
 A rule base covering roughly 150 macOS and developer-tool locations gives each recognized item a consistent safety verdict and plain-language explanation. Unknown or sensitive items remain clearly marked for manual review.
+
+### Keyboard shortcuts
+
+| Shortcut | Action |
+| --- | --- |
+| ⌘O | Scan a folder or volume |
+| ⌘R | Rescan |
+| ⌘[ or ⌘← | Back |
+| ⌘] or ⌘→ | Forward |
+| ⌘1 | Dashboard |
+| ⌘2 | Folder Tree |
+| ⌘3 | Treemap |
+| ⌘4 | By Category |
+| ⌘5 | Largest Files |
+| ⌘6 | Duplicates |
+| ⌘7 | Cleanup |
+
+Back and Forward are also in the **Go** menu and as **‹ ›** buttons in the toolbar. ⌘← and ⌘→ go back and forward everywhere except in a text field, where they move the cursor as usual.
 
 ## Safety and privacy
 
