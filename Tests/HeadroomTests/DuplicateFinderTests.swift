@@ -1,4 +1,5 @@
 import XCTest
+import CryptoKit
 @testable import Headroom
 
 final class DuplicateFinderTests: XCTestCase {
@@ -118,6 +119,24 @@ final class DuplicateFinderTests: XCTestCase {
         let r = try await DuplicateFinder(counters: counters, options: DuplicateOptions(minimumSize: 0)).find(in: root)
         XCTAssertTrue(r.groups.isEmpty)
         XCTAssertEqual(r.filesHashed, 0, "the sampling pass must eliminate the pair before any full read")
+    }
+
+    func testFullHashOfMultiChunkFileMatchesCryptoKit() throws {
+        // 3.5 MB: several 1 MB reads plus a partial last chunk, hashed through the reused buffer.
+        let content = blob(9, 3 * (1 << 20) + (1 << 19))
+        let url = dir.appendingPathComponent("big.bin")
+        try content.write(to: url)
+        let expected = SHA256.hash(data: content).map { String(format: "%02x", $0) }.joined()
+        XCTAssertEqual(DuplicateFinder.hash(path: url.path, mode: .full, size: Int64(content.count)), expected)
+
+        let head = SHA256.hash(data: content.prefix(64 * 1024)).map { String(format: "%02x", $0) }.joined()
+        XCTAssertEqual(DuplicateFinder.hash(path: url.path, mode: .head, size: Int64(content.count)), head)
+
+        let mid = content.count / 2 - 32 * 1024
+        var sampled = Data(content[mid..<mid + 64 * 1024])
+        sampled.append(content.suffix(64 * 1024))
+        let samples = SHA256.hash(data: sampled).map { String(format: "%02x", $0) }.joined()
+        XCTAssertEqual(DuplicateFinder.hash(path: url.path, mode: .samples, size: Int64(content.count)), samples)
     }
 
     func testHashHelper() throws {

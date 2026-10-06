@@ -228,8 +228,15 @@ struct DeleteProgressSheet: View {
             ProgressView(value: p.fraction)
             Text("\(p.done.formatted()) / \(p.total.formatted()) · \(p.bytes.humanBytes) freed")
                 .font(.callout).foregroundStyle(.secondary).monospacedDigit()
+            if !p.current.isEmpty {
+                Text(p.current).font(.caption).foregroundStyle(.tertiary)
+                    .lineLimit(1).truncationMode(.middle).frame(maxWidth: .infinity)
+            }
+            if state.deleteMode == .permanent {
+                Button("Cancel") { state.cancelDelete() }.keyboardShortcut(.cancelAction)
+            }
         }
         .padding(24)
-        .frame(width: 380)
+        .frame(width: 420)
     }
 }

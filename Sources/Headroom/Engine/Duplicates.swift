@@ -137,23 +137,31 @@ struct DuplicateFinder {
             DispatchQueue.concurrentPerform(iterations: width) { lane in
                 let lo = lane * stride, hi = min(nodes.count, lo + stride)
                 guard lo < hi else { return }
+                // One reusable read buffer per lane: hashing never allocates per chunk, so a lane
+                // that reads hundreds of gigabytes stays at a few megabytes of memory.
+                let buffer = UnsafeMutableRawBufferPointer.allocate(byteCount: chunkBytes, alignment: 16)
+                defer { buffer.deallocate() }
                 for i in lo..<hi {
                     if Task.isCancelled { return }
-                    let node = nodes[i]
-                    let key: String
-                    if let digest = hash(path: node.path, mode: mode, size: node.logicalSize) {
-                        key = "\(node.logicalSize):\(digest)"
-                    } else {
-                        key = "unreadable:\(node.id.uuidString)"
+                    // concurrentPerform blocks only drain their autorelease pool when the whole
+                    // lane returns; drain per file so nothing Foundation hands back piles up.
+                    autoreleasepool {
+                        let node = nodes[i]
+                        let key: String
+                        if let digest = hash(path: node.path, mode: mode, size: node.logicalSize, buffer: buffer) {
+                            key = "\(node.logicalSize):\(digest)"
+                        } else {
+                            key = "unreadable:\(node.id.uuidString)"
+                        }
+                        let read: Int64
+                        switch mode {
+                        case .head: read = Int64(min(prefixBytes, Int(node.logicalSize)))
+                        case .samples: read = Int64(2 * prefixBytes)
+                        case .full: read = node.logicalSize
+                        }
+                        counters.tick(bytes: read, current: node.path)
+                        results.withLock { $0.append((node, key)) }
                     }
-                    let read: Int64
-                    switch mode {
-                    case .head: read = Int64(min(prefixBytes, Int(node.logicalSize)))
-                    case .samples: read = Int64(2 * prefixBytes)
-                    case .full: read = node.logicalSize
-                    }
-                    counters.tick(bytes: read, current: node.path)
-                    results.withLock { $0.append((node, key)) }
                 }
             }
         }.value
@@ -161,35 +169,74 @@ struct DuplicateFinder {
         return results.withLock { $0 }
     }
 
+    /// Size of one read: 1 MB. Head and sample reads are 64 KB, full reads stream 1 MB at a time.
+    private static let chunkBytes = 1 << 20
+
     /// SHA-256 of the first 64 KB (head), of 64 KB from the middle plus the last 64 KB (samples),
     /// or of the whole file streamed in 1 MB chunks (full).
-    static func hash(path: String, mode: HashMode, size: Int64) -> String? {
-        guard let handle = FileHandle(forReadingAtPath: path) else { return nil }
-        defer { try? handle.close() }
+    ///
+    /// Reads with pread(2) into `buffer` (at least `chunkBytes` long) and feeds the hasher
+    /// directly. `FileHandle.read` returned a fresh autoreleased `Data` per chunk, and inside a
+    /// GCD lane those were only released when the lane finished, so a scan held every byte it
+    /// had hashed in memory (tens of GB on a big tree) and the machine started paging and
+    /// killing other processes.
+    static func hash(path: String, mode: HashMode, size: Int64, buffer: UnsafeMutableRawBufferPointer) -> String? {
+        precondition(buffer.count >= chunkBytes)
+        let fd = open(path, O_RDONLY | O_CLOEXEC)
+        guard fd >= 0 else { return nil }
+        defer { close(fd) }
         var hasher = SHA256()
+
+        /// Feeds up to `limit` bytes starting at `offset`. Returns false on a read error.
+        func feed(from offset: Int64, upTo limit: Int) -> Bool {
+            var position = off_t(offset)
+            var remaining = limit
+            while remaining > 0 {
+                let n = pread(fd, buffer.baseAddress, min(chunkBytes, remaining), position)
+                if n < 0 {
+                    if errno == EINTR { continue }
+                    return false
+                }
+                if n == 0 { break }
+                hasher.update(bufferPointer: UnsafeRawBufferPointer(rebasing: buffer[0..<n]))
+                position += off_t(n)
+                remaining -= n
+            }
+            return true
+        }
+
         switch mode {
         case .head:
-            guard let data = try? handle.read(upToCount: prefixBytes) else { return nil }
-            hasher.update(data: data)
+            guard feed(from: 0, upTo: prefixBytes) else { return nil }
         case .samples:
-            let chunk = UInt64(prefixBytes)
-            let mid = UInt64(max(0, size / 2 - Int64(prefixBytes / 2)))
-            let tail = UInt64(max(0, size - Int64(prefixBytes)))
+            let mid = max(0, size / 2 - Int64(prefixBytes / 2))
+            let tail = max(0, size - Int64(prefixBytes))
             for offset in [mid, tail] {
-                guard (try? handle.seek(toOffset: offset)) != nil,
-                      let data = try? handle.read(upToCount: Int(chunk)) else { return nil }
-                hasher.update(data: data)
+                guard feed(from: offset, upTo: prefixBytes) else { return nil }
             }
         case .full:
-            let chunk = 1 << 20
-            while true {
-                guard let data = try? handle.read(upToCount: chunk) else { return nil }
-                if data.isEmpty { break }
-                hasher.update(data: data)
-                if data.count < chunk { break }
-            }
+            guard feed(from: 0, upTo: Int.max) else { return nil }
         }
-        return hasher.finalize().map { String(format: "%02x", $0) }.joined()
+        return hex(hasher.finalize())
+    }
+
+    /// Hashes with a buffer of its own. Use the `buffer:` overload when hashing many files.
+    static func hash(path: String, mode: HashMode, size: Int64) -> String? {
+        let buffer = UnsafeMutableRawBufferPointer.allocate(byteCount: chunkBytes, alignment: 16)
+        defer { buffer.deallocate() }
+        return hash(path: path, mode: mode, size: size, buffer: buffer)
+    }
+
+    /// Lowercase hex without going through `String(format:)` (an NSString round trip per byte).
+    private static func hex<D: Sequence>(_ digest: D) -> String where D.Element == UInt8 {
+        let table: [UInt8] = Array("0123456789abcdef".utf8)
+        var out: [UInt8] = []
+        out.reserveCapacity(64)
+        for byte in digest {
+            out.append(table[Int(byte >> 4)])
+            out.append(table[Int(byte & 0x0f)])
+        }
+        return String(decoding: out, as: UTF8.self)
     }
 
     /// Convenience used by tests and tooling.

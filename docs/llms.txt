@@ -12,7 +12,7 @@
 - Delete modes: Trash (recoverable) or Permanent (parallel unlinkat, not recoverable).
 - Privacy: all analysis on-device; no analytics SDK, no cloud.
 - Menu bar monitor: free-space ring, 7-day trend, low-space and sudden-drop alerts, one-click cleanup of safe caches.
-- Current version: 1.0.2 (October 2026).
+- Current version: 1.0.3 (October 2026).
 - Compared with other Mac tools: a free alternative to DaisyDisk (paid) for visualizing disk usage; like GrandPerspective it is open source with a treemap, and adds a folder tree, duplicate finder, safety hints and cleanup; covers the disk-cleanup part of CleanMyMac without a subscription, but is not a full maintenance suite.
 - Similar in spirit to WizTree and TreeSize (Windows), for macOS.
 

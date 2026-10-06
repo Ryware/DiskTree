@@ -173,7 +173,7 @@ Headroom works locally and has no account system, analytics SDK, or cloud servic
 Deletion is always user-initiated:
 
 - **Trash** uses `FileManager.trashItem` and is recoverable until Trash is emptied.
-- **Permanent** uses a fast parallel removal engine and cannot be undone.
+- **Permanent** uses a fast parallel removal engine and cannot be undone. The progress sheet shows every file as it goes and has a Cancel button; files already removed stay removed, the rest are untouched.
 
 For the safest workflow, leave Headroom in Trash mode and review safety details before deleting anything. Important files should always have a backup.
 
@@ -191,7 +191,11 @@ Permanent deletion follows a parallel POSIX strategy:
 2. directories use their own `dirfd` and remove entries with `unlinkat`, avoiding repeated full-path walks; and
 3. empty directories are removed deepest-first, with each level processed in parallel.
 
+If a security product (an antivirus or ransomware shield with an Endpoint Security extension) holds every removal for seconds and then refuses it, Headroom notices after a few consecutive refusals, stops instead of grinding for hours, renames any hidden folder back, and says so in the result. Add Headroom to that product's allowed apps, or use Trash mode for folders it protects.
+
 Trash mode uses the standard macOS Trash API instead.
+
+The duplicate finder hashes with `pread(2)` into one reusable buffer per worker, so memory stays flat no matter how many gigabytes it compares.
 
 ## Requirements
 
@@ -232,7 +236,7 @@ Releases are built by GitHub Actions on a macOS runner. Pushing a version tag bu
 ```sh
 # 1. bump CFBundleShortVersionString / CFBundleVersion in Info.plist (and project.yml), add a CHANGELOG section
 # 2. commit and push, then:
-git tag -a v1.0.2 -m "Headroom 1.0.2" && git push origin v1.0.2
+git tag -a v1.0.3 -m "Headroom 1.0.3" && git push origin v1.0.3
 ```
 
 The workflow (`.github/workflows/release.yml`) needs five repository secrets: `MACOS_CERT_P12` (base64 of the exported Developer ID Application `.p12`), `MACOS_CERT_PASSWORD`, and an App Store Connect API key as `ASC_KEY_ID`, `ASC_ISSUER_ID` and `ASC_KEY_P8` (base64 of the `.p8`). The tag must match the version in `Info.plist` or the run fails before building.
@@ -288,6 +292,9 @@ No. Disk space is reclaimed after you empty Trash.
 
 **Can permanent deletion be undone?**  
 No. Use Trash mode unless you are certain the selected items are disposable.
+
+**Why did a permanent delete stop with "every file removal was held for seconds and then refused"?**  
+An antivirus or ransomware shield on your Mac is blocking Headroom from deleting inside a folder it protects (usually Documents, Desktop or Pictures). Each removal waits for the security product's verdict and is then refused, so Headroom stops rather than spend hours deleting nothing. Add Headroom to that product's allowed applications, or use Trash mode for those folders.
 
 ## License
 

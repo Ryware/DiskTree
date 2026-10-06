@@ -26,10 +26,12 @@ struct DeleteResult {
 }
 
 final class DeleteCounters: @unchecked Sendable {
-    private let lock = OSAllocatedUnfairLock(initialState: (done: 0, total: 0, bytes: Int64(0)))
+    private let lock = OSAllocatedUnfairLock(initialState: (done: 0, total: 0, bytes: Int64(0), current: ""))
     func setTotal(_ n: Int) { lock.withLock { $0.total = n } }
-    func tick(bytes: Int64, count: Int = 1) { lock.withLock { $0.done += count; $0.bytes += bytes } }
-    var snapshot: (done: Int, total: Int, bytes: Int64) { lock.withLock { $0 } }
+    func tick(bytes: Int64, count: Int = 1, current: String? = nil) {
+        lock.withLock { $0.done += count; $0.bytes += bytes; if let current { $0.current = current } }
+    }
+    var snapshot: (done: Int, total: Int, bytes: Int64, current: String) { lock.withLock { $0 } }
 }
 
 /// Fast recursive remover.
@@ -43,6 +45,8 @@ final class DeleteCounters: @unchecked Sendable {
 struct Deleter {
     let mode: DeleteMode
     let counters: DeleteCounters
+    /// Cancel from the UI, and stop on our own when every unlink is being held and refused.
+    var control = DeleteControl()
 
     func delete(_ nodes: [FileNode]) async -> DeleteResult {
         switch mode {
@@ -121,6 +125,7 @@ struct Deleter {
         let counters = self.counters
         let jobs = dirJobs
         let loose = looseFiles
+        let stall = control
 
         // Step 2: unlink files. One dirfd per directory, directories in parallel.
         let (files, bytes) = await Task.detached(priority: .userInitiated) { () -> (Int, Int64) in
@@ -128,14 +133,17 @@ struct Deleter {
             DispatchQueue.concurrentPerform(iterations: jobs.count + 1) { i in
                 if i == jobs.count {
                     for f in loose {
-                        if Self.unlinkPath(f.path) { ok.withLock { $0.0 += 1; $0.1 += f.bytes } }
+                        if stall.aborted { counters.tick(bytes: 0); continue }
+                        let removed = stall.timed { Self.unlinkPath(f.path) }
+                        if removed { ok.withLock { $0.0 += 1; $0.1 += f.bytes } }
                         else { errorLock.withLock { $0.append((f.path, String(cString: strerror(errno)))) } }
-                        counters.tick(bytes: f.bytes)
+                        counters.tick(bytes: removed ? f.bytes : 0, current: f.path)
                     }
                     return
                 }
                 let job = jobs[i]
                 guard !job.files.isEmpty else { return }
+                if stall.aborted { counters.tick(bytes: 0, count: job.files.count); return }
                 let fd = open(job.path, O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC)
                 guard fd >= 0 else {
                     errorLock.withLock { $0.append((job.path, String(cString: strerror(errno)))) }
@@ -144,13 +152,17 @@ struct Deleter {
                 }
                 defer { close(fd) }
                 var n = 0, b: Int64 = 0
-                for f in job.files {
-                    if Self.unlinkAt(fd, f.name, dirPath: job.path) { n += 1; b += f.bytes }
+                // Progress ticks per file, not per directory: when something outside the kernel
+                // holds each unlink for seconds, a per-directory tick looks like a frozen app.
+                for (index, f) in job.files.enumerated() {
+                    if stall.aborted { counters.tick(bytes: 0, count: job.files.count - index); break }
+                    let removed = stall.timed { Self.unlinkAt(fd, f.name, dirPath: job.path) }
+                    if removed { n += 1; b += f.bytes }
                     else { errorLock.withLock { $0.append((job.path + "/" + f.name, String(cString: strerror(errno)))) } }
+                    counters.tick(bytes: removed ? f.bytes : 0, current: job.path + "/" + f.name)
                 }
                 let removedCount = n
                 let removedBytes = b
-                counters.tick(bytes: removedBytes, count: job.files.count)
                 ok.withLock { $0.0 += removedCount; $0.1 += removedBytes }
             }
             return ok.withLock { $0 }
@@ -159,29 +171,41 @@ struct Deleter {
         result.freedBytes = bytes
 
         // Step 3: directories, deepest first; each level in parallel.
-        let byDepth = Dictionary(grouping: jobs, by: \.depth)
-        for depth in byDepth.keys.sorted(by: >) {
-            let level = byDepth[depth]!
-            let n = await Task.detached(priority: .userInitiated) { () -> Int in
-                let ok = OSAllocatedUnfairLock(initialState: 0)
-                DispatchQueue.concurrentPerform(iterations: level.count) { i in
-                    let path = level[i].path
-                    if rmdir(path) == 0 {
-                        ok.withLock { $0 += 1 }
-                    } else {
-                        // Anything odd (leftover entries, flags) → Foundation fallback.
-                        do {
-                            try FileManager.default.removeItem(atPath: path)
+        // Skipped after a stall: the directories are not empty, and the Foundation fallback
+        // would walk them and wait on every refused unlink all over again.
+        if !stall.aborted {
+            let byDepth = Dictionary(grouping: jobs, by: \.depth)
+            for depth in byDepth.keys.sorted(by: >) {
+                let level = byDepth[depth]!
+                let n = await Task.detached(priority: .userInitiated) { () -> Int in
+                    let ok = OSAllocatedUnfairLock(initialState: 0)
+                    DispatchQueue.concurrentPerform(iterations: level.count) { i in
+                        let path = level[i].path
+                        if rmdir(path) == 0 {
                             ok.withLock { $0 += 1 }
-                        } catch {
-                            errorLock.withLock { $0.append((path, error.localizedDescription)) }
+                        } else {
+                            // Anything odd (leftover entries, flags) → Foundation fallback.
+                            do {
+                                try FileManager.default.removeItem(atPath: path)
+                                ok.withLock { $0 += 1 }
+                            } catch {
+                                errorLock.withLock { $0.append((path, error.localizedDescription)) }
+                            }
                         }
                     }
-                }
-                counters.tick(bytes: 0, count: level.count)
-                return ok.withLock { $0 }
-            }.value
-            result.removedDirectories += n
+                    counters.tick(bytes: 0, count: level.count)
+                    return ok.withLock { $0 }
+                }.value
+                result.removedDirectories += n
+            }
+        } else {
+            counters.tick(bytes: 0, count: jobs.count)
+        }
+
+        // Whatever survived under a hidden stash name goes back to its real name, so a
+        // partly failed delete never leaves the user's folder "missing".
+        for s in stashed where access(s.work, F_OK) == 0 && access(s.original, F_OK) != 0 {
+            _ = rename(s.work, s.original)
         }
 
         // Report errors under the original names, not the hidden stash names.
@@ -191,7 +215,55 @@ struct Deleter {
             }
             return e
         }
+        if let reason = stall.abortReason {
+            result.errors.insert((nodes.first?.path ?? "", reason), at: 0)
+        }
         return result
+    }
+
+    static let stallMessage = "Deleting stopped: every file removal was held for seconds and then refused. " +
+        "A security product (antivirus or Endpoint Security extension, such as a ransomware shield) is " +
+        "blocking Headroom from deleting files. Allow Headroom in it, or use Move to Trash instead."
+    static let cancelMessage = "Deleting was cancelled. Files already removed are gone; the rest are untouched."
+
+    /// Lets the UI cancel a running delete, and notices when unlinks are being held for seconds
+    /// and refused, which is what an Endpoint Security client (antivirus, ransomware shield)
+    /// does when it blocks a process: each call waits out the kernel deadline (~10 s) and
+    /// fails. Grinding through tens of thousands of files like that takes days, so after a
+    /// run of consecutive slow refusals we stop and tell the user.
+    final class DeleteControl: @unchecked Sendable {
+        static let refusalsBeforeAbort = 6
+        /// Nanoseconds a refused unlink must have taken to count as "held". A normal unlink
+        /// takes microseconds; 1 s only happens when something outside the kernel is deciding.
+        let slowThreshold: UInt64
+        private let lock = OSAllocatedUnfairLock(initialState: (streak: 0, stalled: false, cancelled: false))
+
+        init(slowThreshold: UInt64 = 1_000_000_000) { self.slowThreshold = slowThreshold }
+
+        var aborted: Bool { lock.withLock { $0.stalled || $0.cancelled } }
+        var stalled: Bool { lock.withLock { $0.stalled } }
+        var cancelled: Bool { lock.withLock { $0.cancelled } }
+        var abortReason: String? {
+            lock.withLock { $0.cancelled ? Deleter.cancelMessage : $0.stalled ? Deleter.stallMessage : nil }
+        }
+
+        func cancel() { lock.withLock { $0.cancelled = true } }
+
+        /// Runs one unlink, timing it, and returns its result. A success resets the streak, so a
+        /// security product that scans slowly but allows the deletes never trips the abort.
+        func timed(_ unlink: () -> Bool) -> Bool {
+            let t0 = DispatchTime.now().uptimeNanoseconds
+            let ok = unlink()
+            let elapsed = DispatchTime.now().uptimeNanoseconds - t0
+            lock.withLock {
+                if ok { $0.streak = 0 }
+                else if elapsed >= self.slowThreshold {
+                    $0.streak += 1
+                    if $0.streak >= Self.refusalsBeforeAbort { $0.stalled = true }
+                }
+            }
+            return ok
+        }
     }
 
     /// Atomically rename `path` to a hidden sibling so it disappears at once.
@@ -202,25 +274,37 @@ struct Deleter {
         return rename(path, hidden) == 0 ? hidden : nil
     }
 
-    /// unlinkat(2) relative to an open directory; clears immutable flags on EPERM.
+    /// unlinkat(2) relative to an open directory. Retries once only if the file carried an
+    /// immutable/append flag that we could clear; any other refusal (a security product's
+    /// Endpoint Security client, say) is reported straight away rather than waited out twice.
     private static func unlinkAt(_ fd: Int32, _ name: String, dirPath: String) -> Bool {
         if unlinkat(fd, name, 0) == 0 { return true }
-        if errno == EPERM || errno == EACCES {
-            let full = dirPath + "/" + name
-            _ = lchflags(full, 0)
-            _ = fchmodat(fd, name, 0o600, AT_SYMLINK_NOFOLLOW)
-            if unlinkat(fd, name, 0) == 0 { return true }
+        let refused = errno
+        guard refused == EPERM || refused == EACCES else { return false }
+        var st = stat()
+        guard fstatat(fd, name, &st, AT_SYMLINK_NOFOLLOW) == 0, clearLockFlags(dirPath + "/" + name, st) else {
+            errno = refused   // report the unlink's error, not the probe's
+            return false
         }
-        return false
+        return unlinkat(fd, name, 0) == 0
     }
 
     private static func unlinkPath(_ path: String) -> Bool {
         if unlink(path) == 0 { return true }
-        if errno == EPERM || errno == EACCES {
-            _ = lchflags(path, 0)
-            _ = chmod(path, 0o600)
-            if unlink(path) == 0 { return true }
+        let refused = errno
+        guard refused == EPERM || refused == EACCES else { return false }
+        var st = stat()
+        guard lstat(path, &st) == 0, clearLockFlags(path, st) else {
+            errno = refused
+            return false
         }
-        return false
+        return unlink(path) == 0
+    }
+
+    /// Clears uchg/uappnd/schg/sappnd on `path`. Returns true only when there was a flag to clear.
+    private static func clearLockFlags(_ path: String, _ st: stat) -> Bool {
+        let locked = UInt32(UF_IMMUTABLE | UF_APPEND | SF_IMMUTABLE | SF_APPEND)
+        guard st.st_flags & locked != 0 else { return false }
+        return lchflags(path, st.st_flags & ~locked) == 0
     }
 }

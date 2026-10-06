@@ -16,7 +16,7 @@ struct ScanProgress {
     var elapsed: TimeInterval { (finished ?? Date()).timeIntervalSince(started) }
 }
 
-struct DuplicateProgress {
+struct DuplicateProgress: Equatable {
     var done = 0
     var total = 0
     var bytes: Int64 = 0
@@ -25,10 +25,11 @@ struct DuplicateProgress {
     var fraction: Double { total == 0 ? 0 : Double(done) / Double(total) }
 }
 
-struct DeleteProgress {
+struct DeleteProgress: Equatable {
     var done = 0
     var total = 0
     var bytes: Int64 = 0
+    var current = ""
     var fraction: Double { total == 0 ? 0 : Double(done) / Double(total) }
 }
 
@@ -49,6 +50,7 @@ final class AppState: ObservableObject {
     @Published var selectedNode: FileNode?
     @Published var deleteMode: DeleteMode = .trash
     @Published var deleting: DeleteProgress?
+    private var deleteControl: Deleter.DeleteControl?
     @Published var lastDeleteResult: DeleteResult?
     @Published var cleanupCandidates: [CleanupCandidate] = []
     @Published var knownLocationCandidates: [CleanupCandidate] = []
@@ -270,7 +272,9 @@ final class AppState: ObservableObject {
             let s = counters.snapshot
             Task { @MainActor in
                 guard self?.duplicateProgress != nil else { return }
-                self?.duplicateProgress = DuplicateProgress(done: s.done, total: s.total, bytes: s.bytes, current: s.current, phase: s.phase)
+                let next = DuplicateProgress(done: s.done, total: s.total, bytes: s.bytes, current: s.current, phase: s.phase)
+                // Publishing an unchanged value still re-renders every view observing AppState.
+                if self?.duplicateProgress != next { self?.duplicateProgress = next }
             }
         }
         duplicateTask = Task.detached(priority: .userInitiated) { [weak self] in
@@ -307,14 +311,23 @@ final class AppState: ObservableObject {
     func delete(_ nodes: [FileNode], mode: DeleteMode? = nil, silent: Bool = false) async -> DeleteResult? {
         guard !nodes.isEmpty, deleting == nil else { return nil }
         let counters = DeleteCounters()
+        let control = Deleter.DeleteControl()
+        deleteControl = control
         deleting = DeleteProgress()
         let timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
             let s = counters.snapshot
-            Task { @MainActor in self?.deleting = DeleteProgress(done: s.done, total: s.total, bytes: s.bytes) }
+            Task { @MainActor in
+                guard self?.deleting != nil else { return }
+                let next = DeleteProgress(done: s.done, total: s.total, bytes: s.bytes, current: s.current)
+                // Publishing an unchanged value still re-renders every view observing AppState
+                // (the whole window, ten times a second, for as long as the delete runs).
+                if self?.deleting != next { self?.deleting = next }
+            }
         }
-        let deleter = Deleter(mode: mode ?? deleteMode, counters: counters)
+        let deleter = Deleter(mode: mode ?? deleteMode, counters: counters, control: control)
         let result = await Task.detached(priority: .userInitiated) { await deleter.delete(nodes) }.value
         timer.invalidate()
+        deleteControl = nil
 
         // Drop removed nodes from the in-memory tree instead of rescanning.
         let removed = nodes.filter { n in !result.errors.contains(where: { $0.path.hasPrefix(n.path) }) }
@@ -342,6 +355,9 @@ final class AppState: ObservableObject {
         }
         return result
     }
+
+    /// Stops a running permanent delete after the unlinks already in flight return.
+    func cancelDelete() { deleteControl?.cancel() }
 
     // MARK: Folder picking
 

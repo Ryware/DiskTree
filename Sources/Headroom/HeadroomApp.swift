@@ -55,7 +55,7 @@ struct HeadroomApp: App {
                     // First launch → full tour; updated app → jump to What's New.
                     try? await Task.sleep(for: .milliseconds(600))
                     if seenIntroVersion == 0 { introPage = 0; showIntro = true }
-                    else if seenIntroVersion < currentIntroVersion { introPage = 5; showIntro = true }
+                    else if seenIntroVersion < currentIntroVersion { introPage = 7; showIntro = true }
                 }
         }
         .windowStyle(.titleBar)
@@ -69,7 +69,7 @@ struct HeadroomApp: App {
             }
             CommandGroup(replacing: .help) {
                 Button("Welcome Tour") { introPage = 0; showIntro = true }
-                Button("What's New in Headroom") { introPage = 5; showIntro = true }
+                Button("What's New in Headroom") { introPage = 7; showIntro = true }
             }
             CommandGroup(replacing: .newItem) {
                 Button("Scan Folder…") { state.pickFolder() }

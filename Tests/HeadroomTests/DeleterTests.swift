@@ -79,6 +79,66 @@ final class DeleterTests: XCTestCase {
         XCTAssertGreaterThan(s.total, 0)
     }
 
+    func testLockedFileIsUnlockedAndDeleted() async throws {
+        let victim = dir.appendingPathComponent("locked")
+        let f = try TestSupport.write(victim.appendingPathComponent("immutable.bin"), bytes: 100)
+        XCTAssertEqual(lchflags(f.path, UInt32(UF_IMMUTABLE)), 0, String(cString: strerror(errno)))
+        defer { _ = lchflags(f.path, 0) }
+
+        let (root, _) = try await TestSupport.scan(dir)
+        let node = try XCTUnwrap(root.children.first { $0.name == "locked" })
+        let result = await permanentDelete([node])
+
+        XCTAssertTrue(result.errors.isEmpty, "\(result.errors)")
+        XCTAssertFalse(FileManager.default.fileExists(atPath: f.path))
+        XCTAssertFalse(FileManager.default.fileExists(atPath: victim.path))
+    }
+
+    func testControlAbortsAfterConsecutiveSlowRefusals() {
+        let fast = Deleter.DeleteControl(slowThreshold: 1_000_000)   // 1 ms
+        for _ in 0..<20 { XCTAssertFalse(fast.timed { false }) }     // instant refusals: not a stall
+        XCTAssertFalse(fast.aborted, "fast failures (missing files, permissions) must not abort")
+
+        let held = Deleter.DeleteControl(slowThreshold: 1_000_000)
+        for _ in 0..<Deleter.DeleteControl.refusalsBeforeAbort {
+            XCTAssertFalse(held.aborted)
+            _ = held.timed { usleep(3_000); return false }
+        }
+        XCTAssertTrue(held.stalled, "refusals that each took longer than the threshold mean something is holding every unlink")
+        XCTAssertEqual(held.abortReason, Deleter.stallMessage)
+
+        // A security product that scans slowly but allows the deletes: successes keep resetting the streak.
+        let scanned = Deleter.DeleteControl(slowThreshold: 1_000_000)
+        for _ in 0..<30 {
+            _ = scanned.timed { usleep(3_000); return false }
+            _ = scanned.timed { true }
+        }
+        XCTAssertFalse(scanned.aborted)
+
+        // ...but once it flips to refusing everything, we stop promptly despite the earlier successes.
+        for _ in 0..<Deleter.DeleteControl.refusalsBeforeAbort { _ = scanned.timed { usleep(3_000); return false } }
+        XCTAssertTrue(scanned.stalled)
+    }
+
+    func testCancelStopsTheDeleteAndReportsIt() async throws {
+        let victim = dir.appendingPathComponent("victim")
+        for i in 0..<20 { try TestSupport.write(victim.appendingPathComponent("f\(i).bin"), bytes: 100) }
+        let (root, _) = try await TestSupport.scan(dir)
+        let node = try XCTUnwrap(root.children.first { $0.name == "victim" })
+
+        let counters = DeleteCounters()
+        var deleter = Deleter(mode: .permanent, counters: counters)
+        deleter.control.cancel()                       // cancelled before it starts: nothing may be removed
+        let result = await deleter.delete([node])
+
+        XCTAssertEqual(result.removedFiles, 0)
+        XCTAssertEqual(result.errors.first?.message, Deleter.cancelMessage)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: victim.path), "the stash must be renamed back")
+        XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: victim.path).count, 20)
+        let s = counters.snapshot
+        XCTAssertEqual(s.done, s.total, "progress must still reach the total so the sheet can close")
+    }
+
     func testDeleteModeLabels() {
         XCTAssertEqual(DeleteMode.allCases.count, 2)
         XCTAssertTrue(DeleteMode.trash.actionLabel.contains("Trash"))

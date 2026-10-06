@@ -37,6 +37,11 @@ struct DeleteToast: View {
                     .contentTransition(.numericText(value: Double(shown)))
                 Text(Self.count(result.removedFiles, "file") + " · " + Self.count(result.removedDirectories, "folder") + (mode == .trash ? " moved to the Trash" : " removed"))
                     .font(.callout).foregroundStyle(.secondary)
+                // Say why right here; a "Details" click should not be needed to learn that nothing happened.
+                if let reason = result.errors.first?.message, !ok {
+                    Text(reason).font(.callout).foregroundStyle(SafetyLevel.caution.color)
+                        .lineLimit(3).fixedSize(horizontal: false, vertical: true).frame(maxWidth: 520, alignment: .leading)
+                }
             }
             if !ok {
                 Button("Details") { showErrors = true }

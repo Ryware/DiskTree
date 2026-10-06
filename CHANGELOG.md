@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.0.3 — October 6, 2026
+
+### 🐛 Fixed
+
+- **Duplicate finder no longer eats all memory.** Hashing read files through `FileHandle`, and every chunk it returned stayed alive until the whole worker finished, so a scan held every byte it had compared in memory (tens of GB on a big tree) until macOS started killing other apps. Hashing now uses `pread(2)` into one reusable 1 MB buffer per worker: a 7.9 GB verification pass runs in 7 MB and about three times faster.
+- **Permanent delete no longer grinds for hours when a security product blocks it.** An antivirus or ransomware shield with an Endpoint Security extension can hold every `unlinkat` for seconds and then refuse it. Headroom now stops after a few consecutive held refusals, renames any hidden folder back to its real name, and explains what happened in the result instead of showing "0 KB freed" with no reason. A refused removal is also no longer retried unless the file actually carried an immutable flag, which halved the time wasted per file.
+- The result toast shows the reason for a failure inline; the Details button is no longer needed to learn that nothing was removed.
+- A late progress tick could re-open the delete sheet after the delete had finished.
+
+### ✨ Changed
+
+- **Cancel button** on the permanent-delete sheet. Files already removed stay removed, everything else is left untouched.
+- Delete progress advances per file and shows the current path, so a slow delete is visibly moving instead of looking frozen.
+- Progress for deletes and duplicate scans is published only when it changes; the window no longer re-renders ten times a second for the length of a delete.
+
+### 🧰 Chores
+
+- 83 unit tests: multi-chunk hashing against CryptoKit, locked-file deletion, the stall rule, and cancel.
+
 ## 1.0.2 — October 5, 2026
 
 ### ✨ Changed
