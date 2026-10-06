@@ -113,8 +113,8 @@ struct CategoriesView: View {
     }
 
     private func barOpacity(_ cat: FileCategory) -> Double {
-        if hovered == cat { return selected == cat ? 1 : 0.8 }
-        return selected == nil || selected == cat ? 1 : 0.35
+        if selected == nil || selected == cat { return 1 }
+        return hovered == cat ? 0.8 : 0.35   // a faded bar lifts on hover; a full one stays full
     }
 
     private func category(at point: CGPoint, proxy: ChartProxy, geo: GeometryProxy) -> FileCategory? {
