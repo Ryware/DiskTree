@@ -113,15 +113,15 @@ jobs:
           fi
           gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json url -q .url
 
-      # Publishes `brew install ryware/tap/headroom`. Needs a HOMEBREW_TAP_TOKEN secret:
-      # a fine-grained token with Contents: read and write on Ryware/homebrew-tap. Skipped without it.
+      # Optional: Ryware/homebrew-tap updates its own cask every 3 hours. With a HOMEBREW_TAP_TOKEN
+      # secret (Contents: read and write on that repo) this pushes the new cask right away instead.
       - name: Update Homebrew cask
         env:
           TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
           VERSION: ${{ steps.notes.outputs.version }}
         run: |
           if [ -z "$TAP_TOKEN" ]; then
-            echo "::warning::HOMEBREW_TAP_TOKEN is not set; skipping the Homebrew cask update."; exit 0
+            echo "No HOMEBREW_TAP_TOKEN; the tap picks up this release on its own within 3 hours."; exit 0
           fi
           set -e
           SHA=$(cut -d' ' -f1 "dist/Headroom-$VERSION.dmg.sha256")

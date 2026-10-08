@@ -160,13 +160,10 @@ Set `destination` to `upload` in `ExportOptions.plist` to upload directly once t
 
 ## Homebrew
 
-Users install with `brew install ryware/tap/headroom`. The cask template is `packaging/homebrew/headroom.rb`. On each tag, the release workflow fills in the version and the DMG's SHA-256 and pushes the result to `Ryware/homebrew-tap` as `Casks/headroom.rb`.
+Users install with `brew install ryware/tap/headroom`. The tap is the public repository [`Ryware/homebrew-tap`](https://github.com/Ryware/homebrew-tap), holding `Casks/headroom.rb`.
 
-One-time setup:
+The tap keeps itself up to date: its `Update Headroom cask` workflow runs every 3 hours (and on demand from its Actions tab). It reads Headroom's latest GitHub release, takes the DMG checksum from the `.sha256` asset, fills in `packaging/homebrew/headroom.rb` from this repository and commits the result. No token or secret is needed.
 
-- [ ] Create the public repository `Ryware/homebrew-tap` (the `homebrew-` prefix is required; an initial README is enough).
-- [ ] Create a fine-grained personal access token limited to `Ryware/homebrew-tap` with **Contents: Read and write**.
-- [ ] Add it to this repository as the Actions secret `HOMEBREW_TAP_TOKEN`. Without it, the workflow skips the step and logs a warning.
-- [ ] Re-run the Release workflow for the current tag (or push the next tag) and check `brew install ryware/tap/headroom` on a Mac.
+Optional: to update the tap the moment a release is published instead of within 3 hours, add a fine-grained token with **Contents: Read and write** on `Ryware/homebrew-tap` to this repository as the Actions secret `HOMEBREW_TAP_TOKEN`; the release workflow then pushes the cask itself.
 
-Later, once the repository meets Homebrew's notability bar, the cask can be submitted to the official `homebrew/cask` with `brew bump-cask-pr` so that `brew install --cask headroom` works without the tap.
+Later, once the repository meets Homebrew's notability bar (about 75 stars), the cask can be submitted to the official `homebrew/cask` with `brew bump-cask-pr` so that `brew install headroom` works without the tap.
