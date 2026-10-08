@@ -3,84 +3,130 @@
 <head>
 <meta charset="utf-8">
 <title>Headroom promo</title>
+<!--
+  A 29 s promo rendered frame by frame by render.mjs. window.render(t) sets every element
+  from the time alone. The app screens follow the SwiftUI views in Sources/Headroom/Views
+  (ScanningView, DashboardView, TreemapView, CleanupView, DeleteToast, StatusBar), drawn
+  at macOS point sizes inside a window that is scaled up as a whole.
+-->
 <style>
 @font-face{font-family:Geist;src:url(geist-latin-wght-normal.woff2) format("woff2");font-weight:100 900}
 @font-face{font-family:"Geist Mono";src:url(geist-mono-latin-wght-normal.woff2) format("woff2");font-weight:100 900}
-:root{
-  --bg:#0c0c12;--win:#1e1e22;--side:#26262c;--line:rgba(255,255,255,.08);--fg:#f2f2f5;--fg2:#a9a9b3;--fg3:#6f6f7a;
-  --accent:#7c6cf6;--safe:#61c78a;--usually:#6bc2cc;--caution:#f5b257;--never:#ed6b6b;
-}
+:root{--fg:#f2f2f5;--fg2:rgba(235,235,245,.6);--fg3:rgba(235,235,245,.35);--line:rgba(255,255,255,.08);--accent:#2f6fe0;
+  --safe:rgb(97,199,138);--usually:rgb(107,194,204);--caution:rgb(245,178,87);--never:rgb(237,107,107)}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{width:1920px;height:1080px;overflow:hidden;background:var(--bg);font-family:Geist,system-ui,sans-serif;color:var(--fg);-webkit-font-smoothing:antialiased}
-.layer{position:absolute;inset:0;will-change:opacity,transform}
+html,body{width:1920px;height:1080px;overflow:hidden;background:#0c0c12;font-family:Geist,system-ui,sans-serif;color:var(--fg);-webkit-font-smoothing:antialiased}
+.layer{position:absolute;inset:0}
 .glow{position:absolute;inset:-20%;background:radial-gradient(40% 40% at 70% 20%,rgba(124,108,246,.28),transparent 70%),radial-gradient(35% 35% at 20% 85%,rgba(14,165,233,.18),transparent 70%)}
+.num{font-variant-numeric:tabular-nums}
+svg.i{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex:none}
 
 /* captions */
-.cap{position:absolute;left:0;right:0;top:46px;text-align:center;font-size:58px;font-weight:650;letter-spacing:-.02em;line-height:1.1}
+.cap{position:absolute;left:0;right:0;top:40px;text-align:center;font-size:56px;font-weight:650;letter-spacing:-.02em;line-height:1.1}
 .cap em{font-style:normal;background:linear-gradient(90deg,#a99cff,#5ec8f5);-webkit-background-clip:text;background-clip:text;color:transparent}
-.cap small{display:block;font-size:26px;font-weight:450;color:var(--fg2);letter-spacing:0;margin-top:14px}
+.cap small{display:block;font-size:25px;font-weight:450;color:#b4b4be;letter-spacing:0;margin-top:10px}
 
-/* scene 1: macOS storage */
+/* scene 1: macOS Storage */
 #storage{position:absolute;left:310px;top:330px;width:1300px;padding:44px 48px;border-radius:22px;background:#202026;border:1px solid var(--line);box-shadow:0 40px 120px rgba(0,0,0,.5)}
 #storage h3{font-size:30px;font-weight:600;display:flex;align-items:center;gap:16px}
 #storage h3 .disk{width:40px;height:30px;border-radius:6px;background:linear-gradient(#cfcfd6,#8d8d97)}
-#storage .used{color:var(--fg2);font-size:22px;margin:10px 0 28px 56px}
+#storage .used{color:#a9a9b3;font-size:22px;margin:10px 0 28px 56px}
 #bar{display:flex;height:34px;border-radius:9px;overflow:hidden;background:#3a3a42}
 #bar div{height:100%}
-#legend{display:flex;gap:30px;margin-top:22px;font-size:20px;color:var(--fg2)}
+#legend{display:flex;gap:30px;margin-top:22px;font-size:20px;color:#a9a9b3}
 #legend span::before{content:"";display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:9px;background:var(--c)}
 #sysdata{position:absolute;font-size:22px;color:#fff;font-weight:600;top:-40px;right:0}
 
-/* window */
-#win{position:absolute;left:150px;top:170px;width:1620px;height:860px;border-radius:16px;background:var(--win);border:1px solid rgba(255,255,255,.1);box-shadow:0 50px 140px rgba(0,0,0,.6);overflow:hidden}
-#title{height:54px;display:flex;align-items:center;padding:0 20px;border-bottom:1px solid var(--line);background:#24242a;gap:18px}
-.lights{display:flex;gap:9px}.lights i{width:13px;height:13px;border-radius:50%;display:block}
-#title b{font-size:19px;font-weight:600;margin-left:200px}
-.seg{margin-left:auto;display:flex;background:#1a1a1f;border-radius:8px;padding:3px;font-size:15px;color:var(--fg2)}
-.seg span{padding:5px 16px;border-radius:6px}.seg span.on{background:#3b3b44;color:#fff}
-#side{position:absolute;left:0;top:54px;bottom:0;width:236px;background:var(--side);border-right:1px solid var(--line);padding:14px 10px}
-.nav{display:flex;align-items:center;gap:12px;font-size:17px;padding:9px 12px;border-radius:8px;color:#e6e6ea;margin-bottom:2px}
-.nav svg{width:19px;height:19px;fill:none;stroke:#7ab0ff;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
-.nav.on{background:#2f6fe0;color:#fff}.nav.on svg{stroke:#fff}
-#content{position:absolute;left:236px;top:54px;right:0;bottom:0}
+/* window, at macOS point sizes; scaled by 1.3 */
+#win{position:absolute;left:154px;top:162px;width:1240px;height:688px;transform-origin:0 0;border-radius:11px;overflow:hidden;background:#1e1e20;border:1px solid rgba(255,255,255,.14);box-shadow:0 40px 110px rgba(0,0,0,.65);font-size:13px}
+#side{position:absolute;left:0;top:0;bottom:0;width:210px;background:linear-gradient(180deg,#232838,#1f2230 60%,#1d1f28);border-right:1px solid rgba(0,0,0,.5);padding:52px 8px 0}
+.lights{position:absolute;left:18px;top:19px;display:flex;gap:8px}.lights i{width:12px;height:12px;border-radius:50%;display:block}
+#side .tog{position:absolute;left:96px;top:16px;color:var(--fg2)}
+.nav{display:flex;align-items:center;gap:8px;height:28px;padding:0 9px;border-radius:6px;margin-bottom:1px}
+.nav svg{color:#6ea3ff}.nav.on{background:var(--accent)}.nav.on svg{color:#fff}
+.shead{font-size:11px;font-weight:600;color:var(--fg3);margin:18px 10px 6px}
+.scanned{padding:2px 10px}.scanned b{font-weight:650;display:block}.scanned s{text-decoration:none;color:var(--fg2);font-size:11px;display:block;margin-top:2px}
+#tb{position:absolute;left:210px;right:0;top:0;height:52px;display:flex;align-items:center;gap:16px;padding:0 14px;background:#2a2a2d;border-bottom:1px solid rgba(0,0,0,.6);color:var(--fg2)}
+#tb .t{color:var(--fg);font-weight:650;font-size:15px}
+.segc{display:flex;background:rgba(255,255,255,.07);border-radius:6px;padding:2px;font-size:12px;color:var(--fg)}
+.segc span{padding:3px 11px;border-radius:5px}.segc span.on{background:rgba(255,255,255,.2)}
+#detail{position:absolute;left:210px;right:0;top:52px;bottom:28px;overflow:hidden;background:#1e1e20}
 .pane{position:absolute;inset:0}
+#status{position:absolute;left:210px;right:0;bottom:0;height:28px;display:flex;align-items:center;gap:10px;padding:0 12px;font-size:12px;border-top:1px solid rgba(0,0,0,.5);background:#232326}
+#status .r{margin-left:auto;color:var(--fg2);display:flex;gap:5px;align-items:center}
+.spin{width:12px;height:12px;border-radius:50%;border:2px solid rgba(255,255,255,.2);border-top-color:#fff}
 
-/* scan */
-#scan{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px}
-#ring{width:250px;height:250px}
-#scan .path{font-size:24px;color:var(--fg2)}
-#stats{display:flex;gap:26px}
-.stat{width:250px;padding:22px 24px;border-radius:14px;background:#26262c;border:1px solid var(--line)}
-.stat .k{font-size:17px;font-weight:600}
-.stat .v{font-variant-numeric:tabular-nums;font-size:38px;font-weight:600;margin-top:10px;letter-spacing:-.02em}
+/* ScanningView: BrandBackground + BentoLoader + stats */
+.brand{background:radial-gradient(40% 30% at 20% 10%,rgba(255,255,255,.22),transparent 70%),radial-gradient(38% 30% at 95% 95%,rgba(56,210,240,.45),transparent 70%),linear-gradient(135deg,rgb(79,69,230),rgb(125,59,237) 50%,rgb(13,166,232))}
+#pScan{display:flex;align-items:center;justify-content:center;gap:48px;color:#fff}
+#bento{position:relative;width:220px;height:220px}
+.tile{position:absolute;background:linear-gradient(rgba(255,255,255,.5),rgba(255,255,255,.15)),rgba(255,255,255,.22);border:1.5px solid rgba(255,255,255,.65);box-shadow:0 6px 16px rgba(0,0,0,.18)}
+.tile i{position:absolute;inset:0;border-radius:inherit;opacity:0}
+#pScan h2{font-size:22px;font-weight:650}
+.sstats{display:flex;gap:28px;margin:14px 0}
+.sstats b{display:block;font-size:30px;font-weight:750}.sstats s{text-decoration:none;font-size:11px;opacity:.7}
+#cur{font:11px "Geist Mono",monospace;opacity:.6;width:420px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wbtn{display:inline-block;margin-top:14px;padding:4px 14px;border-radius:6px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);font-size:13px}
 
-/* treemap */
-#tm{position:absolute;left:22px;top:66px;right:22px;bottom:22px}
-#tmbar{position:absolute;left:22px;right:22px;top:16px;height:36px;display:flex;align-items:center;gap:14px;font-size:16px;color:var(--fg2)}
-#tmbar .seg{margin-left:auto}
-.cell{position:absolute;border-radius:3px;overflow:hidden;font-size:14px;padding:5px 7px;color:rgba(0,0,0,.78);font-weight:600;line-height:1.25;transform-origin:center}
-.cell s{text-decoration:none;display:block;font-weight:500;opacity:.8}
-.grp{position:absolute;border:1px solid rgba(255,255,255,.18);border-radius:4px;background:rgba(255,255,255,.03)}
-.grp b{position:absolute;left:6px;top:3px;font-size:14px;font-weight:600;color:#d8d8de;white-space:nowrap}
+/* DashboardView */
+#pDash{padding:20px 22px;display:flex;flex-direction:column;gap:14px}
+.dhead{border-radius:18px;padding:22px 24px;color:#fff}
+.dhead h2{font-size:28px;font-weight:750;display:flex;gap:10px;align-items:center}
+.dhead .p{font-size:12px;margin-top:8px;display:flex;gap:6px;align-items:center}
+.dhead .m{font-size:11px;opacity:.8;margin-top:8px}
+.card{background:#28282b;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:16px 18px}
+.card h4{font-size:13px;font-weight:650;display:flex;gap:7px;align-items:center}
+.dfree{display:flex;align-items:baseline;gap:6px;margin-top:10px}.dfree b{font-size:28px;font-weight:750}
+.dfree span{color:var(--fg2)}.dfree .tot{margin-left:auto}
+.dbar{height:6px;border-radius:3px;background:rgba(255,255,255,.1);margin:10px 0 8px;overflow:hidden}.dbar i{display:block;height:100%;border-radius:3px;background:#d147d8}
+.cap2{font-size:11px;color:var(--fg2)}
+.tiles{display:flex;gap:12px}
+.tiles .card{width:220px}.tiles .k{font-size:12px;font-weight:550;display:flex;gap:6px;align-items:center}
+.tiles b{display:block;font-size:28px;font-weight:750;margin:8px 0 4px}
+.cbar{display:flex;flex-direction:column;gap:7px;margin-top:10px}
+.cbar div{font-size:11px;color:var(--fg2)}.cbar i{display:block;height:5px;border-radius:3px;margin-top:3px}
 
-/* cleanup list */
-#list{padding:28px 34px}
-#diskcard{display:flex;align-items:center;gap:26px;padding:20px 26px;border-radius:14px;background:#26262c;border:1px solid var(--line);margin-bottom:22px}
-#diskcard .free{font-size:40px;font-weight:650;font-variant-numeric:tabular-nums;letter-spacing:-.02em;min-width:260px}
-#diskcard .free small{font-size:20px;color:var(--fg2);font-family:Geist}
-#dbar{flex:1;height:14px;border-radius:7px;background:#3a3a42;overflow:hidden}
-#dbar div{height:100%;border-radius:7px}
-.row{display:flex;align-items:center;gap:20px;height:84px;padding:0 22px;border-radius:12px;margin-bottom:8px;background:#232328;border:1px solid var(--line);overflow:hidden}
-.chk{width:24px;height:24px;border-radius:6px;border:2px solid #5a5a64;flex:none;display:flex;align-items:center;justify-content:center;font-size:17px;color:#fff;font-weight:800}
-.row .nm{width:470px}
-.row .nm b{font-size:21px;font-weight:600;display:block}
-.row .nm s{text-decoration:none;font-size:15px;color:var(--fg3);font-family:"Geist Mono",monospace}
-.badge{width:178px;flex:none;font-size:16px;font-weight:650;padding:7px 12px;border-radius:999px;text-align:center}
-.row .adv{flex:1;font-size:18px;color:var(--fg2)}
-.row .sz{width:130px;text-align:right;font-variant-numeric:tabular-nums;font-size:22px;font-weight:600}
-#btn{position:absolute;right:34px;bottom:26px;padding:16px 26px;border-radius:12px;background:var(--accent);font-size:20px;font-weight:650;color:#fff;box-shadow:0 10px 30px rgba(124,108,246,.35)}
-#toast{position:absolute;left:50%;bottom:30px;transform:translateX(-50%);padding:16px 26px;border-radius:12px;background:#2f2f37;border:1px solid rgba(255,255,255,.14);font-size:19px;white-space:nowrap;box-shadow:0 20px 50px rgba(0,0,0,.5)}
-#toast b{color:var(--safe)}#toast u{text-decoration:none;color:#9fb8ff;margin-left:18px;font-weight:600}
+/* TreemapView */
+.thead{height:36px;display:flex;align-items:center;gap:8px;padding:0 12px;font-size:12px;border-bottom:1px solid rgba(0,0,0,.5)}
+.thead .up{margin-left:auto;color:var(--fg3);display:flex;gap:4px;align-items:center}
+.stepper{display:flex;align-items:center;gap:6px}
+#canvas{position:absolute;left:0;right:0;top:36px;bottom:24px}
+.tlegend{position:absolute;left:0;right:0;bottom:0;height:24px;display:flex;align-items:center;gap:14px;padding:0 12px;font-size:11px;color:var(--fg2)}
+.tlegend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
+.tlegend .hint{margin-left:auto;color:var(--fg3)}
+.leaf{position:absolute;border-radius:2px;overflow:hidden;padding:2px 4px;color:#fff;font-size:10px;font-weight:550;line-height:13px;white-space:nowrap}
+.leaf s{text-decoration:none;display:block;font-size:9px;font-weight:450;opacity:.85}
+.dir{position:absolute;border-radius:3px;border:1px solid}
+.dir b{position:absolute;left:3px;top:1px;right:3px;font-size:10px;font-weight:650;color:rgba(255,255,255,.85);white-space:nowrap;overflow:hidden;line-height:13px}
+#hov{position:absolute;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.35);border-radius:3px;pointer-events:none}
+#tip{position:absolute;width:300px;padding:10px 12px;border-radius:8px;background:rgba(52,52,58,.92);border:1px solid rgba(255,255,255,.12);box-shadow:0 10px 30px rgba(0,0,0,.45);backdrop-filter:blur(20px)}
+#tip .h{display:flex;font-weight:650;font-size:13px}#tip .h span{margin-left:auto}
+#tip .pth{font-size:11px;color:var(--fg2);margin:3px 0 8px}
+#tip .lv{font-size:11px;font-weight:700;color:var(--safe);display:flex;gap:5px;align-items:center}
+#tip .w{font-size:11px;margin-top:4px;line-height:1.35}
+
+/* CleanupView */
+.chead{height:52px;display:flex;align-items:center;gap:8px;padding:0 12px;border-bottom:1px solid rgba(0,0,0,.5)}
+.chead h4{font-size:13px;font-weight:650}.chead .cap2{margin-top:2px}
+.btn{padding:3px 10px;border-radius:6px;background:rgba(255,255,255,.12);font-size:13px}
+.btn.dis{opacity:.4}
+.btn.pri{background:var(--accent);color:#fff;display:flex;gap:5px;align-items:center}
+.list{padding:6px 10px}
+.sec{display:flex;font-size:11px;font-weight:650;color:var(--fg2);padding:10px 8px 4px}.sec a{margin-left:auto;color:#6ea3ff;font-weight:450}
+.grp,.crow{display:flex;align-items:center;gap:8px;padding:0 8px;overflow:hidden}
+.grp{height:42px}.crow{height:36px;padding-left:44px}
+.chev{width:10px;color:var(--fg2);font-size:10px}
+.cb{width:14px;height:14px;border-radius:4px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.06);flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:800}
+.cb.on{background:var(--accent);border-color:var(--accent)}
+.grp .tt{line-height:1.3}.grp .tt s,.crow .tt s{text-decoration:none;display:block;font-size:11px;color:var(--fg2)}
+.grp .ct,.crow .sz{margin-left:auto;color:var(--fg2)}.crow .sz{width:70px;text-align:right;color:var(--fg);margin-left:0}
+.crow .tt{flex:1}
+.badge{display:flex;gap:3px;align-items:center;font-size:11px;padding:1px 7px;border-radius:999px;color:var(--safe);background:rgba(97,199,138,.12);border:.5px solid rgba(97,199,138,.28)}
+.when{font-size:11px;color:var(--fg3);width:78px;text-align:right}
+#toast{position:absolute;left:50%;bottom:26px;display:flex;gap:16px;align-items:center;padding:14px 18px;border-radius:16px;background:rgba(48,48,54,.94);border:1px solid rgba(255,255,255,.12);box-shadow:0 8px 36px rgba(0,0,0,.4);white-space:nowrap}
+#toast b{font-size:17px;font-weight:750;display:block}#toast s{text-decoration:none;font-size:12px;color:var(--fg2)}
+
+#cursor{position:absolute;left:0;top:0;width:22px;height:30px;z-index:50;pointer-events:none;filter:drop-shadow(0 2px 3px rgba(0,0,0,.5))}
 
 /* outro */
 #outro{background:linear-gradient(135deg,#4f45e6,#7d3aed 50%,#0ea5e9);display:flex;flex-direction:column;align-items:center;justify-content:center}
@@ -95,61 +141,90 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:var(--bg);font-f
 <body>
 <div class="glow"></div>
 
-<!-- scene 1 -->
 <div class="layer" id="s1">
   <div id="storage">
     <h3><span class="disk"></span>Macintosh HD</h3>
     <div class="used">456.7 GB of 494.4 GB used</div>
-    <div style="position:relative">
-      <div id="sysdata">System Data · 291.7 GB</div>
-      <div id="bar"></div>
-    </div>
-    <div id="legend">
-      <span style="--c:#4c8df6">Applications</span><span style="--c:#f5c24c">Documents</span><span style="--c:#f07a5a">Photos</span><span style="--c:#c9c9d1">macOS</span><span style="--c:#7d7d87">System Data</span>
-    </div>
+    <div style="position:relative"><div id="sysdata">System Data · 291.7 GB</div><div id="bar"></div></div>
+    <div id="legend"><span style="--c:#4c8df6">Applications</span><span style="--c:#f5c24c">Documents</span><span style="--c:#f07a5a">Photos</span><span style="--c:#c9c9d1">macOS</span><span style="--c:#7d7d87">System Data</span></div>
   </div>
 </div>
 
-<!-- app window -->
 <div class="layer" id="appl">
-  <div id="win">
-    <div id="title">
-      <div class="lights"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div>
-      <b>Headroom</b>
-      <div class="seg"><span class="on">Trash</span><span>Permanent</span></div>
+ <div id="win">
+  <div id="side">
+    <div class="lights"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i></div>
+    <svg class="i tog" viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="11" rx="2"/><path d="M6 2.5v11"/></svg>
+    <div class="nav" data-n="dash"><svg class="i" viewBox="0 0 16 16"><path d="M3 13V8M8 13V3M13 13V6"/></svg>Dashboard</div>
+    <div class="nav" data-n="tree"><svg class="i" viewBox="0 0 16 16"><path d="M1.5 4.5h4l1.5 1.5h7.5v7h-13z"/></svg>Folder Tree</div>
+    <div class="nav" data-n="tm"><svg class="i" viewBox="0 0 16 16"><rect x="1.5" y="1.5" width="13" height="13" rx="1.5"/><path d="M8 1.5v13M8 8h6.5M1.5 9.5H8"/></svg>Treemap</div>
+    <div class="nav"><svg class="i" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5"/><path d="M8 1.5V8l5 4"/></svg>By Category</div>
+    <div class="nav"><svg class="i" viewBox="0 0 16 16"><path d="M3.5 1.5h6l3 3v10h-9z"/><path d="M6 11V7M8 11V5.5M10 11V8.5"/></svg>Largest Files</div>
+    <div class="nav"><svg class="i" viewBox="0 0 16 16"><rect x="1.5" y="4.5" width="9" height="10" rx="1.5"/><path d="M5.5 1.5h7a2 2 0 0 1 2 2V11"/></svg>Duplicates</div>
+    <div class="nav" data-n="clean"><svg class="i" viewBox="0 0 16 16"><path d="M8 1.5l1.6 4.9L14.5 8l-4.9 1.6L8 14.5l-1.6-4.9L1.5 8l4.9-1.6z"/></svg>Cleanup</div>
+    <div id="scannedSec"><div class="shead">Scanned</div><div class="scanned"><b>you</b><s>/Users/you</s><s>153.9 GB · 1,256,000 files</s></div></div>
+  </div>
+  <div id="tb">
+    <svg class="i" viewBox="0 0 16 16"><path d="M10 3L5 8l5 5"/></svg><svg class="i" viewBox="0 0 16 16" style="opacity:.4"><path d="M6 3l5 5-5 5"/></svg>
+    <svg class="i" viewBox="0 0 16 16"><path d="M1.5 4.5h4l1.5 1.5h7.5v7h-13z"/><path d="M11 8.5v3M9.5 10h3"/></svg>
+    <svg class="i" viewBox="0 0 16 16"><path d="M13 8a5 5 0 1 1-1.5-3.6M13 2.5v2.5h-2.5"/></svg>
+    <span class="t">Headroom</span>
+    <div class="segc" style="margin-left:auto"><span class="on">Trash</span><span>Permanent</span></div>
+    <svg class="i" viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="11" rx="2"/><path d="M10 2.5v11"/></svg>
+  </div>
+
+  <div id="detail">
+    <div class="pane brand" id="pScan">
+      <div id="bento"></div>
+      <div>
+        <h2>Analyzing you</h2>
+        <div class="sstats"><div><b class="num" id="sf">0 KB</b><s>found</s></div><div><b class="num" id="sn">0</b><s>files</s></div><div><b class="num" id="sd">0</b><s>folders</s></div></div>
+        <div id="cur">/Users/you/Library/Caches</div>
+        <div class="wbtn">Stop</div>
+      </div>
     </div>
-    <div id="side">
-      <div class="nav" data-n="dash"><svg viewBox="0 0 16 16"><path d="M3 13V8M8 13V3M13 13V6" /></svg>Dashboard</div>
-      <div class="nav"><svg viewBox="0 0 16 16"><path d="M1.5 4.5h4l1.5 1.5h7.5v7h-13z" /></svg>Folder Tree</div>
-      <div class="nav" data-n="tm"><svg viewBox="0 0 16 16"><rect x="1.5" y="1.5" width="13" height="13" rx="1.5"/><path d="M8 1.5v13M8 8h6.5M1.5 9.5H8"/></svg>Treemap</div>
-      <div class="nav"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5"/><path d="M8 1.5V8l5 4"/></svg>By Category</div>
-      <div class="nav"><svg viewBox="0 0 16 16"><path d="M3.5 1.5h6l3 3v10h-9z"/><path d="M6 11V7M8 11V5.5M10 11V8.5"/></svg>Largest Files</div>
-      <div class="nav"><svg viewBox="0 0 16 16"><rect x="1.5" y="4.5" width="9" height="10" rx="1.5"/><path d="M5.5 1.5h7a2 2 0 0 1 2 2V11"/></svg>Duplicates</div>
-      <div class="nav" data-n="clean"><svg viewBox="0 0 16 16"><path d="M8 1.5l1.6 4.9L14.5 8l-4.9 1.6L8 14.5l-1.6-4.9L1.5 8l4.9-1.6z"/></svg>Cleanup</div>
+
+    <div class="pane" id="pDash">
+      <div class="dhead brand"><h2><svg class="i" viewBox="0 0 16 16" style="width:26px;height:26px;stroke-width:2"><path d="M3 13V8M8 13V3M13 13V6"/></svg>Dashboard</h2>
+        <div class="p"><svg class="i" viewBox="0 0 16 16" style="width:13px;height:13px"><path d="M2 7.5L8 2.5l6 5M3.5 6.5v7h9v-7"/></svg>Home · /Users/you</div>
+        <div class="m">Scanned 8 Oct 2026 at 21:40 &nbsp; 19.6s</div></div>
+      <div class="card"><h4><svg class="i" viewBox="0 0 16 16"><rect x="1.5" y="4.5" width="13" height="7" rx="2"/><path d="M4 9h.01"/></svg>Disk space</h4>
+        <div class="dfree"><b class="num">37.67 GB</b><span>free</span><span class="tot">494.38 GB total</span></div>
+        <div class="dbar"><i style="width:92%"></i></div>
+        <div class="cap2" style="display:flex">Macintosh HD<span style="margin-left:auto">456.71 GB used · 8% free</span></div></div>
+      <div class="tiles">
+        <div class="card"><div class="k" style="color:#d76ad8">Size on disk</div><b class="num">153.9 GB</b><div class="cap2">204.2 GB logical size</div></div>
+        <div class="card"><div class="k" style="color:#6aa8ff">Files</div><b class="num">1,256,000</b><div class="cap2">Inside the scanned folder</div></div>
+        <div class="card"><div class="k" style="color:#f0a650">Folders</div><b class="num">216,387</b><div class="cap2">Excludes the scanned root</div></div>
+        <div class="card"><div class="k" style="color:#5fd0a4">Cleanup candidates</div><b class="num">36.3 GB</b><div class="cap2">126 folders to review</div></div>
+      </div>
+      <div class="card" style="flex:1"><h4>Space by category<span style="margin-left:auto;color:#6ea3ff;font-weight:450">View all</span></h4><div class="cbar" id="cbar"></div></div>
     </div>
-    <div id="content">
-      <div class="pane" id="scan">
-        <svg id="ring" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="none" stroke="#33333b" stroke-width="7"/><circle id="arc" cx="50" cy="50" r="44" fill="none" stroke="url(#g)" stroke-width="7" stroke-linecap="round" transform="rotate(-90 50 50)" stroke-dasharray="276.5" stroke-dashoffset="276.5"/><defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#8b7cf6"/><stop offset="1" stop-color="#38bdf8"/></linearGradient></defs><text id="pct" x="50" y="56" text-anchor="middle" fill="#fff" font-size="17" font-weight="650" font-family="Geist">0%</text></svg>
-        <div class="path" id="spath">Scanning /Users/you …</div>
-        <div id="stats">
-          <div class="stat"><div class="k" style="color:#6aa8ff">Files</div><div class="v" id="vf">0</div></div>
-          <div class="stat"><div class="k" style="color:#f0a650">Folders</div><div class="v" id="vd">0</div></div>
-          <div class="stat"><div class="k" style="color:#d76ad8">Size on disk</div><div class="v" id="vs">0 GB</div></div>
-          <div class="stat"><div class="k" style="color:#5fd0a4">Elapsed</div><div class="v" id="vt">0.0 s</div></div>
-        </div>
-      </div>
-      <div class="pane" id="tmp">
-        <div id="tmbar"><span style="color:#fff;font-weight:600">you</span> · 152.3 GB<div class="seg" id="mode"><span>Category</span><span>Age</span><span>Safety</span></div></div>
-        <div id="tm"></div>
-      </div>
-      <div class="pane" id="list">
-        <div id="diskcard"><div class="free" id="free">37.7 GB <small>free</small></div><div id="dbar"><div></div></div><div style="font-size:18px;color:var(--fg2)">Macintosh HD · 494.4 GB</div></div>
-        <div id="rows"></div>
-        <div id="btn">Move 4 items to Trash (30.0 GB)</div>
-        <div id="toast">✓ Moved 4 items to the Trash · <b>30.0 GB freed</b><u>Undo</u></div>
-      </div>
+
+    <div class="pane" id="pTm">
+      <div class="thead"><b>you</b><span style="color:var(--fg2)">· 153.9 GB</span>
+        <span class="up"><svg class="i" viewBox="0 0 16 16" style="width:12px"><path d="M8 13V3M4 7l4-4 4 4"/></svg>Up</span>
+        <span style="margin-left:10px">Color</span><div class="segc" id="mode"><span class="on">Category</span><span>Age</span><span>Safety</span></div>
+        <div class="stepper" style="margin-left:10px">Depth 4 <div class="segc" style="padding:0 4px">⌃⌄</div></div></div>
+      <div id="canvas"><div id="hov"></div><div id="tip"><div class="h">DerivedData<span class="num">12.4 GB</span></div><div class="pth">/Users/you/Library/Developer/Xcode</div>
+        <div class="lv"><svg class="i" viewBox="0 0 16 16" style="width:12px;stroke-width:2"><path d="M8 1.5l5.5 2v4c0 3.5-2.5 6-5.5 7-3-1-5.5-3.5-5.5-7v-4z"/><path d="M5.5 8l2 2 3-3.5"/></svg>Safe to delete</div>
+        <div class="w">Xcode build products, indexes and module caches for every project you've opened.</div></div></div>
+      <div class="tlegend" id="tleg"></div>
+    </div>
+
+    <div class="pane" id="pClean">
+      <div class="chead"><div><h4>Quick cleanup</h4><div class="cap2">Regenerable folders only. Dependencies come back with the next install; caches rebuild themselves.</div></div>
+        <span class="btn" style="margin-left:auto">Select All</span><span class="btn dis" id="clr">Clear</span>
+        <span class="btn pri dis" id="clean"><svg class="i" viewBox="0 0 16 16" style="width:13px"><path d="M2.5 4h11M6 4V2.5h4V4M4 4l.7 9.5h6.6L12 4"/></svg><span id="cleanl">Clean</span></span></div>
+      <div class="list" id="clist"></div>
+      <div id="toast"><svg width="52" height="52" viewBox="0 0 52 52"><circle cx="26" cy="26" r="25" fill="rgba(97,199,138,.18)"/><circle id="tring" cx="26" cy="26" r="24.5" fill="none" stroke="rgb(97,199,138)" stroke-width="3" stroke-linecap="round" transform="rotate(-90 26 26)" stroke-dasharray="154" stroke-dashoffset="154"/><path id="tchk" d="M17 27l6 6 12-13" fill="none" stroke="rgb(97,199,138)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="30" stroke-dashoffset="30"/></svg>
+        <div><b class="num" id="freed">Freed 0 KB</b><s>48,213 files · 1,904 folders moved to the Trash</s></div><span style="color:var(--fg2);font-size:11px;margin-left:6px">✕</span></div>
     </div>
   </div>
+
+  <div id="status"><span class="spin" id="spin"></span><span id="stxt" class="num"></span><span class="r"><svg class="i" viewBox="0 0 16 16" style="width:13px"><path d="M2.5 4h11M6 4V2.5h4V4M4 4l.7 9.5h6.6L12 4"/></svg>Trash mode</span></div>
+  <svg id="cursor" viewBox="0 0 22 30"><path d="M2 2v21l5.2-5 3.6 8.4 3.4-1.5-3.5-8.2H18z" fill="#000" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>
+ </div>
 </div>
 
 <div class="layer" id="outro">
@@ -171,37 +246,73 @@ const eout = x => 1 - Math.pow(1 - x, 3);
 const back = x => { const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
 const lerp = (a, b, x) => a + (b - a) * x;
 const mix = (c1, c2, x) => c1.map((v, i) => Math.round(lerp(v, c2[i], x)));
-const rgb = c => `rgb(${c[0]},${c[1]},${c[2]})`;
+const rgb = (c, a = 1) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
 const fmt = n => Math.round(n).toLocaleString('en-US');
-const DUR = 29;
+const bytes = gb => gb < 1 ? Math.round(gb * 1000) + ' MB' : gb.toFixed(gb < 100 ? 2 : 1) + ' GB';
+function show(el, o, tf) { el.style.opacity = o; el.style.transform = tf || ''; el.style.visibility = o <= 0.001 ? 'hidden' : 'visible'; }
+const S = 1.3;
+window.DURATION = 29;
 
 /* ---------- captions ---------- */
 const CAPS = [
-  [0.4, 3.6, 'Your Mac: <em>“291.7 GB System Data.”</em><small>And that’s all it tells you.</small>'],
-  [3.9, 7.6, 'Scan <em>1.2 million files</em> in seconds'],
-  [7.9, 12.9, 'See exactly <em>what fills your disk</em>'],
-  [13.2, 18.9, 'Know what’s <em>safe to delete</em><small>Every known folder gets a verdict and a reason</small>'],
-  [19.2, 23.6, 'Reclaim the space. <em>Undo anytime.</em>'],
+  [0.4, 3.5, 'Your Mac: <em>“291.7 GB System Data.”</em><small>And that’s all it tells you.</small>'],
+  [3.8, 6.9, 'Scan <em>1.2 million files</em> in seconds'],
+  [7.1, 11.9, 'See exactly <em>what fills your disk</em>'],
+  [12.1, 16.6, 'Know what’s <em>safe to delete</em><small>Every known folder gets a verdict and a reason</small>'],
+  [16.8, 23.1, 'Clean up <em>in one click</em><small>Everything goes to the Trash, so you can undo</small>'],
 ];
 const capEls = CAPS.map(([, , html]) => { const d = document.createElement('div'); d.className = 'cap'; d.innerHTML = html; $('#caps').appendChild(d); return d; });
 
-/* ---------- scene 1 bar ---------- */
-const SEG = [[48, '#4c8df6'], [74, '#f5c24c'], [22, '#f07a5a'], [21, '#c9c9d1'], [291.7, '#7d7d87']];
-SEG.forEach(([v, c]) => { const d = document.createElement('div'); d.style.background = c; d.dataset.v = v; $('#bar').appendChild(d); });
+/* ---------- scene 1 ---------- */
+[[48, '#4c8df6'], [74, '#f5c24c'], [22, '#f07a5a'], [21, '#c9c9d1'], [291.7, '#7d7d87']].forEach(([v, c]) => {
+  const d = document.createElement('div'); d.style.background = c; d.dataset.v = v; $('#bar').appendChild(d);
+});
 
-/* ---------- treemap data (category colors and safety levels from the app) ---------- */
-const CAT = { other: [140, 143, 153], vm: [133, 179, 163], pkg: [214, 158, 102], cache: [204, 122, 112], doc: [107, 153, 204], code: [122, 173, 133], img: [204, 133, 158], vid: [158, 128, 194], disk: [112, 158, 168], app: [102, 168, 184], db: [148, 117, 179] };
-const SAFE = { safe: [97, 199, 138], usually: [107, 194, 204], caution: [245, 178, 87], never: [237, 107, 107], unknown: [88, 88, 98] };
-const TREE = [
-  ['Library', [['Application Support', 38.0, 'other', 'caution'], ['Containers · Docker VM', 27.7, 'vm', 'caution'], ['Developer · DerivedData', 12.4, 'pkg', 'safe'], ['Caches', 7.1, 'cache', 'safe'], ['Mail', 3.2, 'doc', 'never'], ['Messages', 3.1, 'db', 'never']]],
-  ['Documents', [['node_modules ×214', 9.8, 'pkg', 'safe'], ['Source code', 8.2, 'code', 'unknown'], ['Disk images', 4.6, 'disk', 'caution'], ['PDFs', 3.4, 'doc', 'unknown']]],
-  ['Android', [['system-images', 6.8, 'disk', 'usually'], ['ndk', 5.8, 'code', 'usually'], ['emulator', 2.7, 'app', 'usually']]],
-  ['Pictures', [['Photos Library', 6.5, 'img', 'never']]],
-  ['Movies', [['Screen recordings', 4.0, 'vid', 'caution']]],
-  ['.cache', [['huggingface', 4.2, 'cache', 'safe']]],
-  ['.npm', [['_cacache', 2.8, 'pkg', 'safe']]],
-  ['.gradle', [['caches', 2.0, 'pkg', 'safe']]],
+/* ---------- ScanningView bento (geometry from BentoTiles) ---------- */
+const BS = 220, BG = BS * .04, BIG = BS * .62, SIDE = BS - BIG - BG;
+const TILES = [
+  [0, 0, BIG, BIG, BS * .09, [255, 214, 10]],
+  [BIG + BG, 0, SIDE, BIG * .55 - BG / 2, BS * .07, [255, 55, 95]],
+  [BIG + BG, BIG * .55 + BG / 2, SIDE, BIG * .45 - BG / 2, BS * .07, [102, 212, 207]],
+  [0, BIG + BG, BS * .45, SIDE, BS * .07, [255, 159, 10]],
+  [BS * .45 + BG, BIG + BG, BS - BS * .45 - BG, SIDE, BS * .07, [100, 210, 255]],
 ];
+const tileEls = TILES.map(([x, y, w, h, r, c]) => {
+  const d = document.createElement('div'); d.className = 'tile';
+  Object.assign(d.style, { left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px', borderRadius: r + 'px' });
+  d.innerHTML = `<i style="background:${rgb(c)}"></i>`; d.dataset.c = c.join(',');
+  $('#bento').appendChild(d); return d;
+});
+const PATHS = ['/Users/you/Library/Caches/com.apple.dt.Xcode', '/Users/you/Documents/comic-studio/node_modules/.pnpm', '/Users/you/Library/Containers/com.docker.docker/Data', '/Users/you/Android/sdk/system-images/android-34', '/Users/you/Library/Developer/Xcode/DerivedData', '/Users/you/.cache/huggingface/hub', '/Users/you/Pictures/Photos Library.photoslibrary'];
+
+/* ---------- Dashboard: space by category ---------- */
+const CAT = { other: [140, 143, 153], cache: [204, 122, 112], pkg: [214, 158, 102], vm: [133, 179, 163], doc: [107, 153, 204], db: [148, 117, 179], code: [122, 173, 133], disk: [112, 158, 168], app: [102, 168, 184], img: [204, 133, 158], vid: [158, 128, 194], ai: [209, 184, 107] };
+const CATS = [['Other', 41.0, 'other'], ['Caches', 29.5, 'cache'], ['Virtual Machines', 27.7, 'vm'], ['Dependencies', 16.8, 'pkg'], ['Disk Images', 14.8, 'disk'], ['Source Code', 11.4, 'code']];
+const cbarEls = CATS.map(([n, v, c]) => { const d = document.createElement('div'); d.innerHTML = `${n}<i style="background:${rgb(CAT[c])}"></i>`; $('#cbar').appendChild(d); return [d.lastChild, v / 41]; });
+
+/* ---------- Treemap (TreemapLayout: padding 3, header 14) ---------- */
+const SAFE = { safe: [97, 199, 138], usually: [107, 194, 204], caution: [245, 178, 87], never: [237, 107, 107], unknown: [142, 142, 147] };
+const L = (n, v, c, s) => ({ n, v, c, s });
+const D = (n, kids) => ({ n, kids, v: kids.reduce((a, k) => a + k.v, 0) });
+const TREE = D('you', [
+  D('Library', [
+    D('Application Support', [L('Cursor', 15.9, 'other', 'caution'), L('Claude', 12.5, 'other', 'caution'), L('Google', 4.1, 'other', 'caution'), L('Code', 2.9, 'other', 'caution'), L('Slack', 2.6, 'other', 'caution')]),
+    D('Containers', [L('com.docker.docker', 27.7, 'vm', 'caution')]),
+    D('Developer', [L('DerivedData', 12.4, 'cache', 'safe'), L('CoreSimulator', 3.4, 'disk', 'caution')]),
+    D('Caches', [L('com.apple.dt.Xcode', 2.9, 'cache', 'safe'), L('Google', 1.8, 'cache', 'safe'), L('Homebrew', 1.4, 'cache', 'safe'), L('pip', 1.0, 'cache', 'safe')]),
+    L('Mail', 3.2, 'doc', 'never'), L('Messages', 3.1, 'db', 'never')]),
+  D('Documents', [
+    D('mobile-app', [L('node_modules', 3.3, 'pkg', 'safe'), L('android', 2.6, 'code', 'unknown'), L('Pods', 1.4, 'pkg', 'safe')]),
+    D('comic-studio', [L('node_modules', 3.4, 'pkg', 'safe'), L('src', 2.1, 'code', 'unknown'), L('.next', 1.2, 'cache', 'safe')]),
+    D('platform-api', [L('node_modules', 3.1, 'pkg', 'safe'), L('.venv', 1.6, 'pkg', 'safe'), L('src', 0.9, 'code', 'unknown')]),
+    L('Disk images', 4.6, 'disk', 'caution')]),
+  D('Android', [L('system-images', 6.8, 'disk', 'usually'), L('ndk', 5.8, 'code', 'usually'), L('emulator', 2.7, 'app', 'usually')]),
+  D('Pictures', [L('Photos Library', 6.5, 'img', 'never')]),
+  D('Movies', [L('Screen Recordings', 4.0, 'vid', 'caution')]),
+  D('.cache', [L('huggingface', 4.2, 'ai', 'safe')]),
+  D('.npm', [L('_cacache', 2.8, 'cache', 'safe')]),
+  D('.gradle', [L('caches', 2.0, 'cache', 'safe')]),
+]);
 function squarify(items, x, y, w, h) {
   const out = [], total = items.reduce((s, i) => s + i.v, 0);
   let rest = items.slice().sort((a, b) => b.v - a.v);
@@ -219,7 +330,7 @@ function squarify(items, x, y, w, h) {
     let off = 0;
     for (const it of row) {
       const len = (it.v * scale) / thick;
-      out.push(w >= h ? { ...it, x, y: y + off, w: thick, h: len } : { ...it, x: x + off, y, w: len, h: thick });
+      out.push({ it, r: w >= h ? { x, y: y + off, w: thick, h: len } : { x: x + off, y, w: len, h: thick } });
       off += len;
     }
     if (w >= h) { x += thick; w -= thick; } else { y += thick; h -= thick; }
@@ -227,40 +338,105 @@ function squarify(items, x, y, w, h) {
   }
   return out;
 }
-const TW = 1340, TH = 718;
-const groups = squarify(TREE.map(([n, kids]) => ({ n, kids, v: kids.reduce((s, k) => s + k[1], 0) })), 0, 0, TW, TH);
-const cells = [];
-groups.forEach((g, gi) => {
-  const el = document.createElement('div'); el.className = 'grp';
-  Object.assign(el.style, { left: g.x + 2 + 'px', top: g.y + 2 + 'px', width: g.w - 4 + 'px', height: g.h - 4 + 'px' });
-  el.innerHTML = `<b>${g.n} ${g.v.toFixed(1)} GB</b>`; $('#tm').appendChild(el); g.el = el;
-  const pad = 4, head = g.h > 60 && g.w > 80 ? 24 : 4;
-  squarify(g.kids.map(([n, v, c, s]) => ({ n, v, c, s })), g.x + pad, g.y + head, g.w - pad * 2, g.h - head - pad).forEach(k => {
-    const c = document.createElement('div'); c.className = 'cell';
-    Object.assign(c.style, { left: k.x + 1 + 'px', top: k.y + 1 + 'px', width: k.w - 2 + 'px', height: k.h - 2 + 'px' });
-    if (k.w > 90 && k.h > 44) c.innerHTML = `${k.n}<s>${k.v.toFixed(1)} GB</s>`;
-    $('#tm').appendChild(c); cells.push({ el: c, k, gi });
+const dominant = n => n.kids ? dominant(n.kids.reduce((a, b) => a.v >= b.v ? a : b)) : n;
+const tmCells = [];
+let order = 0;
+function place(nodes, x, y, w, h, top) {
+  squarify(nodes, x, y, w, h).forEach(({ it, r }) => {
+    const el = document.createElement('div');
+    const cell = { it, r, el, top, i: order++, dom: dominant(it) };
+    if (it.kids && r.w > 18 && r.h > 30) {
+      el.className = 'dir'; el.innerHTML = `<b>${it.n}&nbsp; ${bytes(it.v)}</b>`;
+      Object.assign(el.style, { left: r.x + 'px', top: r.y + 'px', width: r.w + 'px', height: r.h + 'px' });
+      $('#canvas').insertBefore(el, $('#hov')); tmCells.push(cell);
+      place(it.kids, r.x + 3, r.y + 3 + 14, r.w - 6, r.h - 6 - 14, top ?? it.n);
+    } else {
+      el.className = 'leaf';
+      if (r.w > 40 && r.h > 14) el.innerHTML = it.n + (r.h > 30 ? `<s>${bytes(it.v)}</s>` : '');
+      Object.assign(el.style, { left: r.x + .5 + 'px', top: r.y + .5 + 'px', width: r.w - 1 + 'px', height: r.h - 1 + 'px' });
+      $('#canvas').insertBefore(el, $('#hov')); tmCells.push(cell);
+      if (it.n === 'DerivedData') window.DD = cell;
+    }
   });
-});
+}
+place(TREE.kids, 2, 2, 1030 - 4, 688 - 52 - 28 - 36 - 24 - 4, null);
+const TOPS = TREE.kids.map(k => k.n);
+const legCat = [['Caches', 'cache'], ['Dependencies', 'pkg'], ['Virtual Machines', 'vm'], ['Disk Images', 'disk'], ['Source Code', 'code'], ['Documents', 'doc'], ['Images', 'img'], ['Other', 'other']].map(([n, c]) => `<span><i style="background:${rgb(CAT[c])}"></i>${n}</span>`).join('');
+const legSafe = [['Safe to delete', 'safe'], ['Usually safe', 'usually'], ['Check first', 'caution'], ['Do not delete', 'never'], ['Unknown', 'unknown']].map(([n, c]) => `<span><i style="background:${rgb(SAFE[c])}"></i>${n}</span>`).join('');
+const HINT = '<span class="hint">Click: select · Double-click: zoom in · Right-click: actions</span>';
 
-/* ---------- cleanup rows (descriptions are the app's own) ---------- */
-const ROWS = [
-  ['Xcode DerivedData', '~/Library/Developer/Xcode', 'safe', 'Safe to delete', 'Regenerated on the next build.', '12.4 GB'],
-  ['node_modules ×214', '~/Documents/…', 'safe', 'Safe to delete', '`npm install` recreates it exactly.', '9.8 GB'],
-  ['Caches', '~/Library/Caches', 'safe', 'Safe to delete', 'Apps rebuild them on next launch.', '7.1 GB'],
-  ['.pnpm-store', '~/Library/pnpm', 'usually', 'Usually safe', 'Projects re-link it on `pnpm install`.', '0.7 GB'],
-  ['Docker VM disk', '~/Library/Containers/com.docker.docker', 'caution', 'Check first', 'Run `docker system prune` instead.', '27.7 GB'],
-  ['Mail', '~/Library/Mail', 'never', 'Do not delete', 'Your local mailboxes. Manage in Mail.', '3.2 GB'],
+/* ---------- Cleanup list (CleanupView: sections, DisclosureGroups, rows) ---------- */
+const SHIELD = '<svg class="i" viewBox="0 0 16 16" style="width:11px;height:11px;stroke-width:2"><path d="M8 1.5l5.5 2v4c0 3.5-2.5 6-5.5 7-3-1-5.5-3.5-5.5-7v-4z"/><path d="M5.5 8l2 2 3-3.5"/></svg>';
+const ICON = {
+  hammer: '<path d="M9 3.5l3.5 3.5M7.5 5L11 1.5l3.5 3.5L11 8.5M8.5 6L2 12.5l1.5 1.5L10 7.5"/>',
+  chip: '<rect x="3.5" y="3.5" width="9" height="9" rx="1.5"/><path d="M6 1.5v2M10 1.5v2M6 12.5v2M10 12.5v2M1.5 6h2M1.5 10h2M12.5 6h2M12.5 10h2"/>',
+  box: '<path d="M2 5l6-3 6 3v6l-6 3-6-3z"/><path d="M2 5l6 3 6-3M8 8v6"/>',
+};
+const LIST = [
+  ['sec', 'Known locations in your home folder', 'Refresh'],
+  ['grp', 'g1', 'hammer', 'Build output (DerivedData, .build, target…)', 'Regenerated on the next build.', '1 · 12.40 GB', 12.4, true],
+  ['row', 'g1', 'DerivedData', '/Users/you/Library/Developer/Xcode/DerivedData', '2 days ago', '12.40 GB'],
+  ['grp', 'g2', 'chip', 'Caches', 'Apps rebuild these as needed. First launch after cleaning may be slower.', '3 · 14.10 GB', 14.1, true],
+  ['row', 'g2', 'Caches', '/Users/you/Library/Caches', 'today', '7.10 GB'],
+  ['row', 'g2', '.cache', '/Users/you/.cache', 'last week', '4.20 GB'],
+  ['row', 'g2', '_cacache', '/Users/you/.npm/_cacache', '3 weeks ago', '2.80 GB'],
+  ['ph', '<span class="btn">Find system-wide junk (caches, DerivedData, npm/pip/gradle stores…)</span>'],
+  ['sec', 'Inside you', ''],
+  ['grp', 'g3', 'box', 'Dependencies (node_modules, .venv, Pods…)', 'Reinstalled by npm/pip/pod install. Safe to delete for projects you are not actively working on.', '214 · 9.80 GB', 9.8, false],
+  ['ph', '<span style="color:var(--fg2)">Nothing obvious to clean in the scanned folder.</span>'],
 ];
-const rowEls = ROWS.map(([n, p, lvl, title, adv, sz]) => {
-  const c = SAFE[lvl];
-  const d = document.createElement('div'); d.className = 'row';
-  d.innerHTML = `<div class="chk"></div><div class="nm"><b>${n}</b><s>${p}</s></div><div class="badge" style="color:${rgb(c)};background:rgba(${c},.14)">${title}</div><div class="adv">${adv.replace(/`([^`]+)`/g, '<code style="font-family:Geist Mono;color:#d8d8e0">$1</code>')}</div><div class="sz">${sz}</div>`;
-  $('#rows').appendChild(d); return d;
+const listEls = LIST.map(e => {
+  const d = document.createElement('div');
+  if (e[0] === 'sec') { d.className = 'sec'; d.innerHTML = `${e[1]}<a>${e[2]}</a>`; }
+  else if (e[0] === 'ph') { d.className = 'grp'; d.style.paddingLeft = '10px'; d.innerHTML = e[1]; }
+  else if (e[0] === 'grp') {
+    d.className = 'grp'; d.dataset.g = e[1];
+    d.innerHTML = `<span class="chev">${e[7] ? '▾' : '▸'}</span><span class="cb"></span><svg class="i" viewBox="0 0 16 16" style="color:var(--fg2)">${ICON[e[2]]}</svg><div class="tt">${e[3]}<s>${e[4]}</s></div><span class="ct num">${e[5]}</span>`;
+  } else {
+    d.className = 'crow'; d.dataset.g = e[1];
+    d.innerHTML = `<span class="cb"></span><div class="tt">${e[2]}<s>${e[3]}</s></div><span class="badge">${SHIELD}Safe</span><span class="when">${e[4]}</span><span class="sz num">${e[5]}</span>`;
+  }
+  $('#clist').appendChild(d); return { el: d, e };
 });
+const CHECK = { g1: 17.55, g2: 18.15, g3: 18.75 };
+const GB = { g1: 12.4, g2: 14.1, g3: 9.8 };
+const CLEAN_AT = 19.5;
 
-/* ---------- render(t): every element's state is a pure function of time ---------- */
-function show(el, o, tf) { el.style.opacity = o; el.style.transform = tf || ''; el.style.visibility = o <= 0.001 ? 'hidden' : 'visible'; }
+/* ---------- cursor path (window points), targets measured from the layout ---------- */
+function at(el, fx = .5, fy = .5) {
+  let x = 0, y = 0, n = el;
+  while (n && n.id !== 'win') { x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent; }
+  return [x + el.offsetWidth * fx, y + el.offsetHeight * fy];
+}
+const grpEl = g => listEls.find(l => l.e[0] === 'grp' && l.e[1] === g).el.querySelector('.cb');
+const MOVES = [ // [arrive by, target], each move starts when the previous one ends
+  [6.0, [760, 520]],
+  [9.3, at($('.nav[data-n=tm]'), .45)],
+  [11.6, at($('#mode').children[2])],
+  [13.4, (() => { const r = DD.r, c = at($('#canvas'), 0, 0); return [c[0] + r.x + r.w * .55, c[1] + r.y + r.h * .55]; })()],
+  [16.5, at($('.nav[data-n=clean]'), .45)],
+  [17.4, at(grpEl('g1'))],
+  [18.0, at(grpEl('g2'))],
+  [18.6, at(grpEl('g3'))],
+  [19.3, at($('#clean'), .5)],
+];
+const LEAVE = { 9.3: 8.6, 11.6: 10.9, 13.4: 12.7, 16.5: 15.8, 17.4: 17.0, 18.0: 17.65, 18.6: 18.25, 19.3: 18.85 };
+const CLICKS = [9.45, 11.75, 16.65, 17.5, 18.1, 18.7, 19.45];
+function cursorAt(t) {
+  let p = MOVES[0][1];
+  for (let i = 1; i < MOVES.length; i++) {
+    const [end, to] = MOVES[i], start = LEAVE[end];
+    if (t <= start) break;
+    const k = eio(prog(t, start, end));
+    p = [lerp(p[0], to[0], k), lerp(p[1], to[1], k)];
+    if (t < end) break;
+    p = to;
+  }
+  return p;
+}
+const pressAt = t => Math.max(0, ...CLICKS.map(c => 1 - Math.abs(t - c) / .09));
+
+/* ---------- render(t) ---------- */
 window.render = function (t) {
   CAPS.forEach(([a, b], i) => {
     const o = Math.min(eout(prog(t, a, a + .45)), 1 - prog(t, b - .35, b));
@@ -268,82 +444,108 @@ window.render = function (t) {
   });
 
   /* scene 1 */
-  const s1 = 1 - prog(t, 3.5, 4.0);
-  show($('#s1'), s1, `scale(${1 - .04 * prog(t, 3.5, 4)})`);
-  const fill = eio(prog(t, .3, 1.8)), tot = 494.4;
+  show($('#s1'), 1 - prog(t, 3.4, 3.9), `scale(${1 - .04 * prog(t, 3.4, 3.9)})`);
+  const fill = eio(prog(t, .3, 1.8));
   let acc = 0;
-  [...$('#bar').children].forEach(d => { const v = +d.dataset.v; const w = clamp((fill * 456.7 - acc) / v) * v; acc += v; d.style.width = (w / tot * 100) + '%'; });
-  const pulse = prog(t, 1.9, 2.4) * (1 - prog(t, 3.2, 3.5));
-  $('#bar').lastChild.style.boxShadow = `inset 0 0 0 ${3 * pulse}px #fff`;
+  [...$('#bar').children].forEach(d => { const v = +d.dataset.v; d.style.width = (clamp((fill * 456.7 - acc) / v) * v / 494.4 * 100) + '%'; acc += v; });
+  $('#bar').lastChild.style.boxShadow = `inset 0 0 0 ${3 * prog(t, 1.9, 2.4) * (1 - prog(t, 3.1, 3.4))}px #fff`;
   show($('#sysdata'), prog(t, 1.9, 2.3));
 
-  /* app window */
-  const wi = eout(prog(t, 3.6, 4.3));
-  const out = prog(t, 23.7, 24.3);
-  show($('#appl'), Math.min(wi, 1 - out), `translateY(${(1 - wi) * 60}px) scale(${1 - out * .05})`);
-  const pane = t < 7.7 ? 'dash' : t < 13.2 ? 'tm' : 'clean';
-  document.querySelectorAll('.nav').forEach(n => n.classList.toggle('on', n.dataset.n === pane));
+  /* window */
+  const wi = eout(prog(t, 3.5, 4.2)), out = prog(t, 23.2, 23.8);
+  show($('#appl'), Math.min(wi, 1 - out));
+  $('#win').style.transform = `translateY(${(1 - wi) * 50}px) scale(${S * (1 - out * .04)})`;
 
-  /* scan */
-  const sp = eio(prog(t, 4.2, 7.1));
-  show($('#scan'), 1 - prog(t, 7.5, 7.9));
-  $('#arc').setAttribute('stroke-dashoffset', 276.5 * (1 - sp));
-  $('#pct').textContent = Math.round(sp * 100) + '%';
-  $('#vf').textContent = fmt(sp * 1256000);
-  $('#vd').textContent = fmt(sp * 216387);
-  $('#vs').textContent = (sp * 152.3).toFixed(1) + ' GB';
-  $('#vt').textContent = (sp * 19.6).toFixed(1) + ' s';
-  $('#spath').textContent = sp < 1 ? 'Scanning /Users/you …' : 'Done · 1,256,000 files in 19.6 s';
+  const pane = t < 6.9 ? 'scan' : t < 9.5 ? 'dash' : t < 16.7 ? 'tm' : 'clean';
+  document.querySelectorAll('.nav').forEach(n => n.classList.toggle('on', n.dataset.n === (pane === 'scan' ? '' : pane)));
+  show($('#scannedSec'), prog(t, 6.9, 7.2));
 
-  /* treemap */
-  const tmo = Math.min(prog(t, 7.6, 8.0), 1 - prog(t, 13.0, 13.4));
-  show($('#tmp'), tmo);
-  const safety = eio(prog(t, 10.6, 11.6));
-  [...$('#mode').children].forEach((s, i) => s.classList.toggle('on', i === (safety > .5 ? 2 : 0)));
-  groups.forEach((g, gi) => show(g.el, prog(t, 7.8 + gi * .12, 8.2 + gi * .12)));
-  cells.forEach(({ el, k, gi }, i) => {
-    const st = 7.9 + gi * .12 + (i % 6) * .05;
-    const p = prog(t, st, st + .5);
-    const col = mix(CAT[k.c], SAFE[k.s], safety);
-    el.style.background = rgb(col);
-    const hi = k.s === 'safe' ? eout(prog(t, 11.8, 12.3)) : 0;
-    show(el, p > 0 ? 1 : 0, `scale(${back(p) * (1 + hi * .03)})`);
-    el.style.boxShadow = hi ? `0 0 0 ${3 * hi}px #fff, 0 0 ${30 * hi}px rgba(97,199,138,.8)` : 'none';
-    el.style.zIndex = hi ? 2 : 1;
+  /* ScanningView */
+  const sp = eio(prog(t, 3.8, 6.7));
+  show($('#pScan'), pane === 'scan' ? 1 : 1 - prog(t, 6.9, 7.2));
+  const lit = Math.floor(t / 0.42) % 5;
+  tileEls.forEach((el, i) => {
+    const on = i === lit;
+    el.firstChild.style.opacity = on ? .95 : 0;
+    el.style.transform = on ? 'scale(1.05)' : '';
+    el.style.boxShadow = on ? `0 6px 14px rgba(${el.dataset.c},.55)` : '0 6px 8px rgba(0,0,0,.18)';
   });
+  $('#sf').textContent = bytes(sp * 153.9).replace(/\.(\d)\d GB/, '.$1 GB');
+  $('#sn').textContent = fmt(sp * 1256000);
+  $('#sd').textContent = fmt(sp * 216387);
+  $('#cur').textContent = PATHS[Math.floor(t * 5) % PATHS.length];
+  const scanning = t < 6.9;
+  $('#spin').style.display = scanning ? 'block' : 'none';
+  $('#spin').style.transform = `rotate(${t * 720}deg)`;
+  $('#stxt').innerHTML = scanning
+    ? `${fmt(sp * 1256000)} files · ${fmt(sp * 216387)} folders · ${bytes(sp * 153.9)} <span style="color:var(--fg2)">${PATHS[Math.floor(t * 5) % PATHS.length]}</span>`
+    : '1,256,000 files · 216,387 folders · 153.9 GB in 19.6s';
 
-  /* cleanup list */
-  show($('#list'), prog(t, 13.2, 13.6));
-  rowEls.forEach((r, i) => {
-    const a = 13.5 + i * .55, p = eout(prog(t, a, a + .45));
-    const chk = i < 4 ? prog(t, 19.4 + i * .3, 19.55 + i * .3) : 0;
-    const gone = i < 4 ? eio(prog(t, 21.0 + i * .08, 21.6 + i * .08)) : 0;
-    show(r, p * (1 - gone), `translateX(${(1 - p) * 80 - gone * 140}px)`);
-    r.style.height = (84 * (1 - gone)) + 'px';
-    r.style.marginBottom = (8 * (1 - gone)) + 'px';
-    const box = r.firstChild;
-    box.textContent = chk > .5 ? '✓' : '';
-    box.style.background = chk > .5 ? 'var(--accent)' : 'transparent';
-    box.style.borderColor = chk > .5 ? 'var(--accent)' : '#5a5a64';
-    box.style.transform = `scale(${1 + .25 * Math.sin(chk * Math.PI)})`;
+  /* Dashboard */
+  show($('#pDash'), pane === 'dash' ? prog(t, 6.9, 7.2) : 0);
+  [...$('#pDash').children].forEach((c, i) => { const p = eout(prog(t, 7.0 + i * .12, 7.45 + i * .12)); show(c, p, `translateY(${(1 - p) * 14}px)`); });
+  cbarEls.forEach(([b, f], i) => b.style.width = (f * eout(prog(t, 7.6 + i * .06, 8.5 + i * .06)) * 100) + '%');
+
+  /* Treemap */
+  show($('#pTm'), pane === 'tm' ? 1 : 0);
+  const safety = eio(prog(t, 11.8, 12.5));
+  [...$('#mode').children].forEach((s, i) => s.classList.toggle('on', i === (t >= 11.8 ? 2 : 0)));
+  $('#tleg').innerHTML = (t >= 11.8 ? legSafe : legCat) + HINT;
+  tmCells.forEach(c => {
+    const st = 9.55 + TOPS.indexOf(c.top ?? c.it.n) * .1 + (c.i % 7) * .025;
+    const p = prog(t, st, st + .4);
+    const col = mix(CAT[c.dom.c], SAFE[c.dom.s], safety);
+    if (c.el.className === 'dir') {
+      c.el.style.background = rgb(col, .18); c.el.style.borderColor = rgb(col, .7);
+      show(c.el, p);
+    } else {
+      c.el.style.background = `linear-gradient(135deg, ${rgb(col, .95)}, ${rgb(col, .6)})`;
+      show(c.el, p > 0 ? 1 : 0, `scale(${back(p)})`);
+    }
   });
-  const bp = prog(t, 20.4, 20.7), press = Math.sin(prog(t, 20.6, 20.9) * Math.PI);
-  show($('#btn'), bp * (1 - prog(t, 21.0, 21.3)), `scale(${1 - .06 * press})`);
-  const freed = eio(prog(t, 21.2, 22.6));
-  const free = 37.7 + 30.0 * freed;
-  $('#free').innerHTML = free.toFixed(1) + ' GB <small>free</small>';
-  const used = (494.4 - free) / 494.4;
-  const bc = mix([237, 107, 107], [97, 199, 138], freed);
-  Object.assign($('#dbar').firstChild.style, { width: used * 100 + '%', background: rgb(bc) });
-  show($('#toast'), Math.min(eout(prog(t, 21.6, 22.0)), 1), `translate(-50%, ${(1 - eout(prog(t, 21.6, 22.0))) * 30}px)`);
+  const hv = prog(t, 13.45, 13.5) * (1 - prog(t, 15.9, 16.0));
+  const r = DD.r;
+  show($('#hov'), hv); Object.assign($('#hov').style, { left: r.x + 'px', top: r.y + 'px', width: r.w + 'px', height: r.h + 'px' });
+  const tp = eout(prog(t, 13.6, 13.85)) * (1 - prog(t, 15.9, 16.05));
+  show($('#tip'), tp, `translateY(${(1 - tp) * 6}px)`);
+  Object.assign($('#tip').style, { left: r.x + r.w * .55 + 14 + 'px', top: r.y + r.h * .55 + 18 + 'px' });
+
+  /* Cleanup */
+  show($('#pClean'), pane === 'clean' ? 1 : 0);
+  const checked = g => t >= CHECK[g];
+  const cleaned = eio(prog(t, CLEAN_AT + .1, CLEAN_AT + .6));
+  let sum = 0;
+  Object.keys(CHECK).forEach(g => { if (checked(g)) sum += GB[g]; });
+  listEls.forEach(({ el, e }) => {
+    if (e[0] === 'ph') { const p = prog(t, CLEAN_AT + .55, CLEAN_AT + .85); el.style.opacity = p; el.style.height = 34 * p + 'px'; return; }
+    if (e[0] !== 'sec') {
+      const on = checked(e[1]);
+      el.querySelector('.cb').className = 'cb' + (on ? ' on' : '');
+      el.querySelector('.cb').textContent = on ? '✓' : '';
+    }
+    const gone = e[0] === 'sec' ? 0 : cleaned;
+    el.style.opacity = 1 - gone;
+    el.style.height = e[0] === 'sec' ? '' : ((e[0] === 'grp' ? 42 : 36) * (1 - gone)) + 'px';
+  });
+  const empty = t >= CLEAN_AT + .6;
+  $('#clean').className = 'btn pri' + (sum && !empty ? '' : ' dis');
+  $('#clr').className = 'btn' + (sum && !empty ? '' : ' dis');
+  $('#cleanl').textContent = sum && !empty ? `Clean ${sum.toFixed(2)} GB → Trash` : 'Clean';
+  const ta = eout(prog(t, CLEAN_AT + .3, CLEAN_AT + .7));
+  show($('#toast'), ta, `translate(-50%, ${(1 - ta) * 20}px) scale(${.96 + .04 * ta})`);
+  $('#tring').setAttribute('stroke-dashoffset', 154 * (1 - eout(prog(t, CLEAN_AT + .4, CLEAN_AT + .9))));
+  $('#tchk').setAttribute('stroke-dashoffset', 30 * (1 - eout(prog(t, CLEAN_AT + .75, CLEAN_AT + 1.1))));
+  $('#freed').textContent = 'Freed ' + bytes(36.3 * eio(prog(t, CLEAN_AT + .4, CLEAN_AT + 1.6))).replace(/(\.\d)\d/, '$1');
+
+  /* cursor */
+  const [cx, cy] = cursorAt(t), pr = pressAt(t);
+  show($('#cursor'), prog(t, 5.6, 5.9) * (1 - prog(t, 21.6, 21.9)), `translate(${cx - 2}px, ${cy - 2}px) scale(${1 - .15 * pr})`);
 
   /* outro */
-  const oo = eout(prog(t, 23.9, 24.6));
-  show($('#outro'), oo);
-  $('#outro img').style.transform = `scale(${back(prog(t, 24.1, 24.8))})`;
-  [['h1', 24.4], ['p', 24.7], ['.cmd', 25.1], ['.gh', 25.5]].forEach(([s, a]) => { const p = eout(prog(t, a, a + .5)); show($('#outro ' + s), p, `translateY(${(1 - p) * 24}px)`); });
+  show($('#outro'), eout(prog(t, 23.4, 24.1)));
+  $('#outro img').style.transform = `scale(${back(prog(t, 23.6, 24.3))})`;
+  [['h1', 23.9], ['p', 24.2], ['.cmd', 24.6], ['.gh', 25.0]].forEach(([s, a]) => { const p = eout(prog(t, a, a + .5)); show($('#outro ' + s), p, `translateY(${(1 - p) * 24}px)`); });
 };
-window.DURATION = DUR;
 render(0);
 </script>
 </body>
