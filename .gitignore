@@ -58,3 +58,4 @@ node_modules/
 package-lock.json
 # Rendered promo video (re-render with: node promo/render.mjs)
 promo/*.mp4
+promo/*.wav
