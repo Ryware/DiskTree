@@ -1,15 +1,14 @@
-# Narration for headroom-promo.mp4. One line per cue: start time in seconds, then the text.
-# Times are in the final video: Welcome page 3.4-6.2 s, scan 6.2, dashboard 9.7, treemap 12.3,
-# Safety 14.6, Cleanup 19.5, Clean click 22.3, Duplicates 25.95, menu bar 32.55, outro 41.5.
-# audio.py speaks each line and places it at its time; it warns when a line runs into the next.
-0.4	Your Mac says: System Data, two hundred ninety gigabytes. That's it.
-4.9	Meet Headroom, a free, open-source disk analyzer.
-8.2	It scans a million files in about twenty seconds.
-11.1	The dashboard shows where the space went.
-13.2	The treemap shows what fills your disk.
-15.8	Switch to Safety, and every known folder gets a verdict.
-19.7	Cleanup gathers build output, caches and dependencies.
-23.1	One click sends it all to the Trash. Thirty-six gigabytes back, and you can undo.
-27.9	It also finds duplicate photos, videos and downloads, byte for byte, and always keeps one copy.
-34.4	And it keeps watching from the menu bar. When space runs low, you get an alert, and one click cleans it up.
-42.2	Headroom. Free, open source. Get it with Homebrew.
+# Narration for headroom-promo.mp4. One line per cue: start time in seconds (video time), then the
+# text. audio.py speaks each line and places it at its time, warning when a line runs into the next.
+# Scene starts in video time: Welcome 5.4, scan 9.7, dashboard 13.2, treemap 18.8, Safety click 22.6,
+# Cleanup 29.5, Clean click 34.3, Duplicates 39.5, menu bar 49.1, alert 51.5, outro 61.5, star 64.6.
+0.4	Running out of space again? Your Mac just says "System Data", and leaves you guessing.
+6.0	Headroom is here to help. Free, open source, and built for exactly this.
+10.6	Point it at your home folder, and it reads over a million files before your coffee cools.
+15.7	Want the big picture? The dashboard sums it up at a glance.
+19.2	Prefer to explore? The treemap shows every folder by size.
+23.2	And here's the part you'll love: switch to Safety, and Headroom tells you what's safe to delete, and what to leave alone.
+30.2	Ready to clean? Tick the junk, press one button, and it's gone. To the Trash, so you can always undo.
+40.0	Got the same video in three places? Headroom finds exact duplicates, and always keeps one copy for you.
+49.6	It even keeps watch from your menu bar, and warns you before space runs out. One click, and you're back in the green.
+61.9	Headroom is free, at headroom-app.org. If you like it, give us a star on GitHub, and share it with a friend.

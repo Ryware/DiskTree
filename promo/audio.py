@@ -18,17 +18,27 @@ import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SR = 44100
-DUR = 47.1
+HOLDS = [[3.0, 2.0], [5.8, 1.5], [9.6, 1.5], [12.0, 2.5], [14.4, 1.5], [18.5, 3.0], [22.2, 1.5], [25.0, 1.0],
+         [28.5, 1.5], [31.4, 1.0], [35.6, 1.0], [40.5, 1.5]]   # keep in sync with promo.html
+
+
+def warp(t):
+    """Animation time -> video time (promo.html pauses the animation at each hold)."""
+    return t + sum(h for at, h in HOLDS if t >= at)
+
+
+DUR = warp(50.5)
 BPM = 108
 BEAT = 60 / BPM
 T = np.arange(int(DUR * SR)) / SR
 
 # scene times in the video (see promo.html: SHIFT = 2.8 after the hook)
-WELCOME, SCAN, DASH, TREEMAP, SAFETY, CLEANUP, CLEAN_CLICK, TOAST = 3.4, 6.2, 9.7, 12.3, 14.6, 19.5, 22.3, 22.8
-DUP, MENUBAR, OUTRO = 25.95, 32.55, 41.5                      # the two extra scenes, then the outro
-DUP_TOAST, ALERT, MB_DONE = DUP + 5.0, MENUBAR + 2.4, MENUBAR + 7.0
-CLICKS = [12.25, 14.55, 19.45, 20.3, 20.9, 21.5, 22.25,      # cursor clicks (promo.html CLICKS + SHIFT)
-          DUP + .7, DUP + 2.7, DUP + 4.7, MENUBAR + 3.8, MENUBAR + 5.6, MENUBAR + 6.4]
+WELCOME, SCAN, DASH, TREEMAP, SAFETY, CLEANUP, CLEAN_CLICK, TOAST = map(warp, (3.4, 6.2, 9.7, 12.3, 14.6, 19.5, 22.3, 22.8))
+_DUP, _MB = 25.95, 32.55
+DUP, MENUBAR, OUTRO, STAR = map(warp, (_DUP, _MB, 41.5, 46.3))   # the two extra scenes, the outro, the star burst
+DUP_TOAST, ALERT, MB_DONE = map(warp, (_DUP + 5.0, _MB + 2.4, _MB + 7.0))
+CLICKS = [warp(c) for c in (12.25, 14.55, 19.45, 20.3, 20.9, 21.5, 22.25,      # cursor clicks (promo.html CLICKS + SHIFT)
+                            _DUP + .7, _DUP + 2.7, _DUP + 4.7, _MB + 3.8, _MB + 5.6, _MB + 6.4)]
 
 
 def midi(n):
@@ -198,7 +208,9 @@ def music():
     chime(fx, DUP_TOAST + 0.15, 0.16)
     ding(fx, ALERT + 0.1, 0.2)
     chime(fx, MB_DONE + 0.1, 0.14)
-    riser(fx, DUP + 4.7 - 1.0, 1.0, 0.1, rng)
+    chime(fx, STAR, 0.2)
+    hat(fx, STAR, 0.12, rng, 0.5)
+    riser(fx, warp(_DUP + 4.7) - 1.0, 1.0, 0.1, rng)
 
     mix = lowpass(padb, 2200) * 1.0 + lowpass(arp, 5000) * 1.0 + drums * 0.9 + fx
     # overall fade out at the very end
@@ -274,7 +286,7 @@ def main():
     ap.add_argument("--model", help="model file (.onnx)")
     ap.add_argument("--voices", help="kokoro voices file (voices-v1.0.bin)")
     ap.add_argument("--voice", default="af_heart", help="kokoro voice name")
-    ap.add_argument("--speed", type=float, default=1.05)
+    ap.add_argument("--speed", type=float, default=0.95)
     ap.add_argument("--mute-voice", action="store_true")
     ap.add_argument("--video", default=os.path.join(HERE, "headroom-promo.mp4"))
     ap.add_argument("--out", default=os.path.join(HERE, "headroom-promo-audio.mp4"))

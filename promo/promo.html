@@ -195,9 +195,15 @@ svg.i{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.5;stro
 #outro .hero{transform:scale(1.16);margin-bottom:22px}
 #outro h1{font-size:120px;font-weight:700;letter-spacing:-.04em;margin-top:18px}
 #outro p{font-size:34px;font-weight:500;opacity:.9;margin-top:6px}
-#outro .cmd{margin-top:46px;font-family:"Geist Mono",monospace;font-size:34px;padding:20px 34px;border-radius:16px;background:rgba(10,10,30,.45);border:1px solid rgba(255,255,255,.25)}
-#outro .cmd::before{content:"$ ";opacity:.55}
-#outro .gh{margin-top:26px;font-size:28px;font-weight:600;opacity:.95}
+#outro .site{margin-top:40px;font-size:58px;font-weight:700;letter-spacing:-.02em;padding:14px 40px;border-radius:20px;background:rgba(10,10,30,.35);border:1px solid rgba(255,255,255,.3)}
+#outro .site small{display:block;font-size:22px;font-weight:500;opacity:.8;letter-spacing:0;margin-top:2px}
+#outro .cta2{margin-top:30px;display:flex;align-items:center;gap:22px;font-size:30px;font-weight:600}
+#outro .cta2 .dot{opacity:.5}
+#outro .star{display:flex;align-items:center;gap:12px}
+#outro .star svg{width:44px;height:44px;overflow:visible}
+#outro .star path{fill:rgba(255,214,10,0);stroke:#fff;stroke-width:1.6;stroke-linejoin:round}
+#outro .burst{position:absolute;left:12px;top:12px;width:0;height:0;pointer-events:none}
+#outro .burst i{position:absolute;left:0;top:0;width:3px;height:26px;margin-left:-1.5px;border-radius:2px;background:#ffd60a;transform-origin:50% 0}
 </style>
 </head>
 <body>
@@ -356,8 +362,8 @@ svg.i{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.5;stro
   <div class="hero" id="ohero"><div class="ring"></div><div class="orb"><i></i></div><img src="icon.png" alt=""></div>
   <h1>Headroom</h1>
   <p>Free · Open source · No tracking · macOS 14+</p>
-  <div class="cmd">brew install ryware/tap/headroom</div>
-  <div class="gh">★ github.com/Ryware/Headroom</div>
+  <div class="site">headroom-app.org<small>Download free · no account, no ads, no tracking</small></div>
+  <div class="cta2"><span class="star"><svg viewBox="0 0 24 24"><path id="starp" d="M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.4l-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9z"/><g class="burst" id="burst"></g></svg>Give us a star</span><span class="dot">·</span><span class="share">Share it with a friend</span></div>
 </div>
 
 <div id="caps"></div>
@@ -379,15 +385,27 @@ const S = 1.3;
 const SHIFT = 2.8;            // the Welcome page, inserted after the hook
 const F = 23.15;              // main-clock moment where the extra scenes are inserted
 const DUP_LEN = 6.6, MB_LEN = 8.7, SHIFT2 = DUP_LEN + MB_LEN;
-window.DURATION = 29 + SHIFT + SHIFT2;
+const HOLDS = [[3.0, 2.0], [5.8, 1.5], [9.6, 1.5], [12.0, 2.5], [14.4, 1.5], [18.5, 3.0], [22.2, 1.5], [25.0, 1.0], [28.5, 1.5], [31.4, 1.0], [35.6, 1.0], [40.5, 1.5]];
+const TAIL = 3.4;             // the longer closing line
+function unwarp(T) {          // video time -> animation time, pausing at each hold
+  let acc = 0;
+  for (const [at, h] of HOLDS) {
+    if (T < at + acc) break;
+    if (T < at + acc + h) return at;
+    acc += h;
+  }
+  return T - acc;
+}
+window.DURATION = 29 + SHIFT + SHIFT2 + TAIL + HOLDS.reduce((a, h) => a + h[1], 0);
 
 /* ---------- captions ---------- */
 const CAPS = [
-  [0.4, 3.5, 'Your Mac: <em>“291.7 GB System Data.”</em><small>And that’s all it tells you.</small>'],
-  [3.8, 6.9, 'Scan <em>1.2 million files</em> in seconds'],
-  [7.1, 11.9, 'See exactly <em>what fills your disk</em>'],
-  [12.1, 16.6, 'Know what’s <em>safe to delete</em><small>Every known folder gets a verdict and a reason</small>'],
-  [16.8, 23.1, 'Clean up <em>in one click</em><small>Everything goes to the Trash, so you can undo</small>'],
+  [0.4, 3.5, 'Running out of space <em>again?</em><small>Your Mac says “System Data” and leaves you guessing.</small>'],
+  [3.8, 6.9, 'A million files, <em>before your coffee cools</em>'],
+  [7.1, 9.6, 'The big picture, <em>at a glance</em>'],
+  [9.7, 11.9, 'Like to explore? <em>Dive into the treemap</em>'],
+  [12.1, 16.6, 'Know what’s <em>safe to delete</em><small>…and what to leave alone</small>'],
+  [16.8, 23.1, 'Clean up <em>in one click</em><small>It goes to the Trash, so you can always undo</small>'],
 ];
 const capEls = CAPS.map(([, , html]) => { const d = document.createElement('div'); d.className = 'cap'; d.innerHTML = html; $('#caps').appendChild(d); return d; });
 
@@ -672,8 +690,16 @@ function renderMain(t) {
   /* outro */
   show($('#outro'), eout(prog(t, 23.4, 24.1)));
   $('#ohero').style.transform = `scale(${1.16 * back(prog(t, 23.6, 24.3))})`;
-  [['h1', 23.9], ['p', 24.2], ['.cmd', 24.6], ['.gh', 25.0]].forEach(([s, a]) => { const p = eout(prog(t, a, a + .5)); show($('#outro ' + s), p, `translateY(${(1 - p) * 24}px)`); });
+  [['h1', 23.9], ['p', 24.2], ['.site', 24.6], ['.cta2', 27.2]].forEach(([s, a]) => { const p = eout(prog(t, a, a + .5)); show($('#outro ' + s), p, `translateY(${(1 - p) * 24}px)`); });
+  // the star fills with gold and bursts when the voice asks for it; "share" nudges a moment later
+  const stp = prog(t, 28.2, 28.7), fillp = eout(stp);
+  $('#starp').style.fill = `rgba(255,214,10,${fillp})`; $('#starp').style.stroke = fillp > .5 ? '#ffd60a' : '#fff';
+  $('#outro .star svg').style.transform = `scale(${1 + .35 * Math.sin(stp * Math.PI)}) rotate(${-15 * Math.sin(stp * Math.PI)}deg)`;
+  [...$('#burst').children].forEach((b, i) => { const q = prog(t, 28.35, 29.0); b.style.opacity = (1 - q) * (q > 0 ? 1 : 0); b.style.transform = `rotate(${i * 45}deg) translateY(${10 + 26 * eout(q)}px) scaleY(${1 - q * .7})`; });
+  const sh = Math.sin(clamp(prog(t, 29.6, 30.2)) * Math.PI);
+  $('#outro .share').style.transform = `scale(${1 + .08 * sh})`; $('#outro .share').style.color = sh > .2 ? '#ffd60a' : '#fff';
 }
+for (let i = 0; i < 8; i++) $('#burst').appendChild(document.createElement('i'));
 
 /* HeroLoader: ring and light orbit once every 2.2 s */
 function spinHero(t) { document.querySelectorAll('.hero .ring, .hero .orb').forEach(e => e.style.transform = `rotate(${(t / 2.2) * 360}deg)`); }
@@ -743,14 +769,14 @@ function pathAt(path, e, dwell) {
 const press = (e, clicks) => Math.max(0, ...clicks.map(c => 1 - Math.abs(e - c) / .09));
 
 const introCap = document.createElement('div'); introCap.className = 'cap';
-introCap.innerHTML = 'Meet <em>Headroom</em><small>A free, open-source disk analyzer for your Mac</small>';
+introCap.innerHTML = 'Meet <em>Headroom</em><small>Free, open source, and made for exactly this</small>';
 $('#caps').appendChild(introCap);
 const IN0 = 3.4, IN1 = IN0 + SHIFT;          // real-time span the intro owns
 const T0 = F + SHIFT, MB0 = T0 + DUP_LEN, T1 = T0 + SHIFT2;   // extra scenes: duplicates, then the menu bar
 const dupCap = document.createElement('div'); dupCap.className = 'cap';
-dupCap.innerHTML = 'Finds <em>duplicate</em> photos, videos and downloads<small>Compared byte for byte. One copy always stays.</small>';
+dupCap.innerHTML = 'Same video in three places? <em>Found.</em><small>Exact duplicates, and one copy is always kept</small>';
 const mbCap = document.createElement('div'); mbCap.className = 'cap';
-mbCap.innerHTML = 'Watching <em>from the menu bar</em><small>Free-space ring, an alert when it runs low, one click to fix it</small>';
+mbCap.innerHTML = 'It keeps watch <em>from your menu bar</em><small>An alert before space runs out, and one click to fix it</small>';
 $('#caps').append(dupCap, mbCap);
 function mainTime(t) {
   if (t < IN0) return t;
@@ -758,10 +784,11 @@ function mainTime(t) {
   if (a < F) return a;
   return t < T1 ? F : t - SHIFT - SHIFT2;
 }
-window.render = function (t) {
+window.render = function (T) {
+  const t = unwarp(T);
   window.PANE = t >= T0 + .7 && t < MB0 ? 'dup' : null;
   renderMain(mainTime(t));
-  spinHero(t);
+  spinHero(T);
   renderDup(t - T0);
   renderMenuBar(t - MB0);
   if (t >= MB0) show($('#appl'), 0);
