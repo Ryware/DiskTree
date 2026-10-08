@@ -41,6 +41,8 @@
   <a href="#safety-and-privacy">Safety & privacy</a>
 </p>
 
+<p align="center"><sub>Free forever, no ads, no tracking. If Headroom saved you some space, a ⭐ on this repo is the best way to help other Mac users find it.</sub></p>
+
 ```sh
 brew install ryware/tap/headroom
 ```
