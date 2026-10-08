@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 """Soundtrack for headroom-promo.mp4: synthesized music bed, piper narration and click sounds.
 
-    python3 promo/audio.py --piper-lib <dir with piper package> --voice <model.onnx> [--mute-voice]
+    python3 promo/audio.py --engine kokoro --lib <dir with kokoro_onnx> --model kokoro-v1.0.onnx \
+        --voices voices-v1.0.bin --voice af_heart
+    python3 promo/audio.py --engine piper --lib <dir with piper> --model en-us-ryan-medium.onnx
 
 Writes promo/music.wav, promo/voice.wav, promo/sfx.wav, then mixes them under the video into
 promo/headroom-promo-audio.mp4 (music ducks under the voice). Nothing here is downloaded at
-render time: the music and effects are generated with numpy; the voice comes from piper-tts
-(pip install piper-tts) and a voice model, e.g.
+render time: the music and effects are generated with numpy; the voice comes from Kokoro
+(pip install kokoro-onnx; model and voices from
+https://github.com/thewh1teagle/kokoro-onnx/releases/tag/model-files-v1.0) or, as a plainer
+fallback, piper-tts with a voice such as
 https://github.com/rhasspy/piper/releases/download/v0.0.2/voice-en-us-ryan-medium.tar.gz
 """
 import argparse, os, subprocess, sys, wave
@@ -201,11 +205,31 @@ def sfx():
     return np.stack([out, out], axis=1)
 
 
-def narration(piper_lib, voice_path):
-    sys.path.insert(0, piper_lib)
+def speaker(a):
+    """Returns say(text) -> (samples, rate) for the chosen engine."""
+    sys.path.insert(0, a.lib or "")
+    if a.engine == "kokoro":
+        from kokoro_onnx import Kokoro  # noqa: E402
+        k = Kokoro(a.model, a.voices)
+        return lambda text: k.create(text, voice=a.voice, speed=a.speed, lang="en-us")
     from piper import PiperVoice, SynthesisConfig  # noqa: E402
-    voice = PiperVoice.load(voice_path)
-    cfg = SynthesisConfig(length_scale=0.93)  # a touch brisker than the default
+    voice = PiperVoice.load(a.model)
+    cfg = SynthesisConfig(length_scale=1 / a.speed)
+    tmp = os.path.join(HERE, "_line.wav")
+
+    def say(text):
+        with wave.open(tmp, "wb") as w:
+            voice.synthesize_wav(text, w, syn_config=cfg)
+        with wave.open(tmp) as w:
+            sr = w.getframerate()
+            pcm = np.frombuffer(w.readframes(w.getnframes()), dtype=np.int16).astype(float) / 32768
+        os.remove(tmp)
+        return pcm, sr
+    return say
+
+
+def narration(a):
+    say = speaker(a)
     out = np.zeros(len(T))
     cues = []
     with open(os.path.join(HERE, "narration.txt")) as f:
@@ -214,14 +238,10 @@ def narration(piper_lib, voice_path):
                 continue
             start, text = line.rstrip("\n").split("\t", 1)
             cues.append((float(start), text))
-    tmp = os.path.join(HERE, "_line.wav")
     prev_end = 0.0
     for start, text in cues:
-        with wave.open(tmp, "wb") as w:
-            voice.synthesize_wav(text, w, syn_config=cfg)
-        with wave.open(tmp) as w:
-            sr = w.getframerate()
-            pcm = np.frombuffer(w.readframes(w.getnframes()), dtype=np.int16).astype(float) / 32768
+        pcm, sr = say(text)
+        pcm = np.asarray(pcm, dtype=float)
         # resample to SR with linear interpolation
         if sr != SR:
             x = np.arange(len(pcm)) / sr
@@ -231,14 +251,17 @@ def narration(piper_lib, voice_path):
         print(f"{start:5.1f}s +{length:4.1f}s = {start + length:5.1f}s  {text[:52]}{flag}")
         place(out, pcm, start)
         prev_end = start + length
-    os.remove(tmp)
     return np.stack([out, out], axis=1)
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--piper-lib", help="directory containing the installed piper package")
-    ap.add_argument("--voice", help="piper voice model (.onnx)")
+    ap.add_argument("--engine", choices=["kokoro", "piper"], default="kokoro")
+    ap.add_argument("--lib", help="directory containing the installed kokoro_onnx or piper package")
+    ap.add_argument("--model", help="model file (.onnx)")
+    ap.add_argument("--voices", help="kokoro voices file (voices-v1.0.bin)")
+    ap.add_argument("--voice", default="af_heart", help="kokoro voice name")
+    ap.add_argument("--speed", type=float, default=1.05)
     ap.add_argument("--mute-voice", action="store_true")
     ap.add_argument("--video", default=os.path.join(HERE, "headroom-promo.mp4"))
     ap.add_argument("--out", default=os.path.join(HERE, "headroom-promo-audio.mp4"))
@@ -246,9 +269,9 @@ def main():
 
     write_wav(os.path.join(HERE, "music.wav"), music())
     write_wav(os.path.join(HERE, "sfx.wav"), sfx())
-    have_voice = bool(a.voice) and not a.mute_voice
+    have_voice = bool(a.model) and not a.mute_voice
     if have_voice:
-        write_wav(os.path.join(HERE, "voice.wav"), narration(a.piper_lib or "", a.voice))
+        write_wav(os.path.join(HERE, "voice.wav"), narration(a))
 
     # Mix: voice on top, music ducked by the voice (sidechain), clicks quiet.
     inputs = ["-i", a.video, "-i", os.path.join(HERE, "music.wav"), "-i", os.path.join(HERE, "sfx.wav")]

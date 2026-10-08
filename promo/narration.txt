@@ -5,9 +5,9 @@
 0.4	Your Mac says: System Data, two hundred ninety gigabytes. That's it.
 4.9	Meet Headroom, a free, open-source disk analyzer.
 8.2	It scans a million files in about twenty seconds.
-10.9	The dashboard shows where the space went.
+11.1	The dashboard shows where the space went.
 13.2	The treemap shows what fills your disk.
 15.8	Switch to Safety, and every known folder gets a verdict.
 19.7	Cleanup gathers build output, caches and dependencies.
 23.1	One click sends it all to the Trash. Thirty-six gigabytes back, and you can undo.
-27.6	Headroom. Free, open source. Get it with Homebrew.
+27.9	Headroom. Free, open source. Get it with Homebrew.
