@@ -1,0 +1,71 @@
+Headroom FULL SUITE stress/spikes (nohup) — 2026-10-08T22:31:35Z
+Multi-UA + multi Accept-Language (simulated geos) HTTP workers + burst peaks
+
+  heal_1=200:0.025752
+workers_after_baseline_start=6
+--- 0-baseline (22:31:39) http_workers=6 burst=0 ---
+  samples=245 ok=245 fail=0 availability=100.0%
+  latency_s p50=0.038 p95=0.061 avg=0.040 max=0.080
+  stress_feel: healthy / snappy
+
+wave1-ramp → http~12 burst=P10x20
+workers=12 burst=1
+--- wave1-ramp (22:31:57) http_workers=12 burst=1 ---
+  samples=357 ok=357 fail=0 availability=100.0%
+  latency_s p50=0.045 p95=0.085 avg=0.051 max=0.151
+  stress_feel: healthy / snappy
+
+wave2-spike → http~24 burst=P22x48
+workers=24 burst=1
+--- wave2-spike (22:32:23) http_workers=24 burst=1 ---
+  samples=168 ok=162 fail=6 availability=96.4%
+  latency_s p50=0.122 p95=0.248 avg=0.348 max=5.096
+  stress_feel: healthy / snappy
+
+wave3-plateau → http~18 burst=P14x32
+workers=18 burst=1
+--- wave3-plateau (22:32:55) http_workers=18 burst=1 ---
+  samples=42 ok=22 fail=20 availability=52.4%
+  latency_s p50=0.045 p95=0.160 avg=0.071 max=0.161
+  stress_feel: FAILING / mostly down
+
+  >> cooling after wave3-plateau (availability 52.4%)
+  heal_1=200:0.024738
+--- cool-after-wave3-plateau (22:33:32) http_workers=6 burst=0 ---
+  samples=133 ok=133 fail=0 availability=100.0%
+  latency_s p50=0.037 p95=0.052 avg=0.039 max=0.061
+  stress_feel: healthy / snappy
+
+wave4-peak → http~32 burst=P28x56
+workers=32 burst=1
+--- wave4-peak (22:33:44) http_workers=32 burst=1 ---
+  samples=91 ok=78 fail=13 availability=85.7%
+  latency_s p50=0.104 p95=5.035 avg=0.497 max=5.041
+  stress_feel: degraded (errors)
+
+  >> cooling after wave4-peak (availability 85.7%)
+  heal_1=200:0.024946
+--- cool-after-wave4-peak (22:34:20) http_workers=6 burst=0 ---
+  samples=126 ok=126 fail=0 availability=100.0%
+  latency_s p50=0.039 p95=0.053 avg=0.039 max=0.064
+  stress_feel: healthy / snappy
+
+wave5-climax → http~40 burst=P34x64
+workers=40 burst=1
+--- wave5-climax (22:34:32) http_workers=40 burst=1 ---
+  samples=210 ok=204 fail=6 availability=97.1%
+  latency_s p50=0.127 p95=0.375 avg=0.267 max=5.380
+  stress_feel: healthy / snappy
+
+RECOVERY
+  heal_1=200:0.024909
+--- RECOVERY (22:35:13) http_workers=5 burst=0 ---
+  samples=91 ok=85 fail=6 availability=93.4%
+  latency_s p50=0.039 p95=0.058 avg=0.041 max=0.072
+  stress_feel: degraded (errors)
+
+Stopping load.
+final_site=200:0.026051
+http_ok_count=4128
+burst_lines=2782
+=== STRESS COMPLETE 2026-10-08T22:35:31Z ===

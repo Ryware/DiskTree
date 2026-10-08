@@ -1,0 +1,9 @@
+100.0|0.061|healthy / snappy|0-baseline
+100.0|0.085|healthy / snappy|wave1-ramp
+96.4|0.248|healthy / snappy|wave2-spike
+52.4|0.160|FAILING / mostly down|wave3-plateau
+100.0|0.052|healthy / snappy|cool-after-wave3-plateau
+85.7|5.035|degraded (errors)|wave4-peak
+100.0|0.053|healthy / snappy|cool-after-wave4-peak
+97.1|0.375|healthy / snappy|wave5-climax
+93.4|0.058|degraded (errors)|RECOVERY
