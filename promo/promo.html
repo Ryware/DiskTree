@@ -128,9 +128,25 @@ svg.i{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.5;stro
 
 #cursor{position:absolute;left:0;top:0;width:22px;height:30px;z-index:50;pointer-events:none;filter:drop-shadow(0 2px 3px rgba(0,0,0,.5))}
 
+/* IntroView (welcome page): 760x460 sheet, BrandBackground, HeroLoader art */
+#intro{position:absolute;left:371px;top:196px;width:760px;height:460px;transform-origin:0 0;border-radius:12px;overflow:hidden;box-shadow:0 40px 110px rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.18);color:#fff;font-size:13px}
+#intro .body{position:absolute;left:40px;right:40px;top:36px;bottom:66px;display:flex;align-items:center;gap:36px}
+.hero{position:relative;width:260px;height:260px;flex:none}
+.hero .ring{position:absolute;left:12px;top:12px;width:236px;height:236px;border-radius:50%;background:conic-gradient(from 90deg,transparent,rgba(255,255,255,.9),transparent);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 6px),#000 calc(100% - 6px));mask:radial-gradient(farthest-side,transparent calc(100% - 6px),#000 calc(100% - 6px))}
+.hero .orb{position:absolute;left:12px;top:12px;width:236px;height:236px}
+.hero .orb i{position:absolute;left:112px;top:-3px;width:12px;height:12px;border-radius:50%;background:#fff;box-shadow:0 0 8px #fff,0 0 16px #fff}
+.hero img{position:absolute;left:35px;top:35px;width:190px;height:190px;filter:drop-shadow(0 12px 20px rgba(0,0,0,.35))}
+#intro .eb{font-size:11px;font-weight:700;letter-spacing:1.5px;opacity:.65}
+#intro h2{font-size:34px;font-weight:750;margin:12px 0 14px}
+#intro .bl{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;width:340px;opacity:.9}
+#intro .bl svg{width:18px;height:18px;flex:none;fill:none;stroke:#fff;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+#intro .foot{position:absolute;left:0;right:0;bottom:0;height:66px;display:flex;align-items:center;padding:0 24px;background:rgba(0,0,0,.15)}
+#intro .dots{display:flex;gap:6px;justify-content:center}#intro .dots i{height:8px;width:8px;border-radius:4px;background:rgba(255,255,255,.35)}#intro .dots i.on{width:22px;background:rgba(255,255,255,.95)}
+#intro .next{padding:4px 14px;border-radius:6px;background:#fff;color:rgb(89,64,230);font-weight:600}
+
 /* outro */
 #outro{background:linear-gradient(135deg,#4f45e6,#7d3aed 50%,#0ea5e9);display:flex;flex-direction:column;align-items:center;justify-content:center}
-#outro img{width:220px;height:220px;filter:drop-shadow(0 30px 60px rgba(0,0,0,.35))}
+#outro .hero{transform:scale(1.16);margin-bottom:22px}
 #outro h1{font-size:120px;font-weight:700;letter-spacing:-.04em;margin-top:18px}
 #outro p{font-size:34px;font-weight:500;opacity:.9;margin-top:6px}
 #outro .cmd{margin-top:46px;font-family:"Geist Mono",monospace;font-size:34px;padding:20px 34px;border-radius:16px;background:rgba(10,10,30,.45);border:1px solid rgba(255,255,255,.25)}
@@ -227,8 +243,23 @@ svg.i{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.5;stro
  </div>
 </div>
 
+<div class="layer" id="introl">
+  <div id="intro" class="brand">
+    <div class="body"><div class="hero"><div class="ring"></div><div class="orb"><i></i></div><img src="icon.png" alt=""></div>
+      <div><div class="eb">WELCOME</div><h2>Headroom</h2>
+        <div class="bl"><svg viewBox="0 0 16 16"><path d="M9 1.5L3 9h4.5L7 14.5 13 7H8.5z" fill="#fff"/></svg>Scans a million files in seconds</div>
+        <div class="bl"><svg viewBox="0 0 16 16"><rect x="1.5" y="1.5" width="13" height="13" rx="2.5"/><path d="M6 1.5v13M10 1.5v13M1.5 6h13M1.5 10h13"/></svg>Shows where the space goes, by folder, type and age</div>
+        <div class="bl"><svg viewBox="0 0 16 16"><path d="M8 1.5l5.5 2v4c0 3.5-2.5 6-5.5 7-3-1-5.5-3.5-5.5-7v-4z" fill="#fff"/><path d="M5.5 8l2 2 3-3.5" stroke="rgb(110,70,230)"/></svg>Tells you what is safe to delete — and what isn't</div>
+      </div>
+    </div>
+    <div class="foot"><span style="opacity:.7">Skip</span>
+      <div style="flex:1;text-align:center"><div class="dots"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div style="font-size:10px;opacity:.55;margin-top:6px">Use ← → to move between pages</div></div>
+      <span class="next">Next</span></div>
+  </div>
+</div>
+
 <div class="layer" id="outro">
-  <img src="icon.png" alt="">
+  <div class="hero" id="ohero"><div class="ring"></div><div class="orb"><i></i></div><img src="icon.png" alt=""></div>
   <h1>Headroom</h1>
   <p>Free · Open source · No tracking · macOS 14+</p>
   <div class="cmd">brew install ryware/tap/headroom</div>
@@ -251,7 +282,8 @@ const fmt = n => Math.round(n).toLocaleString('en-US');
 const bytes = gb => gb < 1 ? Math.round(gb * 1000) + ' MB' : gb.toFixed(gb < 100 ? 2 : 1) + ' GB';
 function show(el, o, tf) { el.style.opacity = o; el.style.transform = tf || ''; el.style.visibility = o <= 0.001 ? 'hidden' : 'visible'; }
 const S = 1.3;
-window.DURATION = 29;
+const SHIFT = 2.8;
+window.DURATION = 29 + SHIFT;
 
 /* ---------- captions ---------- */
 const CAPS = [
@@ -437,7 +469,7 @@ function cursorAt(t) {
 const pressAt = t => Math.max(0, ...CLICKS.map(c => 1 - Math.abs(t - c) / .09));
 
 /* ---------- render(t) ---------- */
-window.render = function (t) {
+function renderMain(t) {
   CAPS.forEach(([a, b], i) => {
     const o = Math.min(eout(prog(t, a, a + .45)), 1 - prog(t, b - .35, b));
     show(capEls[i], o, `translateY(${(1 - eout(prog(t, a, a + .45))) * 26}px)`);
@@ -543,8 +575,35 @@ window.render = function (t) {
 
   /* outro */
   show($('#outro'), eout(prog(t, 23.4, 24.1)));
-  $('#outro img').style.transform = `scale(${back(prog(t, 23.6, 24.3))})`;
+  $('#ohero').style.transform = `scale(${1.16 * back(prog(t, 23.6, 24.3))})`;
   [['h1', 23.9], ['p', 24.2], ['.cmd', 24.6], ['.gh', 25.0]].forEach(([s, a]) => { const p = eout(prog(t, a, a + .5)); show($('#outro ' + s), p, `translateY(${(1 - p) * 24}px)`); });
+}
+
+/* HeroLoader: ring and light orbit once every 2.2 s */
+function spinHero(t) { document.querySelectorAll('.hero .ring, .hero .orb').forEach(e => e.style.transform = `rotate(${(t / 2.2) * 360}deg)`); }
+
+const introCap = document.createElement('div'); introCap.className = 'cap';
+introCap.innerHTML = 'Meet <em>Headroom</em><small>A free, open-source disk analyzer for your Mac</small>';
+$('#caps').appendChild(introCap);
+const IN0 = 3.4, IN1 = IN0 + SHIFT;          // real-time span the intro owns
+window.render = function (t) {
+  renderMain(t < IN0 ? t : Math.max(IN0, t - SHIFT));
+  spinHero(t);
+  // the hook leaves on real time, not on the paused main clock
+  show($('#s1'), 1 - prog(t, IN0, IN0 + .5), `scale(${1 - .04 * prog(t, IN0, IN0 + .5)})`);
+  if (t >= IN0) show(capEls[0], 0);
+  if (t >= IN0 && t < IN1) show($('#appl'), 0);
+  // the sheet springs in, bullets reveal as in IntroView.reveal(), then it hands over to the app window
+  const a = eout(prog(t, IN0 + .1, IN0 + .7)), z = prog(t, IN1 - .4, IN1 + .1);
+  const k = (.92 + .08 * back(prog(t, IN0 + .1, IN0 + .7))) * (1 - .06 * z), sc = 1.55 * k;
+  show($('#introl'), Math.min(a, 1 - z));
+  $('#intro').style.transform = `translate(${589 * (1 - k)}px, ${356 * (1 - k) + (1 - a) * 30}px) scale(${sc})`;
+  document.querySelectorAll('#intro .bl').forEach((b, i) => {
+    const p = back(prog(t, IN0 + .55 + i * .12, IN0 + 1.0 + i * .12));
+    show(b, clamp(p) * .9, `translateX(${(1 - p) * 24}px)`);
+  });
+  const c = Math.min(eout(prog(t, IN0 + .2, IN0 + .65)), 1 - prog(t, IN1 - .5, IN1 - .15));
+  show(introCap, c, `translateY(${(1 - eout(prog(t, IN0 + .2, IN0 + .65))) * 26}px)`);
 };
 render(0);
 </script>
