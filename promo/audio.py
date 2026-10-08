@@ -18,14 +18,17 @@ import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SR = 44100
-DUR = 31.8
+DUR = 47.1
 BPM = 108
 BEAT = 60 / BPM
 T = np.arange(int(DUR * SR)) / SR
 
 # scene times in the video (see promo.html: SHIFT = 2.8 after the hook)
-WELCOME, SCAN, DASH, TREEMAP, SAFETY, CLEANUP, CLEAN_CLICK, TOAST, OUTRO = 3.4, 6.2, 9.7, 12.3, 14.6, 19.5, 22.3, 22.8, 26.2
-CLICKS = [12.25, 14.55, 19.45, 20.3, 20.9, 21.5, 22.25]  # cursor clicks (promo.html CLICKS + SHIFT)
+WELCOME, SCAN, DASH, TREEMAP, SAFETY, CLEANUP, CLEAN_CLICK, TOAST = 3.4, 6.2, 9.7, 12.3, 14.6, 19.5, 22.3, 22.8
+DUP, MENUBAR, OUTRO = 25.95, 32.55, 41.5                      # the two extra scenes, then the outro
+DUP_TOAST, ALERT, MB_DONE = DUP + 5.0, MENUBAR + 2.4, MENUBAR + 7.0
+CLICKS = [12.25, 14.55, 19.45, 20.3, 20.9, 21.5, 22.25,      # cursor clicks (promo.html CLICKS + SHIFT)
+          DUP + .7, DUP + 2.7, DUP + 4.7, MENUBAR + 3.8, MENUBAR + 5.6, MENUBAR + 6.4]
 
 
 def midi(n):
@@ -100,6 +103,12 @@ def riser(buf, start, length, gain, rng):
 def chime(buf, start, gain):
     for i, m in enumerate((88, 92, 95)):  # E6 G#6 B6 arpeggio
         pluck(buf, m, start + i * 0.07, gain, decay=0.6)
+
+
+def ding(buf, start, gain):
+    """Two soft notes, like a notification."""
+    pluck(buf, 81, start, gain, decay=0.5)
+    pluck(buf, 88, start + 0.12, gain, decay=0.7)
 
 
 def click(buf, start, gain, rng):
@@ -186,6 +195,10 @@ def music():
     riser(fx, CLEAN_CLICK - 1.3, 1.3, 0.16, rng)
     hat(fx, OUTRO, 0.22, rng, 0.9)
     chime(fx, TOAST + 0.15, 0.16)
+    chime(fx, DUP_TOAST + 0.15, 0.16)
+    ding(fx, ALERT + 0.1, 0.2)
+    chime(fx, MB_DONE + 0.1, 0.14)
+    riser(fx, DUP + 4.7 - 1.0, 1.0, 0.1, rng)
 
     mix = lowpass(padb, 2200) * 1.0 + lowpass(arp, 5000) * 1.0 + drums * 0.9 + fx
     # overall fade out at the very end

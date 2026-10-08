@@ -123,8 +123,9 @@ svg.i{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.5;stro
 .crow .tt{flex:1}
 .badge{display:flex;gap:3px;align-items:center;font-size:11px;padding:1px 7px;border-radius:999px;color:var(--safe);background:rgba(97,199,138,.12);border:.5px solid rgba(97,199,138,.28)}
 .when{font-size:11px;color:var(--fg3);width:78px;text-align:right}
-#toast{position:absolute;left:50%;bottom:26px;display:flex;gap:16px;align-items:center;padding:14px 18px;border-radius:16px;background:rgba(48,48,54,.94);border:1px solid rgba(255,255,255,.12);box-shadow:0 8px 36px rgba(0,0,0,.4);white-space:nowrap}
-#toast b{font-size:17px;font-weight:750;display:block}#toast s{text-decoration:none;font-size:12px;color:var(--fg2)}
+#toast,.toastc{position:absolute;left:50%;bottom:26px;display:flex;gap:16px;align-items:center;padding:14px 18px;border-radius:16px;background:rgba(48,48,54,.94);border:1px solid rgba(255,255,255,.12);box-shadow:0 8px 36px rgba(0,0,0,.4);white-space:nowrap}
+#toast b,.toastc b{font-size:17px;font-weight:750;display:block}#toast s,.toastc s{text-decoration:none;font-size:12px;color:var(--fg2)}
+.toastc{bottom:40px}
 
 #cursor{position:absolute;left:0;top:0;width:22px;height:30px;z-index:50;pointer-events:none;filter:drop-shadow(0 2px 3px rgba(0,0,0,.5))}
 
@@ -143,6 +144,51 @@ svg.i{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.5;stro
 #intro .foot{position:absolute;left:0;right:0;bottom:0;height:66px;display:flex;align-items:center;padding:0 24px;background:rgba(0,0,0,.15)}
 #intro .dots{display:flex;gap:6px;justify-content:center}#intro .dots i{height:8px;width:8px;border-radius:4px;background:rgba(255,255,255,.35)}#intro .dots i.on{width:22px;background:rgba(255,255,255,.95)}
 #intro .next{padding:4px 14px;border-radius:6px;background:#fff;color:rgb(89,64,230);font-weight:600}
+
+/* DuplicatesView */
+.dhd{height:52px;display:flex;align-items:center;gap:8px;padding:0 12px;border-bottom:1px solid rgba(0,0,0,.5)}
+.dhd h4{font-size:13px;font-weight:650}
+.field{width:180px;height:22px;border-radius:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:var(--fg3);font-size:12px;padding:0 7px;display:flex;align-items:center}
+.next{height:58px;display:flex;align-items:center;gap:12px;padding:0 12px;background:rgba(47,111,224,.09);border-bottom:1px solid rgba(0,0,0,.5);position:relative}
+.next .st{position:absolute;inset:0;display:flex;align-items:center;gap:12px;padding:0 12px}
+.next .ic{width:22px;height:22px;color:#6ea3ff;flex:none}
+.next b{font-size:13px;font-weight:650;display:block}.next s{text-decoration:none;font-size:11px;color:var(--fg2);display:block;margin-top:2px;max-width:560px}
+.next .sp{flex:1}
+.dlist{padding:4px 10px}
+.dg{display:flex;align-items:center;gap:8px;height:28px;padding:0 6px;font-size:12px;margin-top:6px}
+.dg svg{width:15px;height:15px;flex:none}.dg .m{color:var(--fg2)}.dg .rc{margin-left:auto;font-size:11px;font-weight:650;color:var(--fg2)}
+.dr{display:flex;align-items:center;gap:10px;height:38px;padding:2px 4px 2px 22px;border-radius:6px}
+.dr .tt{flex:1;min-width:0}.dr .tt b{font-weight:550;display:block;font-size:13px}.dr .tt s{text-decoration:none;font-size:11px;color:var(--fg2);display:flex;gap:8px;align-items:center}
+.tag{font-size:9px;font-weight:650;padding:1px 5px;border-radius:999px;background:rgba(255,255,255,.14)}
+.dr .dash{font-size:11px;color:var(--fg2);width:50px;text-align:center}
+.dr .mag{width:13px;height:13px;color:var(--fg2)}
+.keep{position:absolute;left:0;right:0;bottom:0;height:30px;display:flex;align-items:center;gap:7px;padding:0 12px;font-size:12px;background:#232326;border-top:1px solid rgba(0,0,0,.5)}
+
+/* Menu bar scene (page scale) */
+#mbl{background:radial-gradient(60% 50% at 30% 100%,rgba(96,70,220,.55),transparent 70%),radial-gradient(50% 45% at 85% 20%,rgba(14,120,200,.45),transparent 70%),linear-gradient(180deg,#141428,#0b0b16)}
+#mbar{position:absolute;left:0;right:0;top:0;height:34px;background:rgba(28,28,34,.86);backdrop-filter:blur(20px);display:flex;align-items:center;gap:22px;padding:0 20px;font-size:16px;font-weight:500;color:#fff;border-bottom:1px solid rgba(0,0,0,.5)}
+#mbar .r{margin-left:auto;display:flex;align-items:center;gap:20px}
+#mbar .hr{display:flex;align-items:center;gap:6px}
+#mbar svg.sys{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#banner{position:absolute;right:18px;top:46px;width:460px;display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border-radius:16px;background:rgba(44,44,52,.92);backdrop-filter:blur(30px);border:1px solid rgba(255,255,255,.12);box-shadow:0 14px 40px rgba(0,0,0,.45);color:#fff}
+#banner img{width:46px;height:46px;flex:none}
+#banner b{font-size:15px;font-weight:650;display:block}#banner i{font-style:normal;font-size:15px;display:block;margin-top:1px}#banner p{font-size:14px;color:rgba(235,235,245,.65);margin-top:2px;line-height:1.3}
+#banner .ago{margin-left:auto;font-size:12px;color:rgba(235,235,245,.5);flex:none}
+#pop{position:absolute;right:90px;top:44px;width:330px;transform-origin:100% 0;border-radius:12px;background:rgba(40,40,46,.96);backdrop-filter:blur(30px);border:1px solid rgba(255,255,255,.14);box-shadow:0 20px 60px rgba(0,0,0,.5);padding:16px;color:var(--fg);font-size:13px}
+#pop::before{content:"";position:absolute;right:207px;top:-8px;width:16px;height:16px;background:rgba(40,40,46,.96);border-left:1px solid rgba(255,255,255,.14);border-top:1px solid rgba(255,255,255,.14);transform:rotate(45deg)}
+#pop hr{border:0;border-top:1px solid rgba(255,255,255,.1);margin:14px 0}
+#pop .row{display:flex;align-items:center;gap:8px}
+#pop .sh{font-size:12px;font-weight:650;display:flex;align-items:center;gap:6px}
+#pop .pill{margin-left:auto;font-size:11px;font-weight:650;padding:3px 8px;border-radius:999px}
+#pop .big{font-size:30px;font-weight:750;font-variant-numeric:tabular-nums}
+#pop .pbar{height:5px;border-radius:3px;background:rgba(255,255,255,.12);margin:8px 0 6px;overflow:hidden}#pop .pbar i{display:block;height:100%}
+#pop .cap2{font-size:11px;color:var(--fg2)}
+#pop svg.spark{width:298px;height:54px;display:block;margin-top:6px}
+#pop .rec{position:relative;height:66px}
+#pop .rec > div{position:absolute;inset:0}
+#pop .foot{display:flex;gap:10px;align-items:center;font-size:13px}#pop .foot .btn{display:flex;gap:5px;align-items:center}
+#pop svg.i{width:14px;height:14px}
+#cursor2{position:absolute;left:0;top:0;width:28px;height:38px;z-index:50;filter:drop-shadow(0 2px 3px rgba(0,0,0,.5))}
 
 /* outro */
 #outro{background:linear-gradient(135deg,#4f45e6,#7d3aed 50%,#0ea5e9);display:flex;flex-direction:column;align-items:center;justify-content:center}
@@ -176,7 +222,7 @@ svg.i{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.5;stro
     <div class="nav" data-n="tm"><svg class="i" viewBox="0 0 16 16"><rect x="1.5" y="1.5" width="13" height="13" rx="1.5"/><path d="M8 1.5v13M8 8h6.5M1.5 9.5H8"/></svg>Treemap</div>
     <div class="nav"><svg class="i" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5"/><path d="M8 1.5V8l5 4"/></svg>By Category</div>
     <div class="nav"><svg class="i" viewBox="0 0 16 16"><path d="M3.5 1.5h6l3 3v10h-9z"/><path d="M6 11V7M8 11V5.5M10 11V8.5"/></svg>Largest Files</div>
-    <div class="nav"><svg class="i" viewBox="0 0 16 16"><rect x="1.5" y="4.5" width="9" height="10" rx="1.5"/><path d="M5.5 1.5h7a2 2 0 0 1 2 2V11"/></svg>Duplicates</div>
+    <div class="nav" data-n="dup"><svg class="i" viewBox="0 0 16 16"><rect x="1.5" y="4.5" width="9" height="10" rx="1.5"/><path d="M5.5 1.5h7a2 2 0 0 1 2 2V11"/></svg>Duplicates</div>
     <div class="nav" data-n="clean"><svg class="i" viewBox="0 0 16 16"><path d="M8 1.5l1.6 4.9L14.5 8l-4.9 1.6L8 14.5l-1.6-4.9L1.5 8l4.9-1.6z"/></svg>Cleanup</div>
     <div id="scannedSec"><div class="shead">Scanned</div><div class="scanned"><b>you</b><s>/Users/you</s><s>153.9 GB · 1,256,000 files</s></div></div>
   </div>
@@ -236,6 +282,21 @@ svg.i{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.5;stro
       <div id="toast"><svg width="52" height="52" viewBox="0 0 52 52"><circle cx="26" cy="26" r="25" fill="rgba(97,199,138,.18)"/><circle id="tring" cx="26" cy="26" r="24.5" fill="none" stroke="rgb(97,199,138)" stroke-width="3" stroke-linecap="round" transform="rotate(-90 26 26)" stroke-dasharray="154" stroke-dashoffset="154"/><path id="tchk" d="M17 27l6 6 12-13" fill="none" stroke="rgb(97,199,138)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="30" stroke-dashoffset="30"/></svg>
         <div><b class="num" id="freed">Freed 0 KB</b><s>48,213 files · 1,904 folders moved to the Trash</s></div><span style="color:var(--fg2);font-size:11px;margin-left:6px">✕</span></div>
     </div>
+    <div class="pane" id="pDup">
+      <div class="dhd"><div><h4>Duplicate files</h4><div class="cap2" style="margin-top:2px">9.4 GB reclaimable · 128 groups · files of 1 MB and more, compared byte for byte</div></div>
+        <div class="field" style="margin-left:auto">Filter by path</div><span class="btn" style="display:flex;gap:5px;align-items:center"><svg class="i" viewBox="0 0 16 16" style="width:12px"><path d="M13 8a5 5 0 1 1-1.5-3.6M13 2.5v2.5h-2.5"/></svg>Rescan</span></div>
+      <div class="next">
+        <div class="st" id="ns0"><svg class="ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 14.5V5.5a1.5 1.5 0 0 1 3 0V9l3.2.8A2 2 0 0 1 13.5 12v2.5"/><path d="M6 9.5L4.2 8.2A1.3 1.3 0 0 0 2.5 10l3.5 4.5"/></svg>
+          <div><b>Choose which copies to remove</b><s>Tick copies yourself, or let Headroom pick the extra copies in every group. One copy of each file always stays, and copies marked Do not delete are never picked for you.</s></div>
+          <span class="sp"></span><span style="font-size:12px">Other ways ▾</span><span class="btn pri" id="selx">Select extra copies (keep newest)</span></div>
+        <div class="st" id="ns1"><svg class="ic" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="currentColor"/><path d="M5 8.2l2 2 4-4.5" fill="none" stroke="#1e1e20" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div><b class="num">214 copies selected · 9.4 GB</b><s>They go to the Trash, so you can put them back. Unticked copies stay where they are.</s></div>
+          <span class="sp"></span><span class="btn">Clear</span><span class="btn pri" id="mvx"><svg class="i" viewBox="0 0 16 16" style="width:13px"><path d="M2.5 4h11M6 4V2.5h4V4M4 4l.7 9.5h6.6L12 4"/></svg>Move 214 copies to Trash (9.4 GB)</span></div>
+      </div>
+      <div class="dlist" id="dlist"></div>
+      <div class="keep"><span class="cb on">✓</span>Always keep at least one copy of each file</div>
+      <div id="dtoast" class="toastc"></div>
+    </div>
   </div>
 
   <div id="status"><span class="spin" id="spin"></span><span id="stxt" class="num"></span><span class="r"><svg class="i" viewBox="0 0 16 16" style="width:13px"><path d="M2.5 4h11M6 4V2.5h4V4M4 4l.7 9.5h6.6L12 4"/></svg>Trash mode</span></div>
@@ -256,6 +317,39 @@ svg.i{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.5;stro
       <div style="flex:1;text-align:center"><div class="dots"><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div style="font-size:10px;opacity:.55;margin-top:6px">Use ← → to move between pages</div></div>
       <span class="next">Next</span></div>
   </div>
+</div>
+
+<div class="layer" id="mbl">
+  <div id="mbar"><span style="font-size:18px"></span><b>Finder</b><span>File</span><span>Edit</span><span>View</span><span>Go</span><span>Window</span><span>Help</span>
+    <div class="r">
+      <span class="hr"><svg id="mring" viewBox="0 0 18 18" width="22" height="22"><circle cx="9" cy="9" r="6.5" fill="none" stroke-width="2.6" stroke-opacity=".28"/><circle id="marc" cx="9" cy="9" r="6.5" fill="none" stroke-width="2.6" stroke-linecap="round" transform="rotate(-90 9 9)" stroke-dasharray="40.84"/></svg><span id="mtxt" class="num">38 GB</span></span>
+      <svg class="sys" viewBox="0 0 20 20"><path d="M2 7.5a11 11 0 0 1 16 0M5 10.5a7 7 0 0 1 10 0M8 13.5a3 3 0 0 1 4 0M10 16.5h.01"/></svg>
+      <svg class="sys" viewBox="0 0 24 20"><rect x="1.5" y="5" width="18" height="10" rx="2.5"/><path d="M21.5 8.5v3"/><rect x="3.5" y="7" width="12" height="6" rx="1" fill="#fff" stroke="none"/></svg>
+      <span id="mclock">Thu 8 Oct&nbsp; 21:52</span>
+    </div>
+  </div>
+  <div id="banner"><img src="icon.png" alt=""><div><b>Headroom</b><i>Low disk space</i><p>Only 9.8 GB free on Macintosh HD. Open Headroom to see what is using it.</p></div><span class="ago">now</span></div>
+  <div id="pop">
+    <div class="sh"><svg class="i" viewBox="0 0 16 16"><rect x="1.5" y="4.5" width="13" height="7" rx="2"/><path d="M4 9h.01"/></svg>Macintosh HD<span class="pill" id="pst">Low</span></div>
+    <div class="row" style="margin-top:8px;align-items:baseline"><span class="big" id="pfree">9.8 GB</span><span style="color:var(--fg2)">free</span><span style="margin-left:auto;color:var(--fg2)" class="num">of 494.4 GB</span></div>
+    <div class="pbar"><i id="pbar"></i></div>
+    <div class="cap2" id="pcap">2% free · warns below 10 GB</div>
+    <hr>
+    <div class="sh">Last 7 days<span class="cap2 num" style="margin-left:auto;font-weight:450" id="pdelta">−14.2 GB / 24 h</span></div>
+    <svg class="spark" viewBox="0 0 298 54" preserveAspectRatio="none"><defs><linearGradient id="sg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="rgb(237,107,107)" stop-opacity=".35"/><stop offset="1" stop-color="rgb(237,107,107)" stop-opacity=".02"/></linearGradient></defs><path id="sarea" fill="url(#sg)"/><path id="sline" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <hr>
+    <div class="sh">Reclaimable now<svg class="i" viewBox="0 0 16 16" style="margin-left:auto;color:var(--fg2)"><path d="M13 8a5 5 0 1 1-1.5-3.6M13 2.5v2.5h-2.5"/></svg></div>
+    <div class="rec">
+      <div id="rc0"><div class="cap2" style="font-size:13px;margin-top:8px">14.1 GB that macOS and your tools recreate on their own.</div><span class="btn pri" id="pclean" style="display:inline-block;margin-top:8px">Clean 14.1 GB (safe items only)</span></div>
+      <div id="rc1"><div style="font-size:13px;margin-top:6px">Move 14.1 GB of safe caches, logs and build output to the Trash?</div><div class="row" style="margin-top:8px"><span class="btn pri" id="pmove">Move to Trash</span><span class="btn">Cancel</span></div></div>
+      <div id="rc2"><div class="row" style="margin-top:10px"><span class="spin" id="pspin"></span><span style="font-size:13px">Moving to Trash…</span></div></div>
+      <div id="rc3"><div class="cap2" style="font-size:13px;margin-top:8px">Nothing safe to clean right now.</div><div class="cap2" style="margin-top:6px">Moved 14.1 GB to the Trash. Empty the Trash to get the space back.</div></div>
+    </div>
+    <hr>
+    <div class="foot"><span class="btn"><svg class="i" viewBox="0 0 16 16"><rect x="1.5" y="2.5" width="13" height="11" rx="2"/><path d="M1.5 6h13"/></svg>Open Headroom</span><span class="btn"><svg class="i" viewBox="0 0 16 16"><path d="M2 7.5L8 2.5l6 5M3.5 6.5v7h9v-7"/></svg>Scan Home</span>
+      <span style="margin-left:auto;color:var(--fg2)">⚙</span><span style="color:var(--fg2)">⏻</span></div>
+  </div>
+  <svg id="cursor2" viewBox="0 0 22 30"><path d="M2 2v21l5.2-5 3.6 8.4 3.4-1.5-3.5-8.2H18z" fill="#000" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>
 </div>
 
 <div class="layer" id="outro">
@@ -282,8 +376,10 @@ const fmt = n => Math.round(n).toLocaleString('en-US');
 const bytes = gb => gb < 1 ? Math.round(gb * 1000) + ' MB' : gb.toFixed(gb < 100 ? 2 : 1) + ' GB';
 function show(el, o, tf) { el.style.opacity = o; el.style.transform = tf || ''; el.style.visibility = o <= 0.001 ? 'hidden' : 'visible'; }
 const S = 1.3;
-const SHIFT = 2.8;
-window.DURATION = 29 + SHIFT;
+const SHIFT = 2.8;            // the Welcome page, inserted after the hook
+const F = 23.15;              // main-clock moment where the extra scenes are inserted
+const DUP_LEN = 6.6, MB_LEN = 8.7, SHIFT2 = DUP_LEN + MB_LEN;
+window.DURATION = 29 + SHIFT + SHIFT2;
 
 /* ---------- captions ---------- */
 const CAPS = [
@@ -488,7 +584,7 @@ function renderMain(t) {
   show($('#appl'), Math.min(wi, 1 - out));
   $('#win').style.transform = `translateY(${(1 - wi) * 50}px) scale(${S * (1 - out * .04)})`;
 
-  const pane = t < 6.9 ? 'scan' : t < 9.5 ? 'dash' : t < 16.7 ? 'tm' : 'clean';
+  const pane = window.PANE || (t < 6.9 ? 'scan' : t < 9.5 ? 'dash' : t < 16.7 ? 'tm' : 'clean');
   document.querySelectorAll('.nav').forEach(n => n.classList.toggle('on', n.dataset.n === (pane === 'scan' ? '' : pane)));
   show($('#scannedSec'), prog(t, 6.9, 7.2));
 
@@ -563,7 +659,7 @@ function renderMain(t) {
   $('#clean').className = 'btn pri' + (sum && !empty ? '' : ' dis');
   $('#clr').className = 'btn' + (sum && !empty ? '' : ' dis');
   $('#cleanl').textContent = sum && !empty ? `Clean ${sum.toFixed(2)} GB → Trash` : 'Clean';
-  const ta = eout(prog(t, CLEAN_AT + .3, CLEAN_AT + .7));
+  const ta = eout(prog(t, CLEAN_AT + .3, CLEAN_AT + .7)) * (1 - prog(t, 22.6, 22.95));
   show($('#toast'), ta, `translate(-50%, ${(1 - ta) * 20}px) scale(${.96 + .04 * ta})`);
   $('#tring').setAttribute('stroke-dashoffset', 154 * (1 - eout(prog(t, CLEAN_AT + .4, CLEAN_AT + .9))));
   $('#tchk').setAttribute('stroke-dashoffset', 30 * (1 - eout(prog(t, CLEAN_AT + .75, CLEAN_AT + 1.1))));
@@ -582,13 +678,93 @@ function renderMain(t) {
 /* HeroLoader: ring and light orbit once every 2.2 s */
 function spinHero(t) { document.querySelectorAll('.hero .ring, .hero .orb').forEach(e => e.style.transform = `rotate(${(t / 2.2) * 360}deg)`); }
 
+/* ---------- DuplicatesView: groups sorted by reclaimable space, newest copy first ---------- */
+const DCOL = { arc: [168, 138, 107], vid: [158, 128, 194], doc: [107, 153, 204], aud: [122, 128, 199], img: [204, 133, 158] };
+const DICON = {
+  arc: '<path d="M2.5 4.5h11v9h-11zM2.5 4.5l1-2h9l1 2M8 7v4M6.5 9.5L8 11l1.5-1.5"/>',
+  vid: '<rect x="1.5" y="3.5" width="13" height="9" rx="1.5"/><path d="M1.5 6.5h13M1.5 9.5h13M4.5 3.5v9M11.5 3.5v9"/>',
+  doc: '<path d="M3.5 1.5h6l3 3v10h-9z"/><path d="M9.5 1.5v3h3"/>',
+  aud: '<path d="M6 12.5V4l7-1.5v8.5"/><circle cx="4" cy="12.5" r="2"/><circle cx="11" cy="11" r="2"/>',
+  img: '<rect x="1.5" y="2.5" width="13" height="11" rx="1.5"/><path d="M1.5 11l4-4 3 3 2-2 4 4"/><circle cx="10.5" cy="6" r="1.2"/>',
+};
+const DUPS = [
+  ['Xcode_15.4.xip', '3.30 GB', '3.30 GB', 'arc', [['Downloads/Xcode_15.4.xip', '12 Jun 2026 at 09:14'], ['Desktop/Installers/Xcode_15.4.xip', '2 Mar 2026 at 18:40']]],
+  ['Trip to Lisbon.mov', '1.82 GB', '1.82 GB', 'vid', [['Movies/Trip to Lisbon.mov', '3 Aug 2026 at 20:11'], ['Desktop/old/Trip to Lisbon.mov', '3 Aug 2026 at 19:58']]],
+  ['Keynote 2025.key', '640 MB', '1.28 GB', 'doc', [['Documents/Keynote 2025.key', '14 Sep 2026 at 11:02'], ['Downloads/Keynote 2025.key', '14 Sep 2026 at 10:55'], ['Downloads/Keynote 2025 (1).key', '14 Sep 2026 at 10:55']]],
+  ['Podcast raw.wav', '1.10 GB', '1.10 GB', 'aud', [['Music/Podcast raw.wav', '21 May 2026 at 16:30'], ['Downloads/Podcast raw.wav', '21 May 2026 at 16:28']]],
+  ['Wedding photos.zip', '860 MB', '860 MB', 'arc', [['Pictures/Wedding photos.zip', '9 Jan 2026 at 22:05'], ['Downloads/Wedding photos.zip', '9 Jan 2026 at 21:50']]],
+];
+const dupGroups = [], dupRows = [];
+DUPS.forEach(([name, each, rec, cat, files]) => {
+  const g = document.createElement('div'); g.className = 'dg';
+  g.innerHTML = `<svg viewBox="0 0 16 16" fill="none" stroke="${rgb(DCOL[cat])}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${DICON[cat]}</svg>${name}<span class="m">· ${files.length} copies · ${each} each</span><span class="rc num">${rec} reclaimable</span>`;
+  $('#dlist').appendChild(g); dupGroups.push(g);
+  files.forEach(([path, when], i) => {
+    const r = document.createElement('div'); r.className = 'dr';
+    r.innerHTML = `<span class="cb"></span><div class="tt"><b>${path}</b><s>in ~ · ${when}${i === 0 ? ' <span class="tag">newest</span>' : ''}</s></div><span class="dash">—</span><svg class="mag" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5l3.5 3.5"/></svg>`;
+    $('#dlist').appendChild(r); dupRows.push({ el: r, keep: i === 0, gi: dupGroups.length - 1 });
+  });
+});
+$('#dtoast').innerHTML = $('#toast').innerHTML.replace('Freed 0 KB', 'Freed 9.4 GB').replace('48,213 files · 1,904 folders', '214 files');
+const dtRing = $('#dtoast circle:nth-of-type(2)'), dtChk = $('#dtoast path');
+
+/* ---------- menu bar: ring colour by status (RingIcon / MenuBarPanel) ---------- */
+const ST = { ok: [97, 199, 138], warning: [245, 178, 87], critical: [237, 107, 107] };
+function status(gb) { return gb < 10 ? 'critical' : gb < 20 ? 'warning' : 'ok'; }
+function sparkPath(drop) {
+  // seven days of free space, sagging toward the end by `drop` (0..1)
+  const pts = [];
+  for (let i = 0; i <= 28; i++) {
+    const x = i / 28;
+    const base = 46 - 10 * Math.sin(x * 2.4) - 4 * Math.sin(x * 9.1);
+    const sag = drop * 30 * Math.pow(Math.max(0, x - 0.55) / 0.45, 1.8);
+    pts.push([x * 298, Math.min(52, base - 8 + sag)]);
+  }
+  const line = pts.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ');
+  return [line, line + ' L298 54 L0 54 Z'];
+}
+
+/* cursor paths for the two scenes (duplicates in window points, menu bar in page pixels) */
+const DCUR = [[at($('.nav[data-n=clean]'), .45), 0], [at($('.nav[data-n=dup]'), .45), .6], [at($('#selx')), 2.6], [at($('#mvx')), 4.6]];
+const DCLICK = [.7, 2.7, 4.7];
+function pathAt(path, e, dwell) {
+  // path: [[point, arriveAt]...]; the cursor rests `dwell` seconds before each move
+  let p = path[0][0];
+  for (let i = 1; i < path.length; i++) {
+    const [to, end] = path[i], start = end - dwell;
+    if (e <= start) break;
+    const k = eio(prog(e, start, end));
+    p = [lerp(p[0], to[0], k), lerp(p[1], to[1], k)];
+    if (e < end) break;
+    p = to;
+  }
+  return p;
+}
+const press = (e, clicks) => Math.max(0, ...clicks.map(c => 1 - Math.abs(e - c) / .09));
+
 const introCap = document.createElement('div'); introCap.className = 'cap';
 introCap.innerHTML = 'Meet <em>Headroom</em><small>A free, open-source disk analyzer for your Mac</small>';
 $('#caps').appendChild(introCap);
 const IN0 = 3.4, IN1 = IN0 + SHIFT;          // real-time span the intro owns
+const T0 = F + SHIFT, MB0 = T0 + DUP_LEN, T1 = T0 + SHIFT2;   // extra scenes: duplicates, then the menu bar
+const dupCap = document.createElement('div'); dupCap.className = 'cap';
+dupCap.innerHTML = 'Finds <em>duplicate</em> photos, videos and downloads<small>Compared byte for byte. One copy always stays.</small>';
+const mbCap = document.createElement('div'); mbCap.className = 'cap';
+mbCap.innerHTML = 'Watching <em>from the menu bar</em><small>Free-space ring, an alert when it runs low, one click to fix it</small>';
+$('#caps').append(dupCap, mbCap);
+function mainTime(t) {
+  if (t < IN0) return t;
+  const a = Math.max(IN0, t - SHIFT);
+  if (a < F) return a;
+  return t < T1 ? F : t - SHIFT - SHIFT2;
+}
 window.render = function (t) {
-  renderMain(t < IN0 ? t : Math.max(IN0, t - SHIFT));
+  window.PANE = t >= T0 + .7 && t < MB0 ? 'dup' : null;
+  renderMain(mainTime(t));
   spinHero(t);
+  renderDup(t - T0);
+  renderMenuBar(t - MB0);
+  if (t >= MB0) show($('#appl'), 0);
   // the hook leaves on real time, not on the paused main clock
   show($('#s1'), 1 - prog(t, IN0, IN0 + .5), `scale(${1 - .04 * prog(t, IN0, IN0 + .5)})`);
   if (t >= IN0) show(capEls[0], 0);
@@ -605,6 +781,78 @@ window.render = function (t) {
   const c = Math.min(eout(prog(t, IN0 + .2, IN0 + .65)), 1 - prog(t, IN1 - .5, IN1 - .15));
   show(introCap, c, `translateY(${(1 - eout(prog(t, IN0 + .2, IN0 + .65))) * 26}px)`);
 };
+
+/* ---------- Duplicates scene, e = seconds since the scene began ---------- */
+function renderDup(e) {
+  const on = e >= 0 && e < DUP_LEN + .5;
+  show($('#pDup'), on && e >= .7 ? 1 : 0);
+  const c = Math.min(eout(prog(e, .3, .75)), 1 - prog(e, DUP_LEN - .4, DUP_LEN - .05));
+  show(dupCap, on ? c : 0, `translateY(${(1 - eout(prog(e, .3, .75))) * 26}px)`);
+  if (!on) return;
+  // the app window fades out at the end, handing over to the menu bar
+  show($('#appl'), 1 - prog(e, DUP_LEN - .4, DUP_LEN));
+  const sel = e >= 2.75;
+  show($('#ns0'), 1 - prog(e, 2.7, 2.9)); show($('#ns1'), prog(e, 2.75, 2.95));
+  const gone = eio(prog(e, 4.9, 5.4));
+  dupGroups.forEach((g, i) => { const p = eout(prog(e, .8 + i * .12, 1.2 + i * .12)); show(g, p, `translateX(${(1 - p) * 40}px)`); });
+  dupRows.forEach(({ el, keep, gi }, i) => {
+    const p = eout(prog(e, .85 + gi * .12 + .04, 1.25 + gi * .12 + .04));
+    const tick = !keep && e >= 2.8 + i * .06;
+    const cb = el.firstChild;
+    cb.className = 'cb' + (tick ? ' on' : ''); cb.textContent = tick ? '✓' : '';
+    cb.style.transform = `scale(${1 + .3 * Math.sin(clamp((e - (2.8 + i * .06)) / .2) * Math.PI) * (keep ? 0 : 1)})`;
+    const g = keep ? 0 : gone;
+    show(el, p * (1 - g), `translateX(${(1 - p) * 40 - g * 120}px)`);
+    el.style.height = (38 * (1 - g)) + 'px';
+  });
+  dupGroups.forEach(g => { g.querySelector('.m').textContent = gone > .99 ? '· 1 copy' : g.querySelector('.m').textContent; });
+  const ta = eout(prog(e, 5.0, 5.4));
+  show($('#dtoast'), ta, `translate(-50%, ${(1 - ta) * 20}px) scale(${.96 + .04 * ta})`);
+  dtRing.setAttribute('stroke-dashoffset', 154 * (1 - eout(prog(e, 5.1, 5.6))));
+  dtChk.setAttribute('stroke-dashoffset', 30 * (1 - eout(prog(e, 5.45, 5.8))));
+  const [cx, cy] = pathAt(DCUR, e, .55), pr = press(e, DCLICK);
+  show($('#cursor'), Math.min(prog(e, 0, .25), 1 - prog(e, 5.6, 5.9)), `translate(${cx - 2}px, ${cy - 2}px) scale(${1 - .15 * pr})`);
+}
+
+/* ---------- Menu bar scene, e = seconds since the scene began ---------- */
+const MCUR = [[[1500, 420], 0], [[1600, 17], 3.6], [[1661, 384], 5.4], [[1608, 414], 6.2]];
+const MCLICK = [3.8, 5.6, 6.4];
+function renderMenuBar(e) {
+  const on = e >= -0.5 && e < MB_LEN + 1.0;
+  const fadeIn = prog(e, -0.4, 0.1), fadeOut = 1 - prog(e, MB_LEN, MB_LEN + .7);
+  show($('#mbl'), on ? Math.min(fadeIn, fadeOut) : 0);
+  const c = Math.min(eout(prog(e, .2, .65)), 1 - prog(e, MB_LEN - .5, MB_LEN - .1));
+  show(mbCap, on ? c : 0, `translateY(${(1 - eout(prog(e, .2, .65))) * 26}px)`);
+  if (!on) return;
+  // free space: 38 GB drains to 9.8 GB, then the clean-up brings 14.1 GB back
+  const drain = eio(prog(e, .6, 2.4)), refill = eio(prog(e, 7.0, 7.8));
+  const free = lerp(38, 9.8, drain) + 14.1 * refill;
+  const st = status(free), col = ST[st];
+  const ringCol = st === 'ok' ? [255, 255, 255] : col;
+  $('#marc').setAttribute('stroke', rgb(ringCol)); $('#mring').firstElementChild.setAttribute('stroke', rgb(ringCol));
+  $('#marc').setAttribute('stroke-dashoffset', 40.84 * (1 - Math.max(.04, free / 494.4 * 4)));  // the icon shows the free share, scaled up to read at 18 px
+  $('#mtxt').textContent = Math.round(free) + ' GB';
+  // the alert banner slides in once the disk is low
+  const bIn = back(prog(e, 2.4, 2.9)), bOut = eio(prog(e, 3.3, 3.7));
+  show($('#banner'), clamp(bIn) * (1 - bOut), `translateX(${(1 - bIn) * 520 + bOut * 520}px)`);
+  // the popover opens on the click
+  const pIn = prog(e, 3.85, 4.1);
+  show($('#pop'), eout(pIn), `scale(${.96 + .04 * eout(pIn)}) translateY(${(1 - eout(pIn)) * -6}px)`);
+  const label = { ok: 'Healthy', warning: 'Getting low', critical: 'Low' }[st];
+  $('#pst').textContent = label; $('#pst').style.color = rgb(col); $('#pst').style.background = rgb(col, .18);
+  $('#pfree').textContent = free.toFixed(1) + ' GB';
+  Object.assign($('#pbar').style, { width: ((494.4 - free) / 494.4 * 100) + '%', background: rgb(col) });
+  $('#pcap').textContent = Math.round(free / 494.4 * 100) + '% free · warns below 10 GB';
+  $('#pdelta').textContent = refill > .5 ? '+14.1 GB / 24 h' : '−14.2 GB / 24 h';
+  const [line, area] = sparkPath(1 - refill * .9);
+  $('#sline').setAttribute('d', line); $('#sline').setAttribute('stroke', rgb(col)); $('#sarea').setAttribute('d', area);
+  document.querySelectorAll('#sg stop').forEach(sp => sp.setAttribute('stop-color', rgb(col)));
+  const phase = e < 5.6 ? 0 : e < 6.4 ? 1 : e < 7.0 ? 2 : 3;
+  ['#rc0', '#rc1', '#rc2', '#rc3'].forEach((id, i) => show($(id), i === phase ? 1 : 0));
+  $('#pspin').style.transform = `rotate(${e * 720}deg)`;
+  const [cx, cy] = pathAt(MCUR, e, .6), pr = press(e, MCLICK);
+  show($('#cursor2'), Math.min(prog(e, 2.9, 3.2), 1 - prog(e, 7.9, 8.2)), `translate(${cx}px, ${cy}px) scale(${1 - .15 * pr})`);
+}
 render(0);
 </script>
 </body>

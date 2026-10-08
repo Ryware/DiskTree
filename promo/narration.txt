@@ -1,7 +1,7 @@
 # Narration for headroom-promo.mp4. One line per cue: start time in seconds, then the text.
-# Times are in the final video (the Welcome page sits at 3.4-6.2 s, the scan at 6.2, the
-# dashboard at 9.7, the treemap at 12.3, Safety at 14.6, Cleanup at 19.5, the Clean click at
-# 22.3, the outro at 26.2). audio.py speaks each line with piper and places it at its time.
+# Times are in the final video: Welcome page 3.4-6.2 s, scan 6.2, dashboard 9.7, treemap 12.3,
+# Safety 14.6, Cleanup 19.5, Clean click 22.3, Duplicates 25.95, menu bar 32.55, outro 41.5.
+# audio.py speaks each line and places it at its time; it warns when a line runs into the next.
 0.4	Your Mac says: System Data, two hundred ninety gigabytes. That's it.
 4.9	Meet Headroom, a free, open-source disk analyzer.
 8.2	It scans a million files in about twenty seconds.
@@ -10,4 +10,6 @@
 15.8	Switch to Safety, and every known folder gets a verdict.
 19.7	Cleanup gathers build output, caches and dependencies.
 23.1	One click sends it all to the Trash. Thirty-six gigabytes back, and you can undo.
-27.9	Headroom. Free, open source. Get it with Homebrew.
+27.9	It also finds duplicate photos, videos and downloads, byte for byte, and always keeps one copy.
+34.4	And it keeps watching from the menu bar. When space runs low, you get an alert, and one click cleans it up.
+42.2	Headroom. Free, open source. Get it with Homebrew.
