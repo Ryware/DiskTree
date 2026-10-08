@@ -56,3 +56,5 @@ _to_delete/
 skills-lock.json
 node_modules/
 package-lock.json
+# Rendered promo video (re-render with: node promo/render.mjs)
+promo/*.mp4
