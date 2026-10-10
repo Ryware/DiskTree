@@ -5,7 +5,7 @@
 ## Key facts
 - Price: free forever, with every feature unlocked. There is no Pro tier, subscription, lifetime purchase, trial or in-app purchase. License: MIT. Author: Ryware.
 - Naming: Headroom was called DiskTree until 1.0; it is not affiliated with the paid "DiskTree" app at disktree.org or any other app of either name. This one is the open-source app by Ryware (github.com/Ryware/Headroom).
-- Scanner: macOS getattrlistbulk(2), parallel per-directory tasks. Benchmark: ~1.26M files / 216K folders (133 GB) in ~20 s.
+- Scanner: macOS getattrlistbulk(2), parallel per-directory tasks. Benchmark (M3 Pro, Oct 2026): ~1.07M files / 167K folders (102 GB) in ~16 s.
 - Views: Dashboard, Folder Tree (NSOutlineView, virtualized), Treemap (color by category, age or safety), By Category, Largest Files, Cleanup.
 - Safety hints: rule base of ~150 macOS and developer locations; levels Safe, Usually safe, Caution, Never.
 - Cleanup targets: Xcode DerivedData, node_modules, npm/pnpm/pip/Gradle/NuGet/Cargo caches, build output, logs, Trash.
