@@ -1,0 +1,9 @@
+{
+  "name": "headroom-availability-check",
+  "version": "1.0.0",
+  "description": "Website availability check for headroom-app.org",
+  "main": "check.js",
+  "dependencies": {
+    "puppeteer-core": "^22.0.0"
+  }
+}
