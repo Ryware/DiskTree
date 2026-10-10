@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+### ✨ Changed
+
+- **The What's New page has its own animation**: a small Headroom window where a dashboard tile opens its view and Back returns, instead of a sparkle icon.
+
+### 🐛 Fixed
+
+- **Updating no longer opens the tour at the welcome page.** Updated users, and **Help → What's New in Headroom**, now land on What's New as intended. Users who updated to 1.0.5 see it once on their next update.
+
 ## 1.0.5 — October 7, 2026
 
 ### 🚀 New feature

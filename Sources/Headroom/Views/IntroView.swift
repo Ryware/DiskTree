@@ -1,7 +1,13 @@
 import SwiftUI
 
 /// Bump when "What's new" changes; the intro re-opens on the What's New page for existing users.
-let currentIntroVersion = 7
+let currentIntroVersion = 8
+
+struct IntroPage: Identifiable {
+    let id: Int
+    static let welcome = IntroPage(id: 0)
+    static var whatsNew: IntroPage { IntroPage(id: steps.count - 1) }
+}
 
 struct IntroStep: Identifiable {
     let id: Int
@@ -159,9 +165,7 @@ struct IntroView: View {
             case .duplicates:
                 DuplicatesArt(tick: artTick).frame(width: 250, height: 230)
             case .whatsNew:
-                Image(systemName: "sparkles").font(.system(size: 120, weight: .light)).foregroundStyle(.white)
-                    .rotationEffect(.degrees(artTick % 2 == 0 ? -6 : 6))
-                    .animation(.easeInOut(duration: 0.8), value: artTick)
+                NavigationArt(tick: artTick).frame(width: 260, height: 240)
             }
         }
         .id(page)
@@ -431,6 +435,114 @@ private struct MenuBarArt: View {
         }
         .frame(width: size, height: size)
         .scaleEffect(free < 0.1 && phase < 6 && phase % 2 == 0 ? 1.15 : 1)
+    }
+}
+
+/// A mini Headroom window: the pointer clicks a dashboard tile, the treemap opens, then Back returns to the dashboard.
+private struct NavigationArt: View {
+    let tick: Int
+    private var phase: Int { tick % 7 }   // 0 pointer travels, 1 tile pressed, 2-3 treemap, 4 Back pressed, 5 dashboard again, 6 rest
+    private var showsTreemap: Bool { (2...4).contains(phase) }
+    private let tileColors: [Color] = [.pink, .mint, .orange, .cyan]
+
+    var body: some View {
+        VStack(spacing: 16) {
+            window
+                .overlay(alignment: .topLeading) {
+                    Image(systemName: "cursorarrow").font(.system(size: 18, weight: .semibold)).foregroundStyle(.white)
+                        .shadow(color: .black.opacity(0.4), radius: 3, y: 1)
+                        .scaleEffect(phase == 1 || phase == 4 ? 0.85 : 1)
+                        .offset(pointer)
+                }
+            Text(caption).font(.headline).foregroundStyle(.white).contentTransition(.opacity)
+        }
+        .animation(.spring(duration: 0.55, bounce: 0.2), value: phase)
+    }
+
+    private var pointer: CGSize {
+        switch phase {
+        case 0: return CGSize(width: 110, height: 150)
+        case 1, 2, 3: return CGSize(width: 186, height: 86)    // over the second tile
+        case 4, 5: return CGSize(width: 58, height: 6)         // over Back
+        default: return CGSize(width: 130, height: 140)
+        }
+    }
+
+    private var caption: String {
+        switch phase {
+        case 0, 1: return "Click a tile"
+        case 2, 3: return "Its view opens"
+        case 4, 5: return "⌘[ goes back"
+        default: return "⌘1–⌘7 jump anywhere"
+        }
+    }
+
+    private var window: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 6) {
+                ForEach(0..<3, id: \.self) { _ in Circle().fill(.white.opacity(0.45)).frame(width: 7, height: 7) }
+                Spacer().frame(width: 2)
+                Image(systemName: "chevron.left").font(.system(size: 10, weight: .bold))
+                    .padding(3)
+                    .background(.white.opacity(phase == 4 ? 0.45 : 0), in: RoundedRectangle(cornerRadius: 4, style: .continuous))
+                    .opacity(showsTreemap ? 1 : 0.4)
+                Image(systemName: "chevron.right").font(.system(size: 10, weight: .bold)).opacity(0.4)
+                Spacer()
+            }
+            .foregroundStyle(.white)
+            .padding(.horizontal, 10).frame(height: 24)
+            HStack(spacing: 0) {
+                VStack(alignment: .leading, spacing: 8) {
+                    ForEach(0..<5, id: \.self) { i in
+                        Capsule().fill(.white.opacity(i == (showsTreemap ? 2 : 0) ? 0.95 : 0.35)).frame(width: 30, height: 5)
+                    }
+                }
+                .padding(10)
+                .frame(width: 52, alignment: .topLeading).frame(maxHeight: .infinity, alignment: .top)
+                .background(.black.opacity(0.15))
+                ZStack {
+                    if showsTreemap {
+                        TreemapArt(tick: tick).padding(10).transition(.scale(scale: 0.92).combined(with: .opacity))
+                    } else {
+                        dashboard.transition(.scale(scale: 0.92).combined(with: .opacity))
+                    }
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+        }
+        .frame(width: 240, height: 170)
+        .background(.white.opacity(0.16), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).strokeBorder(.white.opacity(0.25)))
+        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+    }
+
+    private var dashboard: some View {
+        VStack(spacing: 8) {
+            RoundedRectangle(cornerRadius: 7, style: .continuous)
+                .fill(LinearGradient(colors: [.purple.opacity(0.7), .blue.opacity(0.6)], startPoint: .leading, endPoint: .trailing))
+                .frame(height: 26)
+            ForEach(0..<2, id: \.self) { row in
+                HStack(spacing: 8) {
+                    ForEach(0..<2, id: \.self) { col in tile(row * 2 + col) }
+                }
+            }
+        }
+        .padding(10)
+    }
+
+    private func tile(_ i: Int) -> some View {
+        let pressed = i == 1 && phase == 1
+        return RoundedRectangle(cornerRadius: 8, style: .continuous)
+            .fill(.white.opacity(pressed ? 0.42 : 0.2))
+            .overlay(RoundedRectangle(cornerRadius: 8, style: .continuous).strokeBorder(.white.opacity(pressed ? 0.8 : 0), lineWidth: 1.5))
+            .overlay(alignment: .topLeading) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Capsule().fill(tileColors[i]).frame(width: 24, height: 4)
+                    Capsule().fill(.white.opacity(0.85)).frame(width: 40, height: 7)
+                }
+                .padding(8)
+            }
+            .scaleEffect(pressed ? 0.94 : 1)
     }
 }
 
