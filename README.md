@@ -239,23 +239,32 @@ Trash mode uses the standard macOS Trash API instead.
 
 The duplicate finder hashes with `pread(2)` into one reusable buffer per worker, so memory stays flat no matter how many gigabytes it compares.
 
-### Benchmark: Headroom vs Mole
+### Benchmark: Headroom, Mole and DiskTree
 
-Both apps scanned the same home folder (~102 GB) on a MacBook Pro with an M3 Pro and 36 GB of RAM, macOS 27.2, in October 2026.
+All three apps scanned the same home folder (~102 GB, ~1.07 million files) on a MacBook Pro with an M3 Pro and 36 GB of RAM, macOS 27.2, in October 2026.
 
-| | Headroom 1.0.5 | [Mole](https://github.com/tw93/Mole) 1.59.1 (`mo analyze`) |
-|---|---|---|
-| Full scan, median | **15.6 s** (11.9 – 15.9 s, 3 runs) | 23.7 s (20.9 – 26.8 s, 4 runs) |
-| Repeat scan | same as a full scan (no cache) | **4.3 s** (reuses its cache in `~/.cache/mole`) |
-| Files listed one by one | **1,075,404** | 261,780 (other folders sized with `du`) |
-| Total size found | 102.35 GB | 101.4 GB |
-| Peak memory | ~1.2 GB | **~21 MB** |
-| Interface | Native app: tree, treemap, categories | Terminal UI, or `-json` |
-| Says what is safe to delete | Safe / Usually safe / Caution / Never, with a reason | Marks some folders `cleanable` |
+| | Headroom 1.0.5 | [Mole](https://github.com/tw93/Mole) 1.59.1 (`mo analyze`) | [DiskTree](https://www.disktree.org) 1.1.3 (free tier) |
+|---|---|---|---|
+| Full scan, median | **15.6 s** (11.9 – 15.9 s, 3 runs) | 23.7 s (20.9 – 26.8 s, 4 runs) | 57.7 s (56.3 – 59.1 s, 2 runs) |
+| Repeat scan | same as a full scan (no cache) | **4.3 s** (reuses its cache in `~/.cache/mole`) | 115.2 s (rescan without quitting the app, 1 run) |
+| Files listed one by one | **1,075,404** | 261,780 (other folders sized with `du`) | not shown (~940,000 counted while scanning) |
+| Total size found | 102.35 GB | 101.4 GB | ~94.8 GB |
+| Peak memory | ~1.2 GB | **~21 MB** | ~1.35 GB |
+| Interface | Native app: tree, treemap, categories | Terminal UI, or `-json` | Native app: tree and treemap |
+| Says what is safe to delete | Safe / Usually safe / Caution / Never, with a reason | Marks some folders `cleanable` | Diagnosis view; cleanup needs Pro |
+| Price and source | Free, MIT | Free, MIT | Free tier; Pro from $2.99/month; closed source |
 
-How it was measured: Headroom's time is the one it reports after a scan. Mole's is the wall-clock time of `analyze-go -json ~`, run with an empty cache folder each time so every run is a full scan. Mole ran both before and after Headroom, so both saw similar disk-cache conditions.
+How it was measured:
 
-What this shows: Headroom does a full scan about 1.5× faster and keeps every file, which the tree, treemap and duplicate finder need. That is why it uses much more memory. Mole is lighter and answers repeat scans from its cache in seconds. It is also a broader CLI cleaner (uninstaller, system optimizer), which Headroom is not.
+- **Headroom:** the time it reports after a scan.
+- **Mole:** the wall-clock time of `analyze-go -json ~`, run with an empty cache folder each time so every run is a full scan.
+- **DiskTree:** it has no timer, so its CPU use was sampled every 0.2 s and a scan was timed from clicking Scan until the app went idle, accurate to about half a second. Each full scan was started right after launching the app. One more scan, started without quitting, took twice as long, so it is listed as the repeat scan.
+
+All three ran within the same hour, so each saw similar disk-cache conditions.
+
+What this shows: Headroom does a full scan about 1.5× faster than Mole and 3.7× faster than DiskTree, and keeps every file, which the tree, treemap and duplicate finder need. Like DiskTree, it uses over a gigabyte of memory for that. Mole is far lighter and answers repeat scans from its cache in seconds, and it is also a broader CLI cleaner (uninstaller, system optimizer), which Headroom is not.
+
+Headroom was called DiskTree before version 1.0. It is not related to the DiskTree app at disktree.org.
 
 ## Requirements
 
