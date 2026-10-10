@@ -1,0 +1,12 @@
+{
+  "name": "headroom-availability-check",
+  "version": "1.0.0",
+  "description": "Website availability check for Headroom",
+  "main": "availability-check.js",
+  "scripts": {
+    "check": "node availability-check.js"
+  },
+  "dependencies": {
+    "puppeteer": "^22.0.0"
+  }
+}
