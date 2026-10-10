@@ -47,7 +47,7 @@
 brew install ryware/tap/headroom
 ```
 
-![Headroom dashboard showing disk usage, cleanup candidates, and space by category](Screenshots/dashboard.jpeg)
+![Headroom treemap of a home folder colored by file age](Screenshots/treemap.jpeg)
 
 Headroom turns a crowded drive into an understandable map. Scan a folder or disk, identify the largest files and developer caches, inspect what is safe to remove, and clean up without leaving the app.
 
@@ -72,9 +72,21 @@ The virtualized folder tree stays responsive with very large directories. Sort b
 
 ### See the whole drive at a glance
 
-![Headroom treemap colored by file age](Screenshots/treemap.jpeg)
+![Headroom dashboard showing free space, a 7-day trend, cleanup candidates, and duplicate files](Screenshots/dashboard.jpeg)
 
-The interactive treemap can be colored by category, age, or deletion safety. Double-click to zoom and right-click an item for actions.
+The dashboard sums up the scan: free space, a 7-day trend, cleanup candidates, and a shortcut to the duplicate finder. The interactive treemap (top of this page) can be colored by category, age, or deletion safety. Double-click to zoom and right-click an item for actions.
+
+### Know what is safe to delete
+
+![Headroom Cleanup view listing caches, Xcode archives, and build output with Safe, Usually safe, and Caution badges](Screenshots/cleanup.jpeg)
+
+Cleanup gathers regenerable folders, such as caches, DerivedData, `node_modules`, and build output, biggest first, and labels each one Safe, Usually safe, Caution, or Never.
+
+### Remove duplicate files
+
+![Headroom Duplicates pane with groups of identical files and a Select extra copies (keep newest) button](Screenshots/duplicates.jpeg)
+
+Byte-for-byte identical files are grouped and ranked by reclaimable space. One click selects the extra copies and keeps the newest.
 
 ### Understand what consumes the space
 
