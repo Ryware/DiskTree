@@ -1,0 +1,27 @@
+{
+  "name": "headroom",
+  "version": "1.0.0",
+  "description": "<p align=\"center\">   <img src=\"Assets/AppIcon-1024.png\" width=\"128\" alt=\"Headroom app icon\"> </p>",
+  "main": "check-website.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ryware/Headroom.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ryware/Headroom/issues"
+  },
+  "homepage": "https://github.com/Ryware/Headroom#readme",
+  "dependencies": {
+    "puppeteer": "^25.13.0",
+    "puppeteer-core": "^25.13.0"
+  }
+}
