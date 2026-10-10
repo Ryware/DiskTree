@@ -239,6 +239,24 @@ Trash mode uses the standard macOS Trash API instead.
 
 The duplicate finder hashes with `pread(2)` into one reusable buffer per worker, so memory stays flat no matter how many gigabytes it compares.
 
+### Benchmark: Headroom vs Mole
+
+Both apps scanned the same home folder (~102 GB) on a MacBook Pro with an M3 Pro and 36 GB of RAM, macOS 27.2, in October 2026.
+
+| | Headroom 1.0.5 | [Mole](https://github.com/tw93/Mole) 1.59.1 (`mo analyze`) |
+|---|---|---|
+| Full scan, median | **15.6 s** (11.9 – 15.9 s, 3 runs) | 23.7 s (20.9 – 26.8 s, 4 runs) |
+| Repeat scan | same as a full scan (no cache) | **4.3 s** (reuses its cache in `~/.cache/mole`) |
+| Files listed one by one | **1,075,404** | 261,780 (other folders sized with `du`) |
+| Total size found | 102.35 GB | 101.4 GB |
+| Peak memory | ~1.2 GB | **~21 MB** |
+| Interface | Native app: tree, treemap, categories | Terminal UI, or `-json` |
+| Says what is safe to delete | Safe / Usually safe / Caution / Never, with a reason | Marks some folders `cleanable` |
+
+How it was measured: Headroom's time is the one it reports after a scan. Mole's is the wall-clock time of `analyze-go -json ~`, run with an empty cache folder each time so every run is a full scan. Mole ran both before and after Headroom, so both saw similar disk-cache conditions.
+
+What this shows: Headroom does a full scan about 1.5× faster and keeps every file, which the tree, treemap and duplicate finder need. That is why it uses much more memory. Mole is lighter and answers repeat scans from its cache in seconds. It is also a broader CLI cleaner (uninstaller, system optimizer), which Headroom is not.
+
 ## Requirements
 
 - macOS 14 Sonoma or newer
